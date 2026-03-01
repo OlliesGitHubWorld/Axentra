@@ -1,0 +1,101 @@
+#       _____                        __            _____   
+#      /  _  \ ___  ___ ____   _____/  |________  /  _  \  
+#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \ 
+#    /    |    \>    <\  ___/|   |  \  |  |  | \/    |    \
+#    \____|__  /__/\_ \\___  >___|  /__|  |__|  \____|__  /
+#            \/      \/    \/     \/                    \/ 
+#
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Axentra Messages                      │
+# │                  Made by OlliesWorld                    │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Having issues? Feel free to reset this file by deleting
+#  it and restarting the server to regenerate the defaults.
+#
+#  After making changes, use /axentra reload to apply them
+#  without restarting the server.
+#
+# ══════════════════════════════════════════════════════════
+
+# The prefix shown before all plugin messages.
+prefix: "&b&lAxentra &8» "
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  Join & Leave Messages                  │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Set to "none" to use the default Minecraft message,
+#  or set to "" to hide the message entirely.
+#  Use %player% to display the player's name.
+
+join: "&a+ &e%player% &ahas joined the game!"
+quit: "&c- &e%player% &chas left the game!"
+first-join: "&6★ &e%player% &6joined for the first time! Welcome!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   General Messages                      │
+# └─────────────────────────────────────────────────────────┘
+
+no-player: "%prefix%&cOnly players can use this command!"
+no-permission: "%prefix%&cYou don't have permission to use this command!"
+player-not-found: "%prefix%&cPlayer &e%player% &cwas not found!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Clear Command                        │
+# └─────────────────────────────────────────────────────────┘
+
+clear-inventory: "%prefix%&aYour inventory has been cleared!"
+clear-other: "%prefix%&aCleared the inventory of &e%player%&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Repair Command                        │
+# └─────────────────────────────────────────────────────────┘
+
+repair-success: "%prefix%&aYour item has been repaired!"
+repair-no-item: "%prefix%&cYou are not holding an item!"
+repair-not-damaged: "%prefix%&cYour item is not damaged!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Kick Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+kick-usage: "%prefix%&cUsage: /kick <player> [reason]"
+kick-default-reason: "You have been kicked!"
+kick-message: "&cYou have been kicked!\n&7Reason: &f%reason%"
+kick-success: "%prefix%&aSuccessfully kicked &e%player% &afor: &7%reason%"
+kick-announce: "%prefix%&e%player% &chas been kicked for: &7%reason%"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Axentra Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information>"
+reload-success: "%prefix%&aThe plugin has been reloaded!"
+upgrade-checking: "%prefix%&eChecking for updates..."
+upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
+upgrade-available: "%prefix%&aNew update available! &7%current% &8→ &a%latest%"
+upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
+# ┌─────────────────────────────────────────────────────────┐
+# │                     Ban Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+ban-usage: "%prefix%&cUsage: /ban <player> [reason]"
+ban-default-reason: "You have been banned!"
+ban-message: "&cYou have been banned!\n&7Reason: &f%reason%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%"
+ban-success: "%prefix%&aSuccessfully banned &e%player% &afor: &7%reason%"
+ban-announce: "%prefix%&e%player% &chas been banned for: &7%reason%"
+ban-already-banned: "%prefix%&e%player% &cis already banned!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Unban Command                        │
+# └─────────────────────────────────────────────────────────┘
+
+unban-usage: "%prefix%&cUsage: /unban <player>"
+unban-success: "%prefix%&aSuccessfully unbanned &e%player%&a!"
+unban-announce: "%prefix%&e%player% &ahas been unbanned!"
+unban-not-banned: "%prefix%&e%player% &cis not banned!"
+
+# ══════════════════════════════════════════════════════════
+#                     End of Messages
+# ══════════════════════════════════════════════════════════
