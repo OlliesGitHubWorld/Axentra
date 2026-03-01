@@ -35,7 +35,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
     private String getLatestVersion() {
         try {
-            URL url = new URL("https://api.github.com/repos/YOUR_GITHUB_USERNAME/YOUR_REPO/releases/latest");
+            URL url = new URL("https://api.github.com/repos/OLliesGitHubWorld/axentra/releases/latest");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
