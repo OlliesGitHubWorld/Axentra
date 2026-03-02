@@ -74,7 +74,7 @@ axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information
 reload-success: "%prefix%&aThe plugin has been reloaded!"
 upgrade-checking: "%prefix%&eChecking for updates..."
 upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
-upgrade-available: "%prefix%&aNew update available! &7%current% &8→ &a%latest%"
+upgrade-available: "%prefix%&aNew update available! &7%current% &8→ &a%latest%\n%prefix%&7Download: &fhttps://github.com/OlliesGitHubWorld/Axentra/releases/latest"
 upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
 # ┌─────────────────────────────────────────────────────────┐
 # │                     Ban Command                         │
@@ -95,6 +95,14 @@ unban-usage: "%prefix%&cUsage: /unban <player>"
 unban-success: "%prefix%&aSuccessfully unbanned &e%player%&a!"
 unban-announce: "%prefix%&e%player% &ahas been unbanned!"
 unban-not-banned: "%prefix%&e%player% &cis not banned!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Fly Command                          │
+# └─────────────────────────────────────────────────────────┘
+
+fly-enabled: "%prefix%&aFlight has been enabled!"
+fly-disabled: "%prefix%&cFlight has been disabled!"
+fly-other: "%prefix%&aFlight toggled for &e%player%&a!"
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

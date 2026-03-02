@@ -1,7 +1,7 @@
 name: Axentra
-version: 1.0-SNAPSHOT
+version: 1.0.0-alpha
 main: mc.ollie.App
-api-version: 1.13
+api-version: 1.21
 description: A custom server management plugin
 author: OlliesWorld
 
@@ -27,6 +27,9 @@ commands:
   unban:
     description: Unbans a player from the server
     usage: /unban <player>
+  fly:
+    description: Toggle flight mode for yourself or others
+    usage: /fly [player]
 
 permissions:
   Axentra.admin:
@@ -34,6 +37,9 @@ permissions:
     default: op
   Axentra.clear:
     description: Allows the player to clear their inventory
+    default: op
+  Axentra.clear.others:
+    description: Allows the player to clear others' inventory
     default: op
   Axentra.repair:
     description: Allows the player to repair their held item
@@ -46,4 +52,10 @@ permissions:
     default: op
   Axentra.unban:
     description: Allows the player to unban others
+    default: op
+  Axentra.fly:
+    description: Allows the player to toggle flight
+    default: op
+  Axentra.fly.others:
+    description: Allows the player to toggle flight for others
     default: op

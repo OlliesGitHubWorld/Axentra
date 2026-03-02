@@ -66,6 +66,11 @@ public class ClearCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (!sender.hasPermission("Axentra.clear.others")) {
+            sender.sendMessage(getMessage("no-permission"));
+            return true;
+        }
+
         target.getInventory().clear();
         target.sendMessage(getMessage("clear-inventory"));
         sender.sendMessage(getMessage("clear-other").replace("%player%", target.getName()));

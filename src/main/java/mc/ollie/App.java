@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
+import mc.ollie.listeners.UpdateListener;
 
 public final class App extends JavaPlugin {
 
@@ -41,30 +42,38 @@ public final class App extends JavaPlugin {
 
         getCommand("unban").setExecutor(new UnbanCommand(this));
 
+        FlyCommand flyCommand = new FlyCommand(this);
+        getCommand("fly").setExecutor(flyCommand);
+        getCommand("fly").setTabCompleter(flyCommand);
+
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
+        getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
 
-        getLogger().info("                                        ");
-        getLogger().info("  _____                 __             ");
-        getLogger().info(" /  _  \\ ___  ______ __/  |_ _______ ");
-        getLogger().info("/  /_\\  \\\\  \\/  /  _ \\   __\\\\_  __ \\");
-        getLogger().info("/    |    \\>    <(  <_> )  |   |  | \\/");
-        getLogger().info("\\____|__  /__/\\_ \\\\____/|__|   |__|   ");
-        getLogger().info("        \\/      \\/                    ");
-        getLogger().info("                                        ");
-        getLogger().info("  Version: " + getDescription().getVersion());
-        getLogger().info("  Author:  " + getDescription().getAuthors());
-        getLogger().info("  Status:  Successfully started!");
-        getLogger().info("                                        ");
+        String CYAN = "\u001B[36m";
+        String GREEN = "\u001B[32m";
+        String RESET = "\u001B[0m";
+
+        getLogger().info(CYAN + "  ================================  " + RESET);
+        getLogger().info(CYAN + "       A  X  E  N  T  R  A         " + RESET);
+        getLogger().info(CYAN + "  ================================  " + RESET);
+        getLogger().info(CYAN + "  Version: " + RESET + getDescription().getVersion());
+        getLogger().info(CYAN + "  Author:  " + RESET + String.join(", ", getDescription().getAuthors()));
+        getLogger().info(GREEN + "  Status:  Successfully started!   " + RESET);
+        getLogger().info(CYAN + "  ================================  " + RESET);
     }
 
     @Override
     public void onDisable() {
         databaseManager.close();
 
-        getLogger().info("                                        ");
-        getLogger().info("  Axentra has been stopped. Goodbye!   ");
-        getLogger().info("                                        ");
+        String CYAN = "\u001B[36m";
+        String RED = "\u001B[31m";
+        String RESET = "\u001B[0m";
+
+        getLogger().info(CYAN + "  ================================  " + RESET);
+        getLogger().info(RED +  "  Axentra has been stopped. Goodbye!" + RESET);
+        getLogger().info(CYAN + "  ================================  " + RESET);
     }
 
     public FileManager getFileManager() {

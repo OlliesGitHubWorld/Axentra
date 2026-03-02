@@ -33,9 +33,9 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    private String getLatestVersion() {
+    public String getLatestVersion() {
         try {
-            URL url = new URL("https://api.github.com/repos/OLliesGitHubWorld/axentra/releases/latest");
+            URL url = new URL("https://api.github.com/repos/OlliesGitHubWorld/Axentra/releases");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
@@ -50,7 +50,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
             String json = response.toString();
             String tag = json.split("\"tag_name\":\"")[1].split("\"")[0];
-            return tag;
+            return tag.startsWith("v") ? tag.substring(1) : tag;
         } catch (Exception e) {
             return null;
         }
@@ -98,11 +98,11 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
                         if (latestVersion.equalsIgnoreCase(currentVersion)) {
                             sender.sendMessage(getMessage("upgrade-up-to-date")
-                                .replace("%version%", currentVersion));
+                                    .replace("%version%", currentVersion));
                         } else {
                             sender.sendMessage(getMessage("upgrade-available")
-                                .replace("%current%", currentVersion)
-                                .replace("%latest%", latestVersion));
+                                    .replace("%current%", currentVersion)
+                                    .replace("%latest%", latestVersion));
                         }
                     });
                 });
@@ -110,29 +110,27 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
             case "help":
                 String prefix = ChatColor.translateAlternateColorCodes('&',
-                    plugin.getFileManager().getMessages().getString("prefix", ""));
+                        plugin.getFileManager().getMessages().getString("prefix", ""));
                 sender.sendMessage(prefix + ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Help ----");
 
                 plugin.getDescription().getCommands().forEach((cmdName, cmdData) -> {
                     String description = cmdData.containsKey("description")
-                        ? (String) cmdData.get("description")
-                        : "No description available";
+                            ? (String) cmdData.get("description")
+                            : "No description available";
                     String usage = cmdData.containsKey("usage")
-                        ? (String) cmdData.get("usage")
-                        : "/" + cmdName;
+                            ? (String) cmdData.get("usage")
+                            : "/" + cmdName;
 
                     sender.sendMessage(prefix + ChatColor.AQUA + usage + " " + ChatColor.GRAY + "- " + description);
                 });
                 break;
 
             case "information":
-                String infoPrefix = ChatColor.translateAlternateColorCodes('&',
-                    plugin.getFileManager().getMessages().getString("prefix", ""));
-                sender.sendMessage(infoPrefix + ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Information ----");
-                sender.sendMessage(infoPrefix + ChatColor.AQUA + "Version: " + ChatColor.GRAY + plugin.getDescription().getVersion());
-                sender.sendMessage(infoPrefix + ChatColor.AQUA + "Author: " + ChatColor.GRAY + plugin.getDescription().getAuthors());
-                sender.sendMessage(infoPrefix + ChatColor.AQUA + "Server: " + ChatColor.GRAY + Bukkit.getVersion());
-                sender.sendMessage(infoPrefix + ChatColor.AQUA + "Online Players: " + ChatColor.GRAY + Bukkit.getOnlinePlayers().size());
+                sender.sendMessage(ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Information ----");
+                sender.sendMessage(ChatColor.AQUA + "Description: " + ChatColor.GRAY + plugin.getDescription().getDescription());
+                sender.sendMessage(ChatColor.AQUA + "Version: " + ChatColor.GRAY + plugin.getDescription().getVersion());
+                sender.sendMessage(ChatColor.AQUA + "Author: " + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
+                sender.sendMessage(ChatColor.AQUA + "Commands: " + ChatColor.GRAY + plugin.getDescription().getCommands().size());
                 break;
 
             default:
