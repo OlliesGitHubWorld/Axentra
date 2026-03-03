@@ -4,7 +4,6 @@
 ![Minecraft](https://img.shields.io/badge/minecraft-1.13--1.21.11-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
-![Status](https://img.shields.io/badge/status-beta-yellow?style=flat-square)
 
 # Axentra
 
