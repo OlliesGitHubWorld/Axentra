@@ -1,7 +1,7 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0.0--beta-blue?style=flat-square)
-![Minecraft](https://img.shields.io/badge/minecraft-1.13--1.20.4-green?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.0--alpha-blue?style=flat-square)
+![Minecraft](https://img.shields.io/badge/minecraft-1.13--1.21.11-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
 ![Status](https://img.shields.io/badge/status-beta-yellow?style=flat-square)
