@@ -8,16 +8,12 @@ author: OlliesWorld
 commands:
   clear:
     description: Clears the player's inventory
-    usage: /clear
+    usage: /clear [player]
     aliases: [c]
   repair:
     description: Repairs the item in your hand
     usage: /repair
     aliases: [r]
-  axentra:
-    description: Main Axentra command
-    usage: /axentra <reload|upgrade|help|information>
-    aliases: [ax]
   kick:
     description: Kicks a player from the server
     usage: /kick <player> [reason]
@@ -30,6 +26,10 @@ commands:
   fly:
     description: Toggle flight mode for yourself or others
     usage: /fly [player]
+  axentra:
+    description: Main Axentra command
+    usage: /axentra <reload | upgrade | help | information>
+    aliases: [ax]
 
 permissions:
   Axentra.admin:

@@ -111,18 +111,14 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
             case "help":
                 String prefix = ChatColor.translateAlternateColorCodes('&',
                         plugin.getFileManager().getMessages().getString("prefix", ""));
-                sender.sendMessage(prefix + ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Help ----");
-
-                plugin.getDescription().getCommands().forEach((cmdName, cmdData) -> {
-                    String description = cmdData.containsKey("description")
-                            ? (String) cmdData.get("description")
-                            : "No description available";
-                    String usage = cmdData.containsKey("usage")
-                            ? (String) cmdData.get("usage")
-                            : "/" + cmdName;
-
-                    sender.sendMessage(prefix + ChatColor.AQUA + usage + " " + ChatColor.GRAY + "- " + description);
-                });
+                sender.sendMessage( ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Help ----");
+                sender.sendMessage( ChatColor.AQUA + "/axentra <reload | upgrade | help | information>" + ChatColor.GRAY + " - Main Axentra command");
+                sender.sendMessage( ChatColor.AQUA + "/kick <player> [reason]" + ChatColor.GRAY + " - Kicks a player from the server");
+                sender.sendMessage( ChatColor.AQUA + "/ban <player> [reason]" + ChatColor.GRAY + " - Bans a player from the server");
+                sender.sendMessage( ChatColor.AQUA + "/unban <player>" + ChatColor.GRAY + " - Unbans a player from the server");
+                sender.sendMessage( ChatColor.AQUA + "/fly [player]" + ChatColor.GRAY + " - Toggle flight mode for yourself or others");
+                sender.sendMessage( ChatColor.AQUA + "/clear [player]" + ChatColor.GRAY + " - Clears the player's inventory");
+                sender.sendMessage( ChatColor.AQUA + "/repair" + ChatColor.GRAY + " - Repairs the item in your hand");
                 break;
 
             case "information":
