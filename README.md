@@ -1,7 +1,7 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0.0--alpha-blue?style=flat-square)
-![Minecraft](https://img.shields.io/badge/minecraft-1.13--1.21.11-green?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)
+![Minecraft](https://img.shields.io/badge/minecraft-1.21.11-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
 
@@ -93,7 +93,7 @@ After making changes run `/axentra reload` to apply them without restarting the 
 ## 🛠️ Requirements
 
 - Minecraft server running **Spigot** or **Paper**
-- Minecraft **1.13** or higher
+- Minecraft **1.21.11** or higher
 - **Java 21** or higher
 
 ---
