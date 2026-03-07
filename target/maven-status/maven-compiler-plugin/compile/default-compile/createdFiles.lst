@@ -3,6 +3,7 @@ mc\ollie\command\RepairCommand.class
 mc\ollie\command\BanCommand.class
 mc\ollie\App.class
 mc\ollie\listeners\JoinLeaveListener.class
+mc\ollie\command\HelpCommand.class
 mc\ollie\command\FlyCommand.class
 mc\ollie\DatabaseManager.class
 mc\ollie\listeners\LoginListener.class
@@ -10,5 +11,6 @@ mc\ollie\FileManager.class
 mc\ollie\command\UnbanCommand.class
 mc\ollie\command\KickCommand.class
 mc\ollie\listeners\UpdateListener.class
+mc\ollie\App$1.class
 mc\ollie\command\AxentraCommand.class
 mc\ollie\MessageManager.class

@@ -19,29 +19,44 @@ public class FileManager {
     }
 
     public void setup() {
-        // config.yml is handled automatically by Bukkit
         plugin.saveDefaultConfig();
 
-        // Setup messages.yml manually
         messagesFile = new File(plugin.getDataFolder(), "messages.yml");
 
         if (!messagesFile.exists()) {
-            plugin.saveResource("messages.yml", false); // Copies from jar
+            plugin.saveResource("messages.yml", false);
         }
 
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
 
-        // Sync any missing default values from the jar's messages.yml
         InputStream defaultStream = plugin.getResource("messages.yml");
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             messagesConfig.setDefaults(defaultConfig);
+            messagesConfig.options().copyDefaults(true);
+            try {
+                messagesConfig.save(messagesFile);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Could not save messages.yml: " + e.getMessage());
+            }
         }
     }
 
     public void reload() {
         plugin.reloadConfig();
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
+
+        InputStream defaultStream = plugin.getResource("messages.yml");
+        if (defaultStream != null) {
+            YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+            messagesConfig.setDefaults(defaultConfig);
+            messagesConfig.options().copyDefaults(true);
+            try {
+                messagesConfig.save(messagesFile);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Could not save messages.yml: " + e.getMessage());
+            }
+        }
     }
 
     public FileConfiguration getMessages() {

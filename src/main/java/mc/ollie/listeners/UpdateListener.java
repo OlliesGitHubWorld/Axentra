@@ -33,8 +33,8 @@ public class UpdateListener implements Listener {
                             plugin.getFileManager().getMessages().getString("prefix", ""));
                     event.getPlayer().sendMessage(prefix + ChatColor.YELLOW + "New update available! " +
                             ChatColor.GRAY + currentVersion + ChatColor.DARK_GRAY + " → " +
-                            ChatColor.GREEN + latestVersion + ChatColor.GRAY + " | Download: " +
-                            ChatColor.WHITE + "https://github.com/OlliesGitHubWorld/Axentra/releases/latest");
+                            ChatColor.GREEN + latestVersion);
+                    event.getPlayer().sendMessage(ChatColor.AQUA + "https://github.com/OlliesGitHubWorld/Axentra/releases/latest");
                 }
             });
         });

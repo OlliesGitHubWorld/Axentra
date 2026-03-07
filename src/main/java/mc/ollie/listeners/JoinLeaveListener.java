@@ -1,6 +1,7 @@
 package mc.ollie.listeners;
 
 import mc.ollie.App;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ public class JoinLeaveListener implements Listener {
     private static final String DEFAULT_JOIN = "%player% joined the game";
     private static final String DEFAULT_QUIT = "%player% left the game";
 
-    private String getMessage(String path, Player player, String defaultMessage) {
+    private String getMessage(String path, Player player, String defaultMessage, int playerCount) {
         String message = plugin.getFileManager().getMessages().getString(path);
 
         if (message == null || message.equalsIgnoreCase("none")) {
@@ -31,6 +32,7 @@ public class JoinLeaveListener implements Listener {
         }
 
         message = message.replace("%player%", player.getName());
+        message = message.replace("%playercount%", String.valueOf(playerCount));
         message = ChatColor.translateAlternateColorCodes('&', message);
         return message;
     }
@@ -38,16 +40,18 @@ public class JoinLeaveListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        int count = Bukkit.getOnlinePlayers().size(); // includes the joining player
 
         if (!player.hasPlayedBefore()) {
-            event.setJoinMessage(getMessage("first-join", player, DEFAULT_JOIN));
+            event.setJoinMessage(getMessage("first-join", player, DEFAULT_JOIN, count));
         } else {
-            event.setJoinMessage(getMessage("join", player, DEFAULT_JOIN));
+            event.setJoinMessage(getMessage("join", player, DEFAULT_JOIN, count));
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        event.setQuitMessage(getMessage("quit", event.getPlayer(), DEFAULT_QUIT));
+        int count = Bukkit.getOnlinePlayers().size() - 1; // exclude the leaving player
+        event.setQuitMessage(getMessage("quit", event.getPlayer(), DEFAULT_QUIT, count));
     }
 }

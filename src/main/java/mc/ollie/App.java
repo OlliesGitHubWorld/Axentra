@@ -5,6 +5,7 @@ import mc.ollie.command.*;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.UpdateListener;
+import org.bukkit.command.SimpleCommandMap;
 
 public final class App extends JavaPlugin {
 
@@ -45,6 +46,31 @@ public final class App extends JavaPlugin {
         FlyCommand flyCommand = new FlyCommand(this);
         getCommand("fly").setExecutor(flyCommand);
         getCommand("fly").setTabCompleter(flyCommand);
+
+        try {
+            java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            SimpleCommandMap commandMap = (SimpleCommandMap) commandMapField.get(getServer());
+
+            // Use reflection to get the knownCommands field from SimpleCommandMap
+            java.lang.reflect.Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+            knownCommandsField.setAccessible(true);
+            java.util.Map<String, org.bukkit.command.Command> knownCommands =
+                    (java.util.Map<String, org.bukkit.command.Command>) knownCommandsField.get(commandMap);
+
+            knownCommands.remove("help");
+            knownCommands.remove("bukkit:help");
+
+            HelpCommand helpCommand = new HelpCommand(this);
+            commandMap.register("axentra", new org.bukkit.command.Command("help") {
+                @Override
+                public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
+                    return helpCommand.onCommand(sender, this, label, args);
+                }
+            });
+        } catch (Exception e) {
+            getLogger().warning("Failed to register /help command: " + e.getMessage());
+        }
 
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);

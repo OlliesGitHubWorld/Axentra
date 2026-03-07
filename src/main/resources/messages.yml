@@ -27,10 +27,13 @@ prefix: "&b&lAxentra &8» "
 #
 #  Set to "none" to use the default Minecraft message,
 #  or set to "" to hide the message entirely.
-#  Use %player% to display the player's name.
+#
+#  Variables:
+#    %player%      - The player's name
+#    %playercount% - The current number of online players
 
-join: "&a+ &e%player% &ahas joined the game!"
-quit: "&c- &e%player% &chas left the game!"
+join: "&a+ &e%player% &ahas joined the game! &8[&7%playercount%&8]"
+quit: "&c- &e%player% &chas left the game! &8[&7%playercount%&8]"
 first-join: "&6★ &e%player% &6joined for the first time! Welcome!"
 
 # ┌─────────────────────────────────────────────────────────┐
@@ -44,6 +47,9 @@ player-not-found: "%prefix%&cPlayer &e%player% &cwas not found!"
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Clear Command                        │
 # └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The target player's name
 
 clear-inventory: "%prefix%&aYour inventory has been cleared!"
 clear-other: "%prefix%&aCleared the inventory of &e%player%&a!"
@@ -59,6 +65,10 @@ repair-not-damaged: "%prefix%&cYour item is not damaged!"
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Kick Command                         │
 # └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The kicked player's name
+#    %reason% - The kick reason
 
 kick-usage: "%prefix%&cUsage: /kick <player> [reason]"
 kick-default-reason: "You have been kicked!"
@@ -69,16 +79,28 @@ kick-announce: "%prefix%&e%player% &chas been kicked for: &7%reason%"
 # ┌─────────────────────────────────────────────────────────┐
 # │                   Axentra Command                       │
 # └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %version% - The current plugin version
+#    %current% - The current plugin version (upgrade)
+#    %latest%  - The latest available version (upgrade)
 
 axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information>"
 reload-success: "%prefix%&aThe plugin has been reloaded!"
 upgrade-checking: "%prefix%&eChecking for updates..."
 upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
-upgrade-available: "%prefix%&aNew update available! &7%current% &8→ &a%latest%\n%prefix%&7Download: &fhttps://github.com/OlliesGitHubWorld/Axentra/releases/latest"
+upgrade-available: "%prefix% &aNew update available! &7%current% &f→ &a%latest%"
 upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
+
 # ┌─────────────────────────────────────────────────────────┐
 # │                     Ban Command                         │
 # └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player%    - The banned player's name
+#    %reason%    - The ban reason
+#    %banned-by% - The staff member who issued the ban
+#    %appeal%    - The ban appeal link from config.yml
 
 ban-usage: "%prefix%&cUsage: /ban <player> [reason]"
 ban-default-reason: "You have been banned!"
@@ -90,6 +112,9 @@ ban-already-banned: "%prefix%&e%player% &cis already banned!"
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Unban Command                        │
 # └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The unbanned player's name
 
 unban-usage: "%prefix%&cUsage: /unban <player>"
 unban-success: "%prefix%&aSuccessfully unbanned &e%player%&a!"
@@ -99,6 +124,9 @@ unban-not-banned: "%prefix%&e%player% &cis not banned!"
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Fly Command                          │
 # └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The target player's name (fly-other only)
 
 fly-enabled: "%prefix%&aFlight has been enabled!"
 fly-disabled: "%prefix%&cFlight has been disabled!"

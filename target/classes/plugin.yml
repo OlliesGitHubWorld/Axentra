@@ -6,26 +6,41 @@ description: A custom server management plugin
 author: OlliesWorld
 
 commands:
+  help:
+    description: Shows all available commands
+    usage: /help
   clear:
     description: Clears the player's inventory
     usage: /clear [player]
     aliases: [c]
+    permission: Axentra.clear
+    permission-message: ""
   repair:
     description: Repairs the item in your hand
     usage: /repair
     aliases: [r]
+    permission: Axentra.repair
+    permission-message: ""
   kick:
     description: Kicks a player from the server
     usage: /kick <player> [reason]
+    permission: Axentra.kick
+    permission-message: ""
   ban:
     description: Bans a player from the server
     usage: /ban <player> [reason]
+    permission: Axentra.ban
+    permission-message: ""
   unban:
     description: Unbans a player from the server
     usage: /unban <player>
+    permission: Axentra.unban
+    permission-message: ""
   fly:
     description: Toggle flight mode for yourself or others
     usage: /fly [player]
+    permission: Axentra.fly
+    permission-message: ""
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
