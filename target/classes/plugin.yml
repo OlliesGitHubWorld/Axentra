@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.0.0-alpha
+version: 1.0.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin

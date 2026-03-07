@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -56,7 +57,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender,@NotNull Command command,@NotNull String label, String[] args) {
         if (args.length == 1) {
             List<String> tabs = new java.util.ArrayList<>();
             tabs.add("help");
@@ -71,7 +72,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender,@NotNull Command command,@NotNull String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(getMessage("axentra-usage"));
             return true;
@@ -125,6 +126,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.AQUA + "Version: " + ChatColor.GRAY + plugin.getDescription().getVersion());
                 sender.sendMessage(ChatColor.AQUA + "Author: " + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
                 sender.sendMessage(ChatColor.AQUA + "Commands: " + ChatColor.GRAY + plugin.getDescription().getCommands().size());
+                sender.sendMessage(ChatColor.AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/kNjvQPNTw3");
                 break;
 
             default:
