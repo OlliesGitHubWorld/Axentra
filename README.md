@@ -93,7 +93,7 @@ After making changes run `/axentra reload` to apply them without restarting the 
 ## 🛠️ Requirements
 
 - Minecraft server running **Spigot** or **Paper**
-- Minecraft **1.13** or higher
+- Minecraft **1.21.11** or higher
 - **Java 21** or higher
 
 ---
