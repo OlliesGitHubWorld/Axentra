@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.0.0
+version: 1.1.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -26,10 +26,30 @@ commands:
     usage: /kick <player> [reason]
     permission: Axentra.kick
     permission-message: ""
+  tempban:
+    description: Temporarily bans a player from the server
+    usage: /tempban <player> <duration> [reason]
+    permission: Axentra.tempban
+    permission-message: ""
   ban:
     description: Bans a player from the server
     usage: /ban <player> [reason]
     permission: Axentra.ban
+    permission-message: ""
+  tempbanip:
+    description: Temporarily bans an IP address from the server
+    usage: /tempbanip <player|ip> <duration> [reason]
+    permission: Axentra.tempbanip
+    permission-message: ""
+  banip:
+    description: Bans an IP address from the server
+    usage: /banip <player|ip> [reason]
+    permission: Axentra.banip
+    permission-message: ""
+  unbanip:
+    description: Unbans an IP address from the server
+    usage: /unbanip <ip>
+    permission: Axentra.unbanip
     permission-message: ""
   unban:
     description: Unbans a player from the server
@@ -40,6 +60,11 @@ commands:
     description: Toggle flight mode for yourself or others
     usage: /fly [player]
     permission: Axentra.fly
+    permission-message: ""
+  feed:
+    description: Feed yourself or another player
+    usage: /feed [player]
+    permission: Axentra.feed
     permission-message: ""
   heal:
     description: Heal yourself or another player
@@ -67,6 +92,18 @@ permissions:
   Axentra.kick:
     description: Allows the player to kick others
     default: op
+  Axentra.tempban:
+    description: Allows the player to temporarily ban others
+    default: op
+  Axentra.tempbanip:
+    description: Allows the player to temporarily ban IP addresses
+    default: op
+  Axentra.banip:
+    description: Allows the player to ban IP addresses
+    default: op
+  Axentra.unbanip:
+    description: Allows the player to unban IP addresses
+    default: op
   Axentra.ban:
     description: Allows the player to ban others
     default: op
@@ -78,6 +115,12 @@ permissions:
     default: op
   Axentra.fly.others:
     description: Allows the player to toggle flight for others
+    default: op
+  Axentra.feed:
+    description: Allows the player to feed themselves
+    default: op
+  Axentra.feed.others:
+    description: Allows the player to feed others
     default: op
   Axentra.heal:
     description: Allows the player to heal themselves

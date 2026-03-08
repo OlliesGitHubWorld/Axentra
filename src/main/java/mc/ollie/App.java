@@ -41,7 +41,21 @@ public final class App extends JavaPlugin {
         getCommand("ban").setExecutor(banCommand);
         getCommand("ban").setTabCompleter(banCommand);
 
+        TempBanCommand tempBanCommand = new TempBanCommand(this);
+        getCommand("tempban").setExecutor(tempBanCommand);
+        getCommand("tempban").setTabCompleter(tempBanCommand);
+
         getCommand("unban").setExecutor(new UnbanCommand(this));
+
+        BanIpCommand banIpCommand = new BanIpCommand(this);
+        getCommand("banip").setExecutor(banIpCommand);
+        getCommand("banip").setTabCompleter(banIpCommand);
+
+        getCommand("unbanip").setExecutor(new UnbanIpCommand(this));
+
+        TempBanIpCommand tempBanIpCommand = new TempBanIpCommand(this);
+        getCommand("tempbanip").setExecutor(tempBanIpCommand);
+        getCommand("tempbanip").setTabCompleter(tempBanIpCommand);
 
         FlyCommand flyCommand = new FlyCommand(this);
         getCommand("fly").setExecutor(flyCommand);
@@ -50,6 +64,10 @@ public final class App extends JavaPlugin {
         HealCommand healCommand = new HealCommand(this);
         getCommand("heal").setExecutor(healCommand);
         getCommand("heal").setTabCompleter(healCommand);
+
+        FeedCommand feedCommand = new FeedCommand(this);
+        getCommand("feed").setExecutor(feedCommand);
+        getCommand("feed").setTabCompleter(feedCommand);
 
         try {
             java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");

@@ -3,7 +3,6 @@ package mc.ollie.command;
 import mc.ollie.App;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,11 +12,11 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HealCommand implements CommandExecutor, TabCompleter {
+public class FeedCommand implements CommandExecutor, TabCompleter {
 
     private final App plugin;
 
-    public HealCommand(App plugin) {
+    public FeedCommand(App plugin) {
         this.plugin = plugin;
     }
 
@@ -30,17 +29,16 @@ public class HealCommand implements CommandExecutor, TabCompleter {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    private void healPlayer(Player player) {
-        double maxHealth = player.getAttribute(Attribute.MAX_HEALTH).getValue();
-        player.setHealth(maxHealth);
+    private void feedPlayer(Player player) {
         player.setFoodLevel(20);
         player.setSaturation(20f);
+        player.setExhaustion(0f);
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> completions = new ArrayList<>();
-        if (args.length == 1 && sender.hasPermission("Axentra.heal.others")) {
+        if (args.length == 1 && sender.hasPermission("Axentra.feed.others")) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 completions.add(player.getName());
             }
@@ -50,7 +48,7 @@ public class HealCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("Axentra.heal")) {
+        if (!sender.hasPermission("Axentra.feed")) {
             sender.sendMessage(getMessage("no-permission"));
             return true;
         }
@@ -61,12 +59,12 @@ public class HealCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             Player player = (Player) sender;
-            healPlayer(player);
-            player.sendMessage(getMessage("heal-self"));
+            feedPlayer(player);
+            player.sendMessage(getMessage("feed-self"));
             return true;
         }
 
-        if (!sender.hasPermission("Axentra.heal.others")) {
+        if (!sender.hasPermission("Axentra.feed.others")) {
             sender.sendMessage(getMessage("no-permission"));
             return true;
         }
@@ -77,9 +75,9 @@ public class HealCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        healPlayer(target);
-        target.sendMessage(getMessage("heal-received").replace("%player%", sender.getName()));
-        sender.sendMessage(getMessage("heal-other").replace("%player%", target.getName()));
+        feedPlayer(target);
+        target.sendMessage(getMessage("feed-received").replace("%player%", sender.getName()));
+        sender.sendMessage(getMessage("feed-other").replace("%player%", target.getName()));
         return true;
     }
 }

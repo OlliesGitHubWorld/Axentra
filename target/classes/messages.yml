@@ -102,6 +102,13 @@ upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
 #    %banned-by% - The staff member who issued the ban
 #    %appeal%    - The ban appeal link from config.yml
 
+tempban-usage: "%prefix%&cUsage: /tempban <player> <duration> [reason]"
+tempban-invalid-duration: "%prefix%&cInvalid duration! Use a combination of &e1d&c, &e2h&c, &e30m&c, &e10s&c."
+tempban-default-reason: "You have been temporarily banned!"
+tempban-message: "&cYou have been temporarily banned!\n&7Reason: &f%reason%\n&7Duration: &f%duration%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%"
+tempban-success: "%prefix%&aSuccessfully temp-banned &e%player% &afor &e%duration% &afor: &7%reason%"
+tempban-announce: "%prefix%&e%player% &chas been temp-banned for &e%duration%&c: &7%reason%"
+
 ban-usage: "%prefix%&cUsage: /ban <player> [reason]"
 ban-default-reason: "You have been banned!"
 ban-message: "&cYou have been banned!\n&7Reason: &f%reason%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%"
@@ -122,6 +129,41 @@ unban-announce: "%prefix%&e%player% &ahas been unbanned!"
 unban-not-banned: "%prefix%&e%player% &cis not banned!"
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                   BanIP Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %ip%       - The banned IP address
+#    %reason%   - The ban reason
+#    %banned-by% - The staff member who issued the ban
+#    %appeal%   - The ban appeal link from config.yml
+
+tempbanip-usage: "%prefix%&cUsage: /tempbanip <player|ip> <duration> [reason]"
+tempbanip-default-reason: "Your IP has been temporarily banned!"
+tempbanip-message: "&cYour IP has been temporarily banned!\n&7Reason: &f%reason%\n&7Duration: &f%duration%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%"
+tempbanip-success: "%prefix%&aSuccessfully temp-banned IP &e%ip% &afor &e%duration% &afor: &7%reason%"
+tempbanip-announce: "%prefix%&e%player%'s &cIP has been temp-banned for &e%duration%&c: &7%reason%"
+
+banip-usage: "%prefix%&cUsage: /banip <player|ip> [reason]"
+banip-default-reason: "Your IP has been banned!"
+banip-no-address: "%prefix%&cCould not retrieve the address of &e%player%&c!"
+banip-already-banned: "%prefix%&e%ip% &cis already banned!"
+banip-message: "&cYour IP has been banned!\n&7Reason: &f%reason%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%"
+banip-success: "%prefix%&aSuccessfully banned IP &e%ip% &afor: &7%reason%"
+banip-announce: "%prefix%&e%player%'s &cIP has been banned for: &7%reason%"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  UnbanIP Command                        │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %ip% - The unbanned IP address
+
+unbanip-usage: "%prefix%&cUsage: /unbanip <ip>"
+unbanip-success: "%prefix%&aSuccessfully unbanned IP &e%ip%&a!"
+unbanip-not-banned: "%prefix%&eIP %ip% &cis not banned!"
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                    Fly Command                          │
 # └─────────────────────────────────────────────────────────┘
 #
@@ -131,6 +173,28 @@ unban-not-banned: "%prefix%&e%player% &cis not banned!"
 fly-enabled: "%prefix%&aFlight has been enabled!"
 fly-disabled: "%prefix%&cFlight has been disabled!"
 fly-other: "%prefix%&aFlight toggled for &e%player%&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Feed Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The feeder's name (feed-received) or target's name (feed-other)
+
+feed-self: "%prefix%&aYou have been fed!"
+feed-other: "%prefix%&aSuccessfully fed &e%player%&a!"
+feed-received: "%prefix%&aYou have been fed by &e%player%&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Heal Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The healer's name (heal-received) or target's name (heal-other)
+
+heal-self: "%prefix%&aYou have been healed!"
+heal-other: "%prefix%&aSuccessfully healed &e%player%&a!"
+heal-received: "%prefix%&aYou have been healed by &e%player%&a!"
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages
