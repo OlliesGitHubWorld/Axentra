@@ -41,6 +41,11 @@ commands:
     usage: /fly [player]
     permission: Axentra.fly
     permission-message: ""
+  heal:
+    description: Heal yourself or another player
+    usage: /heal [player]
+    permission: Axentra.heal
+    permission-message: ""
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -73,4 +78,10 @@ permissions:
     default: op
   Axentra.fly.others:
     description: Allows the player to toggle flight for others
+    default: op
+  Axentra.heal:
+    description: Allows the player to heal themselves
+    default: op
+  Axentra.heal.others:
+    description: Allows the player to heal others
     default: op

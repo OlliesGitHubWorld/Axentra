@@ -47,6 +47,10 @@ public final class App extends JavaPlugin {
         getCommand("fly").setExecutor(flyCommand);
         getCommand("fly").setTabCompleter(flyCommand);
 
+        HealCommand healCommand = new HealCommand(this);
+        getCommand("heal").setExecutor(healCommand);
+        getCommand("heal").setTabCompleter(healCommand);
+
         try {
             java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);

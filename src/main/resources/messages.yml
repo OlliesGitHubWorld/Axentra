@@ -132,6 +132,17 @@ fly-enabled: "%prefix%&aFlight has been enabled!"
 fly-disabled: "%prefix%&cFlight has been disabled!"
 fly-other: "%prefix%&aFlight toggled for &e%player%&a!"
 
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Heal Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The healer's name (heal-received) or target's name (heal-other)
+
+heal-self: "%prefix%&aYou have been healed!"
+heal-other: "%prefix%&aSuccessfully healed &e%player%&a!"
+heal-received: "%prefix%&aYou have been healed by &e%player%&a!"
+
 # ══════════════════════════════════════════════════════════
 #                     End of Messages
 # ══════════════════════════════════════════════════════════
