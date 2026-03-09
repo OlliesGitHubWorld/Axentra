@@ -21,6 +21,10 @@
                   <pattern>org.sqlite</pattern>
                   <shadedPattern>mc.ollie.libs.sqlite</shadedPattern>
                 </relocation>
+                <relocation>
+                  <pattern>org.bstats</pattern>
+                  <shadedPattern>mc.ollie.libs.bstats</shadedPattern>
+                </relocation>
               </relocations>
             </configuration>
           </execution>
@@ -32,6 +36,10 @@
     <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+    <repository>
+      <id>CodeMC</id>
+      <url>https://repo.codemc.io/repository/maven-public/</url>
     </repository>
   </repositories>
   <dependencies>

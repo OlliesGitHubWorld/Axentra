@@ -2,10 +2,12 @@ package mc.ollie;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
+import mc.ollie.listeners.ChatListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.UpdateListener;
 import org.bukkit.command.SimpleCommandMap;
+import org.bstats.bukkit.Metrics;
 
 public final class App extends JavaPlugin {
 
@@ -22,6 +24,9 @@ public final class App extends JavaPlugin {
 
         this.databaseManager = new DatabaseManager(this);
         databaseManager.setup();
+
+        int pluginId = 30019;
+        Metrics metrics = new Metrics(this, pluginId);
 
         ClearCommand clearCommand = new ClearCommand(this);
         getCommand("clear").setExecutor(clearCommand);
@@ -69,6 +74,24 @@ public final class App extends JavaPlugin {
         getCommand("feed").setExecutor(feedCommand);
         getCommand("feed").setTabCompleter(feedCommand);
 
+        WarnCommand warnCommand = new WarnCommand(this);
+        getCommand("warn").setExecutor(warnCommand);
+        getCommand("warn").setTabCompleter(warnCommand);
+
+        WarnsCommand warnsCommand = new WarnsCommand(this);
+        getCommand("warns").setExecutor(warnsCommand);
+        getCommand("warns").setTabCompleter(warnsCommand);
+
+        ClearWarnsCommand clearWarnsCommand = new ClearWarnsCommand(this);
+        getCommand("clearwarns").setExecutor(clearWarnsCommand);
+        getCommand("clearwarns").setTabCompleter(clearWarnsCommand);
+
+        MuteCommand muteCommand = new MuteCommand(this);
+        getCommand("mute").setExecutor(muteCommand);
+        getCommand("mute").setTabCompleter(muteCommand);
+
+        getCommand("unmute").setExecutor(new UnmuteCommand(this));
+
         try {
             java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
@@ -96,6 +119,7 @@ public final class App extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
 
         String CYAN = "\u001B[36m";

@@ -196,6 +196,67 @@ heal-self: "%prefix%&aYou have been healed!"
 heal-other: "%prefix%&aSuccessfully healed &e%player%&a!"
 heal-received: "%prefix%&aYou have been healed by &e%player%&a!"
 
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Warn Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The warned player's name
+#    %reason% - The warn reason
+#    %count%  - The player's total active warn count
+
+warn-usage: "%prefix%&cUsage: /warn <player> [reason]"
+warn-default-reason: "Breaking the rules!"
+warn-message: "%prefix%&eYou have been warned! &7Reason: &f%reason% &8(&e%count% total&8)"
+warn-success: "%prefix%&aWarned &e%player% &afor: &7%reason% &8(&e%count% total warns&8)"
+warn-announce: "%prefix%&e%player% &chas been warned for: &7%reason% &8(&e%count% warns&8)"
+warn-punishment-kick-message: "&cYou have been kicked!\n&7Reason: &f%reason%"
+warn-punishment-announce: "%prefix%&e%player% &chas been &e%action% &cafter reaching &e%count% &cwarnings."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Warns Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+warns-usage: "%prefix%&cUsage: /warns [player]"
+warns-none: "%prefix%&e%player% &ahas no active warnings."
+warns-error: "%prefix%&cFailed to retrieve warnings."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 ClearWarns Command                      │
+# └─────────────────────────────────────────────────────────┘
+
+clearwarns-usage: "%prefix%&cUsage: /clearwarns <player>"
+clearwarns-success: "%prefix%&aCleared all warnings for &e%player%&a!"
+clearwarns-none: "%prefix%&e%player% &chas no active warnings to clear."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Mute Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The muted player's name
+#    %reason% - The mute reason
+
+mute-usage: "%prefix%&cUsage: /mute <player> [reason]"
+mute-default-reason: "You have been muted!"
+mute-message: "%prefix%&cYou have been muted!\n&7Reason: &f%reason%"
+mute-success: "%prefix%&aSuccessfully muted &e%player% &afor: &7%reason%"
+mute-announce: "%prefix%&e%player% &chas been muted for: &7%reason%"
+mute-already-muted: "%prefix%&e%player% &cis already muted!"
+mute-blocked: "%prefix%&cYou are muted and cannot chat!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Unmute Command                        │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The unmuted player's name
+
+unmute-usage: "%prefix%&cUsage: /unmute <player>"
+unmute-success: "%prefix%&aSuccessfully unmuted &e%player%&a!"
+unmute-announce: "%prefix%&e%player% &ahas been unmuted!"
+unmute-not-muted: "%prefix%&e%player% &cis not muted!"
+
 # ══════════════════════════════════════════════════════════
 #                     End of Messages
 # ══════════════════════════════════════════════════════════

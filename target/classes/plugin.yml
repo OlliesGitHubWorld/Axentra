@@ -71,6 +71,31 @@ commands:
     usage: /heal [player]
     permission: Axentra.heal
     permission-message: ""
+  warn:
+    description: Warns a player
+    usage: /warn <player> [reason]
+    permission: Axentra.warn
+    permission-message: ""
+  warns:
+    description: View a player's warnings
+    usage: /warns [player]
+    permission: Axentra.warns
+    permission-message: ""
+  clearwarns:
+    description: Clears all warnings for a player
+    usage: /clearwarns <player>
+    permission: Axentra.clearwarns
+    permission-message: ""
+  mute:
+    description: Mutes a player, preventing them from chatting
+    usage: /mute <player> [reason]
+    permission: Axentra.mute
+    permission-message: ""
+  unmute:
+    description: Unmutes a player
+    usage: /unmute <player>
+    permission: Axentra.unmute
+    permission-message: ""
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -127,4 +152,19 @@ permissions:
     default: op
   Axentra.heal.others:
     description: Allows the player to heal others
+    default: op
+  Axentra.warn:
+    description: Allows the player to warn others
+    default: op
+  Axentra.warns:
+    description: Allows the player to view warnings
+    default: op
+  Axentra.clearwarns:
+    description: Allows the player to clear warnings
+    default: op
+  Axentra.mute:
+    description: Allows the player to mute others
+    default: op
+  Axentra.unmute:
+    description: Allows the player to unmute others
     default: op

@@ -2,14 +2,20 @@ mc\ollie\command\ClearCommand.class
 mc\ollie\command\BanCommand.class
 mc\ollie\App.class
 mc\ollie\listeners\JoinLeaveListener.class
+mc\ollie\command\HelpCommand$HelpEntry.class
+mc\ollie\command\MuteCommand.class
+mc\ollie\command\WarnCommand.class
 mc\ollie\FileManager.class
+mc\ollie\command\ClearWarnsCommand.class
 mc\ollie\command\UnbanIpCommand.class
 mc\ollie\command\UnbanCommand.class
 mc\ollie\command\AxentraCommand.class
 mc\ollie\command\BanIpCommand.class
 mc\ollie\command\TempBanIpCommand.class
 mc\ollie\command\RepairCommand.class
+mc\ollie\command\WarnsCommand.class
 mc\ollie\command\FeedCommand.class
+mc\ollie\command\UnmuteCommand.class
 mc\ollie\command\HelpCommand.class
 mc\ollie\command\FlyCommand.class
 mc\ollie\DatabaseManager.class
@@ -18,5 +24,6 @@ mc\ollie\command\HealCommand.class
 mc\ollie\command\TempBanCommand.class
 mc\ollie\command\KickCommand.class
 mc\ollie\listeners\UpdateListener.class
+mc\ollie\listeners\ChatListener.class
 mc\ollie\App$1.class
 mc\ollie\MessageManager.class
