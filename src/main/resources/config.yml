@@ -35,9 +35,55 @@ announce-ban: true
 # Should the server announce in chat when a player is unbanned?
 announce-unban: true
 
+# Should the server announce in chat when an IP is banned?
+# The announcement shows the player's name, not their IP address.
+announce-banip: true
+
 # The link shown on the ban screen for players to appeal their ban.
 # Set to "" to hide the appeal line entirely.
 ban-appeal-link: "https://discord.gg/yourlink"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Mute Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+# Should the server announce in chat when a player is muted?
+announce-mute: true
+
+# Should the server announce in chat when a player is unmuted?
+announce-unmute: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Warn Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+# Should the server announce in chat when a player is warned?
+announce-warn: true
+
+# Automatic punishments triggered when a player reaches a certain number of warnings.
+#
+# Supported actions:
+#   kick    - Kicks the player with the given reason
+#   mute    - Mutes the player (prevents chatting)
+#   tempban - Temporarily bans the player (requires a "duration" field, e.g. "1d", "12h", "30m")
+#   ban     - Permanently bans the player
+#
+# Add or remove thresholds as needed. Set to {} to disable all auto-punishments.
+
+warn-punishments:
+  3:
+    action: kick
+    reason: "You have accumulated 3 warnings."
+  5:
+    action: mute
+    reason: "You have accumulated 5 warnings."
+  7:
+    action: tempban
+    duration: "1d"
+    reason: "You have accumulated 7 warnings."
+  10:
+    action: ban
+    reason: "You have accumulated 10 warnings."
 
 # ══════════════════════════════════════════════════════════
 #                     End of Config

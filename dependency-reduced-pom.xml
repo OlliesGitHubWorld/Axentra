@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>mc.ollie</groupId>
   <artifactId>axentra</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <build>
     <plugins>
       <plugin>
@@ -21,6 +21,10 @@
                   <pattern>org.sqlite</pattern>
                   <shadedPattern>mc.ollie.libs.sqlite</shadedPattern>
                 </relocation>
+                <relocation>
+                  <pattern>org.bstats</pattern>
+                  <shadedPattern>mc.ollie.libs.bstats</shadedPattern>
+                </relocation>
               </relocations>
             </configuration>
           </execution>
@@ -32,6 +36,10 @@
     <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+    <repository>
+      <id>CodeMC</id>
+      <url>https://repo.codemc.io/repository/maven-public/</url>
     </repository>
   </repositories>
   <dependencies>
