@@ -79,14 +79,41 @@ public class HelpCommand implements CommandExecutor {
 
         // Player
         List<HelpEntry> player = new ArrayList<>();
-        addEntry(player, sender, "Axentra.fly",    "/fly [player]",   "Toggles flight");
-        addEntry(player, sender, "Axentra.heal",   "/heal [player]",  "Heals a player");
-        addEntry(player, sender, "Axentra.feed",   "/feed [player]",  "Feeds a player");
-        addEntry(player, sender, "Axentra.clear",  "/clear [player]", "Clears inventory");
-        addEntry(player, sender, "Axentra.repair", "/repair",         "Repairs held item");
+        addEntry(player, sender, "Axentra.fly",      "/fly [player]",   "Toggles flight");
+        addEntry(player, sender, "Axentra.heal",     "/heal [player]",  "Heals a player");
+        addEntry(player, sender, "Axentra.feed",     "/feed [player]",  "Feeds a player");
+        addEntry(player, sender, "Axentra.clear",    "/clear [player]", "Clears inventory");
+        addEntry(player, sender, "Axentra.repair",   "/repair",         "Repairs held item");
+        addEntry(player, sender, "Axentra.hat",      "/hat",            "Wear item as a hat");
+        addEntry(player, sender, "Axentra.ping",     "/ping [player]",  "Check ping");
+        addEntry(player, sender, "Axentra.suicide",  "/suicide",        "Kill yourself");
         if (!player.isEmpty()) {
             addHeader(entries, "Player");
             entries.addAll(player);
+        }
+
+        // Utility
+        List<HelpEntry> utility = new ArrayList<>();
+        addEntry(utility, sender, "Axentra.anvil",        "/anvil",        "Opens an anvil");
+        addEntry(utility, sender, "Axentra.workbench",    "/workbench",    "Opens a crafting table");
+        addEntry(utility, sender, "Axentra.cartography",  "/cartography",  "Opens a cartography table");
+        addEntry(utility, sender, "Axentra.grindstone",   "/grindstone",   "Opens a grindstone");
+        addEntry(utility, sender, "Axentra.loom",         "/loom",         "Opens a loom");
+        addEntry(utility, sender, "Axentra.smithingtable","/smithingtable","Opens a smithing table");
+        addEntry(utility, sender, "Axentra.stonecutter",  "/stonecutter",  "Opens a stonecutter");
+        addEntry(utility, sender, "Axentra.enderchest",   "/enderchest",   "Opens your ender chest");
+        if (!utility.isEmpty()) {
+            addHeader(entries, "Utility");
+            entries.addAll(utility);
+        }
+
+        // World
+        List<HelpEntry> world = new ArrayList<>();
+        addEntry(world, sender, "Axentra.time",    "/time <set|add> <value>", "Set or add world time");
+        addEntry(world, sender, "Axentra.weather", "/weather <clear|rain|storm>", "Set the weather");
+        if (!world.isEmpty()) {
+            addHeader(entries, "World");
+            entries.addAll(world);
         }
 
         // General (always visible)

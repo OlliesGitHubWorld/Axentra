@@ -8,6 +8,92 @@
 
 ## Utility Commands
 
+### /anvil
+Opens an anvil without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/anvil` |
+| **Permission** | `Axentra.anvil` |
+
+---
+
+### /workbench
+Opens a crafting table without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/workbench` |
+| **Aliases** | `/wb`, `/craft`, `/craftingtable` |
+| **Permission** | `Axentra.workbench` |
+
+---
+
+### /cartography
+Opens a cartography table without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/cartography` |
+| **Aliases** | `/carto`, `/cartographytable` |
+| **Permission** | `Axentra.cartography` |
+
+---
+
+### /grindstone
+Opens a grindstone without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/grindstone` |
+| **Aliases** | `/grind` |
+| **Permission** | `Axentra.grindstone` |
+
+---
+
+### /loom
+Opens a loom without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/loom` |
+| **Permission** | `Axentra.loom` |
+
+---
+
+### /smithingtable
+Opens a smithing table without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/smithingtable` |
+| **Aliases** | `/smithing`, `/smith` |
+| **Permission** | `Axentra.smithingtable` |
+
+---
+
+### /stonecutter
+Opens a stonecutter without needing a physical block.
+
+| | |
+|---|---|
+| **Usage** | `/stonecutter` |
+| **Aliases** | `/stone` |
+| **Permission** | `Axentra.stonecutter` |
+
+---
+
+### /enderchest
+Opens your ender chest from anywhere.
+
+| | |
+|---|---|
+| **Usage** | `/enderchest` |
+| **Aliases** | `/ec`, `/echest` |
+| **Permission** | `Axentra.enderchest` |
+
+---
+
 ### /clear
 Clears a player's inventory.
 
@@ -86,6 +172,98 @@ Fully restores a player's hunger.
 ```
 /feed
 /feed OlliesOtherWorld
+```
+
+---
+
+### /hat
+Places the item in your hand on your head as a helmet.
+
+| | |
+|---|---|
+| **Usage** | `/hat` |
+| **Permission** | `Axentra.hat` |
+
+> **Note:** If you are already wearing a helmet it will be swapped to your hand.
+
+---
+
+### /ping
+Displays your current ping or another player's ping in milliseconds.
+
+| | |
+|---|---|
+| **Usage** | `/ping [player]` |
+| **Permission** | `Axentra.ping` |
+| **Permission (others)** | `Axentra.ping.others` |
+
+**Examples:**
+```
+/ping
+/ping OlliesOtherWorld
+```
+
+---
+
+### /suicide
+Instantly kills yourself.
+
+| | |
+|---|---|
+| **Usage** | `/suicide` |
+| **Permission** | `Axentra.suicide` |
+
+---
+
+## World Commands
+
+### /time
+Sets or adds to the time in the world.
+
+| | |
+|---|---|
+| **Usage** | `/time <set\|add> <day\|noon\|night\|midnight\|ticks>` |
+| **Permission** | `Axentra.time` |
+
+| Shortcut | Description |
+|---|---|
+| `/day` | Sets time to day |
+| `/noon` | Sets time to noon |
+| `/night` | Sets time to night |
+| `/midnight` | Sets time to midnight |
+
+**Examples:**
+```
+/time set day
+/time set 6000
+/time add 1000
+/day
+/night
+```
+
+---
+
+### /weather
+Sets the weather in the world.
+
+| | |
+|---|---|
+| **Usage** | `/weather <clear\|rain\|storm>` |
+| **Permission** | `Axentra.weather` |
+
+| Shortcut | Description |
+|---|---|
+| `/sun` | Sets weather to clear |
+| `/sky` | Sets weather to clear |
+| `/rain` | Sets weather to rain |
+| `/storm` | Sets weather to thunderstorm |
+
+**Examples:**
+```
+/weather clear
+/weather storm
+/sun
+/rain
 ```
 
 ---

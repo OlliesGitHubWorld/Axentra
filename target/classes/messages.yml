@@ -258,6 +258,12 @@ unmute-announce: "%prefix%&e%player% &ahas been unmuted!"
 unmute-not-muted: "%prefix%&e%player% &cis not muted!"
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                 Cartography Command                     │
+# └─────────────────────────────────────────────────────────┘
+
+cartography-open: "%prefix%&aOpened a cartography table!"
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                    Hat Command                          │
 # └─────────────────────────────────────────────────────────┘
 
@@ -275,6 +281,32 @@ time-usage: "%prefix%&cUsage: /time <set|add> <day|noon|night|midnight|ticks>"
 time-invalid: "%prefix%&cInvalid time value: &e%value%&c! Use day, noon, night, midnight, or a number."
 time-set: "%prefix%&aTime set to &e%time%&a!"
 time-add: "%prefix%&aAdded &e%time% &aticks to the world time!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Suicide Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+suicide-success: "%prefix%&cYou have taken your own life."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Weather Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+weather-usage: "%prefix%&cUsage: /weather <clear|rain|storm>"
+weather-clear: "%prefix%&aWeather set to &eclear&a!"
+weather-rain: "%prefix%&aWeather set to &erain&a!"
+weather-storm: "%prefix%&aWeather set to &estorm&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Ping Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %ping%   - The ping in milliseconds
+#    %player% - The target player's name
+
+ping-self: "%prefix%&aYour ping is &e%ping%ms&a!"
+ping-other: "%prefix%&e%player%&a's ping is &e%ping%ms&a!"
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

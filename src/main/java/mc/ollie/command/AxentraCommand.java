@@ -33,6 +33,18 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
+    private String formatUptime() {
+        long seconds = java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime() / 1000;
+        long days    = seconds / 86400;
+        long hours   = (seconds % 86400) / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs    = seconds % 60;
+        if (days > 0)    return days + "d " + hours + "h " + minutes + "m " + secs + "s";
+        if (hours > 0)   return hours + "h " + minutes + "m " + secs + "s";
+        if (minutes > 0) return minutes + "m " + secs + "s";
+        return secs + "s";
+    }
+
     public String getLatestVersion() {
         try {
             URL url = new URL("https://api.github.com/repos/OlliesGitHubWorld/Axentra/releases");
@@ -122,11 +134,15 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
             case "information":
                 sender.sendMessage(ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Information ----");
-                sender.sendMessage(ChatColor.AQUA + "Description: " + ChatColor.GRAY + plugin.getDescription().getDescription());
-                sender.sendMessage(ChatColor.AQUA + "Version: " + ChatColor.GRAY + plugin.getDescription().getVersion());
-                sender.sendMessage(ChatColor.AQUA + "Author: " + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
-                sender.sendMessage(ChatColor.AQUA + "Commands: " + ChatColor.GRAY + plugin.getDescription().getCommands().size());
-                sender.sendMessage(ChatColor.AQUA + "Discord: " + ChatColor.GRAY + "w");
+                sender.sendMessage(ChatColor.AQUA + "Version: "       + ChatColor.GRAY + plugin.getDescription().getVersion());
+                sender.sendMessage(ChatColor.AQUA + "Author: "        + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
+                sender.sendMessage(ChatColor.AQUA + "Commands: "      + ChatColor.GRAY + plugin.getDescription().getCommands().size());
+                sender.sendMessage(ChatColor.AQUA + "Server: "        + ChatColor.GRAY + Bukkit.getName() + " " + Bukkit.getVersion());
+                sender.sendMessage(ChatColor.AQUA + "Bukkit API: "    + ChatColor.GRAY + Bukkit.getBukkitVersion());
+                sender.sendMessage(ChatColor.AQUA + "Online Players: "+ ChatColor.GRAY + Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers());
+                sender.sendMessage(ChatColor.AQUA + "Worlds: "        + ChatColor.GRAY + Bukkit.getWorlds().size());
+                sender.sendMessage(ChatColor.AQUA + "TPS: "           + ChatColor.GRAY + String.format("%.2f", Bukkit.getTPS()[0]));
+                sender.sendMessage(ChatColor.AQUA + "Uptime: "        + ChatColor.GRAY + formatUptime());
                 break;
 
             default:

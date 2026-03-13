@@ -107,6 +107,76 @@ commands:
     aliases: [wb, craft, craftingtable]
     permission: Axentra.workbench
     permission-message: ""
+  cartography:
+    description: Opens a cartography table
+    usage: /cartography
+    aliases: [cartographytable, carto]
+    permission: Axentra.cartography
+    permission-message: ""
+  grindstone:
+    description: Opens a grindstone
+    usage: /grindstone
+    aliases: [grind]
+    permission: Axentra.grindstone
+    permission-message: ""
+  loom:
+    description: Opens a loom
+    usage: /loom
+    permission: Axentra.loom
+    permission-message: ""
+  smithingtable:
+    description: Opens a smithing table
+    usage: /smithingtable
+    aliases: [smithing, smith]
+    permission: Axentra.smithingtable
+    permission-message: ""
+  stonecutter:
+    description: Opens a stonecutter
+    usage: /stonecutter
+    aliases: [stone]
+    permission: Axentra.stonecutter
+    permission-message: ""
+  enderchest:
+    description: Opens your ender chest
+    usage: /enderchest
+    aliases: [ec, echest]
+    permission: Axentra.enderchest
+    permission-message: ""
+  ping:
+    description: Check your ping or another player's ping
+    usage: /ping [player]
+    permission: Axentra.ping
+    permission-message: ""
+  suicide:
+    description: Kill yourself
+    usage: /suicide
+    permission: Axentra.suicide
+    permission-message: ""
+  weather:
+    description: Set the weather in the world
+    usage: /weather <clear|rain|storm>
+    permission: Axentra.weather
+    permission-message: ""
+  sun:
+    description: Set the weather to clear
+    usage: /sun
+    permission: Axentra.weather
+    permission-message: ""
+  sky:
+    description: Set the weather to clear
+    usage: /sky
+    permission: Axentra.weather
+    permission-message: ""
+  rain:
+    description: Set the weather to rain
+    usage: /rain
+    permission: Axentra.weather
+    permission-message: ""
+  storm:
+    description: Set the weather to a thunderstorm
+    usage: /storm
+    permission: Axentra.weather
+    permission-message: ""
   hat:
     description: Place the item in your hand on your head
     usage: /hat
@@ -214,6 +284,36 @@ permissions:
     default: op
   Axentra.workbench:
     description: Allows the player to use /workbench
+    default: op
+  Axentra.cartography:
+    description: Allows the player to use /cartography
+    default: op
+  Axentra.grindstone:
+    description: Allows the player to use /grindstone
+    default: op
+  Axentra.loom:
+    description: Allows the player to use /loom
+    default: op
+  Axentra.smithingtable:
+    description: Allows the player to use /smithingtable
+    default: op
+  Axentra.stonecutter:
+    description: Allows the player to use /stonecutter
+    default: op
+  Axentra.enderchest:
+    description: Allows the player to use /enderchest
+    default: op
+  Axentra.ping:
+    description: Allows the player to check their own ping
+    default: op
+  Axentra.ping.others:
+    description: Allows the player to check other players' ping
+    default: op
+  Axentra.suicide:
+    description: Allows the player to use /suicide
+    default: op
+  Axentra.weather:
+    description: Allows the player to change the weather
     default: op
   Axentra.hat:
     description: Allows the player to use /hat

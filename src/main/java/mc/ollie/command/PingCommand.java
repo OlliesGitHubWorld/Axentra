@@ -12,11 +12,11 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlyCommand implements CommandExecutor, TabCompleter {
+public class PingCommand implements CommandExecutor, TabCompleter {
 
     private final App plugin;
 
-    public FlyCommand(App plugin) {
+    public PingCommand(App plugin) {
         this.plugin = plugin;
     }
 
@@ -32,7 +32,7 @@ public class FlyCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> completions = new ArrayList<>();
-        if (args.length == 1) {
+        if (args.length == 1 && sender.hasPermission("Axentra.ping.others")) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 completions.add(player.getName());
             }
@@ -42,7 +42,7 @@ public class FlyCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("Axentra.fly")) {
+        if (!sender.hasPermission("Axentra.ping")) {
             sender.sendMessage(getMessage("no-permission"));
             return true;
         }
@@ -53,13 +53,12 @@ public class FlyCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             Player player = (Player) sender;
-            boolean newFlightState = !player.getAllowFlight();
-            player.setAllowFlight(newFlightState);
-            if (newFlightState) {
-                player.sendMessage(getMessage("fly-enabled"));
-            } else {
-                player.sendMessage(getMessage("fly-disabled"));
-            }
+            sender.sendMessage(getMessage("ping-self").replace("%ping%", String.valueOf(player.getPing())));
+            return true;
+        }
+
+        if (!sender.hasPermission("Axentra.ping.others")) {
+            sender.sendMessage(getMessage("no-permission"));
             return true;
         }
 
@@ -69,20 +68,9 @@ public class FlyCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (!sender.hasPermission("Axentra.fly.others")) {
-            sender.sendMessage(getMessage("no-permission"));
-            return true;
-        }
-
-        boolean newFlightState = !target.getAllowFlight();
-        target.setAllowFlight(newFlightState);
-        if (newFlightState) {
-            target.sendMessage(getMessage("fly-enabled"));
-            sender.sendMessage(getMessage("fly-other-enabled").replace("%player%", target.getName()));
-        } else {
-            target.sendMessage(getMessage("fly-disabled"));
-            sender.sendMessage(getMessage("fly-other-disabled").replace("%player%", target.getName()));
-        }
+        sender.sendMessage(getMessage("ping-other")
+                .replace("%player%", target.getName())
+                .replace("%ping%", String.valueOf(target.getPing())));
         return true;
     }
 }
