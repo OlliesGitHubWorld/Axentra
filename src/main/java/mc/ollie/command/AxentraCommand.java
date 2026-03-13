@@ -126,7 +126,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.AQUA + "Version: " + ChatColor.GRAY + plugin.getDescription().getVersion());
                 sender.sendMessage(ChatColor.AQUA + "Author: " + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
                 sender.sendMessage(ChatColor.AQUA + "Commands: " + ChatColor.GRAY + plugin.getDescription().getCommands().size());
-                sender.sendMessage(ChatColor.AQUA + "Discord: " + ChatColor.GRAY + "https://discord.gg/kNjvQPNTw3");
+                sender.sendMessage(ChatColor.AQUA + "Discord: " + ChatColor.GRAY + "w");
                 break;
 
             default:

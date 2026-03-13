@@ -92,6 +92,30 @@ public final class App extends JavaPlugin {
 
         getCommand("unmute").setExecutor(new UnmuteCommand(this));
 
+        AnvilCommand anvilCommand = new AnvilCommand(this);
+        getCommand("anvil").setExecutor(anvilCommand);
+        getCommand("anvil").setTabCompleter(anvilCommand);
+
+        WorkbenchCommand workbenchCommand = new WorkbenchCommand(this);
+        getCommand("workbench").setExecutor(workbenchCommand);
+        getCommand("workbench").setTabCompleter(workbenchCommand);
+
+        HatCommand hatCommand = new HatCommand(this);
+        getCommand("hat").setExecutor(hatCommand);
+        getCommand("hat").setTabCompleter(hatCommand);
+
+        TimeCommand timeCommand = new TimeCommand(this);
+        getCommand("time").setExecutor(timeCommand);
+        getCommand("time").setTabCompleter(timeCommand);
+        getCommand("day").setExecutor(timeCommand);
+        getCommand("day").setTabCompleter(timeCommand);
+        getCommand("night").setExecutor(timeCommand);
+        getCommand("night").setTabCompleter(timeCommand);
+        getCommand("noon").setExecutor(timeCommand);
+        getCommand("noon").setTabCompleter(timeCommand);
+        getCommand("midnight").setExecutor(timeCommand);
+        getCommand("midnight").setTabCompleter(timeCommand);
+
         try {
             java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);

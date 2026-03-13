@@ -92,7 +92,7 @@ Once the server has started you should see this in your console:
 [Axentra]   ================================
 [Axentra]        A  X  E  N  T  R  A
 [Axentra]   ================================
-[Axentra]   Version: 1.1.0
+[Axentra]   Version: 1.2.0
 [Axentra]   Author:  OlliesWorld
 [Axentra]   Status:  Successfully started!
 [Axentra]   ================================

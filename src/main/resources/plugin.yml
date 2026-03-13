@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.1.0
+version: 1.2.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -96,6 +96,47 @@ commands:
     usage: /unmute <player>
     permission: Axentra.unmute
     permission-message: ""
+  anvil:
+    description: Opens an anvil
+    usage: /anvil
+    permission: Axentra.anvil
+    permission-message: ""
+  workbench:
+    description: Opens a crafting table
+    usage: /workbench
+    aliases: [wb, craft, craftingtable]
+    permission: Axentra.workbench
+    permission-message: ""
+  hat:
+    description: Place the item in your hand on your head
+    usage: /hat
+    permission: Axentra.hat
+    permission-message: ""
+  time:
+    description: Set or add time in the world
+    usage: /time <set|add> <day|noon|night|midnight|ticks>
+    permission: Axentra.time
+    permission-message: ""
+  day:
+    description: Set the time to day
+    usage: /day
+    permission: Axentra.time
+    permission-message: ""
+  night:
+    description: Set the time to night
+    usage: /night
+    permission: Axentra.time
+    permission-message: ""
+  noon:
+    description: Set the time to noon
+    usage: /noon
+    permission: Axentra.time
+    permission-message: ""
+  midnight:
+    description: Set the time to midnight
+    usage: /midnight
+    permission: Axentra.time
+    permission-message: ""
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -167,4 +208,16 @@ permissions:
     default: op
   Axentra.unmute:
     description: Allows the player to unmute others
+    default: op
+  Axentra.anvil:
+    description: Allows the player to use /anvil
+    default: op
+  Axentra.workbench:
+    description: Allows the player to use /workbench
+    default: op
+  Axentra.hat:
+    description: Allows the player to use /hat
+    default: op
+  Axentra.time:
+    description: Allows the player to change the world time
     default: op

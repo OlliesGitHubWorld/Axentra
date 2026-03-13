@@ -257,6 +257,25 @@ unmute-success: "%prefix%&aSuccessfully unmuted &e%player%&a!"
 unmute-announce: "%prefix%&e%player% &ahas been unmuted!"
 unmute-not-muted: "%prefix%&e%player% &cis not muted!"
 
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Hat Command                          │
+# └─────────────────────────────────────────────────────────┘
+
+hat-success: "%prefix%&aYour hat has been equipped!"
+hat-no-item: "%prefix%&cYou must be holding an item!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Time Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %time% - The time value or name that was set/added
+
+time-usage: "%prefix%&cUsage: /time <set|add> <day|noon|night|midnight|ticks>"
+time-invalid: "%prefix%&cInvalid time value: &e%value%&c! Use day, noon, night, midnight, or a number."
+time-set: "%prefix%&aTime set to &e%time%&a!"
+time-add: "%prefix%&aAdded &e%time% &aticks to the world time!"
+
 # ══════════════════════════════════════════════════════════
 #                     End of Messages
 # ══════════════════════════════════════════════════════════
