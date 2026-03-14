@@ -482,4 +482,4 @@ The main Axentra administration command.
 | `/axentra reload` | Reloads `config.yml` and `messages.yml` without restarting |
 | `/axentra upgrade` | Checks GitHub for a newer version |
 | `/axentra help` | Shows all commands and descriptions |
-| `/axentra information` | Shows plugin, server and player information |
+| `/axentra information` | Shows plugin information |

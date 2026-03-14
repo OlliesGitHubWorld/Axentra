@@ -172,7 +172,8 @@ unbanip-not-banned: "%prefix%&eIP %ip% &cis not banned!"
 
 fly-enabled: "%prefix%&aFlight has been enabled!"
 fly-disabled: "%prefix%&cFlight has been disabled!"
-fly-other: "%prefix%&aFlight toggled for &e%player%&a!"
+fly-other-enabled: "%prefix%&aFlight enabled for &e%player%&a!"
+fly-other-disabled: "%prefix%&cFlight disabled for &e%player%&c!"
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Feed Command                         │
