@@ -172,7 +172,8 @@ unbanip-not-banned: "%prefix%&eIP %ip% &cis not banned!"
 
 fly-enabled: "%prefix%&aFlight has been enabled!"
 fly-disabled: "%prefix%&cFlight has been disabled!"
-fly-other: "%prefix%&aFlight toggled for &e%player%&a!"
+fly-other-enabled: "%prefix%&aFlight enabled for &e%player%&a!"
+fly-other-disabled: "%prefix%&cFlight disabled for &e%player%&c!"
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Feed Command                         │
@@ -256,6 +257,57 @@ unmute-usage: "%prefix%&cUsage: /unmute <player>"
 unmute-success: "%prefix%&aSuccessfully unmuted &e%player%&a!"
 unmute-announce: "%prefix%&e%player% &ahas been unmuted!"
 unmute-not-muted: "%prefix%&e%player% &cis not muted!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Cartography Command                     │
+# └─────────────────────────────────────────────────────────┘
+
+cartography-open: "%prefix%&aOpened a cartography table!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Hat Command                          │
+# └─────────────────────────────────────────────────────────┘
+
+hat-success: "%prefix%&aYour hat has been equipped!"
+hat-no-item: "%prefix%&cYou must be holding an item!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Time Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %time% - The time value or name that was set/added
+
+time-usage: "%prefix%&cUsage: /time <set|add> <day|noon|night|midnight|ticks>"
+time-invalid: "%prefix%&cInvalid time value: &e%value%&c! Use day, noon, night, midnight, or a number."
+time-set: "%prefix%&aTime set to &e%time%&a!"
+time-add: "%prefix%&aAdded &e%time% &aticks to the world time!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Suicide Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+suicide-success: "%prefix%&cYou have taken your own life."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Weather Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+weather-usage: "%prefix%&cUsage: /weather <clear|rain|storm>"
+weather-clear: "%prefix%&aWeather set to &eclear&a!"
+weather-rain: "%prefix%&aWeather set to &erain&a!"
+weather-storm: "%prefix%&aWeather set to &estorm&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Ping Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %ping%   - The ping in milliseconds
+#    %player% - The target player's name
+
+ping-self: "%prefix%&aYour ping is &e%ping%ms&a!"
+ping-other: "%prefix%&e%player%&a's ping is &e%ping%ms&a!"
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

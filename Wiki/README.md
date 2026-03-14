@@ -1,6 +1,6 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.2.0-blue?style=flat-square)
 ![Minecraft](https://img.shields.io/badge/minecraft-1.21-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)

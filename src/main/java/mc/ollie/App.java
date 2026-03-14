@@ -92,6 +92,74 @@ public final class App extends JavaPlugin {
 
         getCommand("unmute").setExecutor(new UnmuteCommand(this));
 
+        AnvilCommand anvilCommand = new AnvilCommand(this);
+        getCommand("anvil").setExecutor(anvilCommand);
+        getCommand("anvil").setTabCompleter(anvilCommand);
+
+        WorkbenchCommand workbenchCommand = new WorkbenchCommand(this);
+        getCommand("workbench").setExecutor(workbenchCommand);
+        getCommand("workbench").setTabCompleter(workbenchCommand);
+
+        CartographyCommand cartographyCommand = new CartographyCommand(this);
+        getCommand("cartography").setExecutor(cartographyCommand);
+        getCommand("cartography").setTabCompleter(cartographyCommand);
+
+        GrindstoneCommand grindstoneCommand = new GrindstoneCommand(this);
+        getCommand("grindstone").setExecutor(grindstoneCommand);
+        getCommand("grindstone").setTabCompleter(grindstoneCommand);
+
+        LoomCommand loomCommand = new LoomCommand(this);
+        getCommand("loom").setExecutor(loomCommand);
+        getCommand("loom").setTabCompleter(loomCommand);
+
+        SmithingTableCommand smithingTableCommand = new SmithingTableCommand(this);
+        getCommand("smithingtable").setExecutor(smithingTableCommand);
+        getCommand("smithingtable").setTabCompleter(smithingTableCommand);
+
+        StonecutterCommand stonecutterCommand = new StonecutterCommand(this);
+        getCommand("stonecutter").setExecutor(stonecutterCommand);
+        getCommand("stonecutter").setTabCompleter(stonecutterCommand);
+
+        EnderChestCommand enderChestCommand = new EnderChestCommand(this);
+        getCommand("enderchest").setExecutor(enderChestCommand);
+        getCommand("enderchest").setTabCompleter(enderChestCommand);
+
+        PingCommand pingCommand = new PingCommand(this);
+        getCommand("ping").setExecutor(pingCommand);
+        getCommand("ping").setTabCompleter(pingCommand);
+
+        SuicideCommand suicideCommand = new SuicideCommand(this);
+        getCommand("suicide").setExecutor(suicideCommand);
+        getCommand("suicide").setTabCompleter(suicideCommand);
+
+        WeatherCommand weatherCommand = new WeatherCommand(this);
+        getCommand("weather").setExecutor(weatherCommand);
+        getCommand("weather").setTabCompleter(weatherCommand);
+        getCommand("sun").setExecutor(weatherCommand);
+        getCommand("sun").setTabCompleter(weatherCommand);
+        getCommand("sky").setExecutor(weatherCommand);
+        getCommand("sky").setTabCompleter(weatherCommand);
+        getCommand("rain").setExecutor(weatherCommand);
+        getCommand("rain").setTabCompleter(weatherCommand);
+        getCommand("storm").setExecutor(weatherCommand);
+        getCommand("storm").setTabCompleter(weatherCommand);
+
+        HatCommand hatCommand = new HatCommand(this);
+        getCommand("hat").setExecutor(hatCommand);
+        getCommand("hat").setTabCompleter(hatCommand);
+
+        TimeCommand timeCommand = new TimeCommand(this);
+        getCommand("time").setExecutor(timeCommand);
+        getCommand("time").setTabCompleter(timeCommand);
+        getCommand("day").setExecutor(timeCommand);
+        getCommand("day").setTabCompleter(timeCommand);
+        getCommand("night").setExecutor(timeCommand);
+        getCommand("night").setTabCompleter(timeCommand);
+        getCommand("noon").setExecutor(timeCommand);
+        getCommand("noon").setTabCompleter(timeCommand);
+        getCommand("midnight").setExecutor(timeCommand);
+        getCommand("midnight").setTabCompleter(timeCommand);
+
         try {
             java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
