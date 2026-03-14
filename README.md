@@ -30,7 +30,9 @@ Axentra is a Minecraft Bukkit/Spigot plugin that adds custom join/leave messages
 - ⚠️ **Warning System** — Warn players with configurable auto-punishments at thresholds
 - 🔇 **Mute System** — Mute and unmute players to block chat messages
 - 🚫 **IP Banning** — Ban and temp-ban IP addresses to block alt accounts
-- 🛠️ **Utility Commands** — Clear inventory, repair items, fly, heal and feed on the fly
+- 🛠️ **Utility Commands** — Clear inventory, repair items, fly, heal, feed and more
+- 🪣 **Virtual Block Commands** — Open anvils, workbenches, enderchests and more without a physical block
+- 🌤️ **World Commands** — Change time and weather with shortcuts like /day, /night, /sun and /rain
 - 📢 **Announcements** — Announce kicks, bans and warns to the whole server
 - 🔗 **Ban Appeal Link** — Show a Discord or website link on the ban screen
 - 🗃️ **SQLite Database** — Persistent ban, mute and warn storage, no external database needed
@@ -56,11 +58,24 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 
 | Command | Description | Permission |
 |---|---|---|
+| `/anvil` | Opens an anvil | `Axentra.anvil` |
+| `/workbench` | Opens a crafting table | `Axentra.workbench` |
+| `/cartography` | Opens a cartography table | `Axentra.cartography` |
+| `/grindstone` | Opens a grindstone | `Axentra.grindstone` |
+| `/loom` | Opens a loom | `Axentra.loom` |
+| `/smithingtable` | Opens a smithing table | `Axentra.smithingtable` |
+| `/stonecutter` | Opens a stonecutter | `Axentra.stonecutter` |
+| `/enderchest` | Opens your ender chest | `Axentra.enderchest` |
 | `/clear [player]` | Clears a player's inventory | `Axentra.clear` |
 | `/repair` | Repairs the item in your hand | `Axentra.repair` |
 | `/fly [player]` | Toggles flight mode | `Axentra.fly` |
 | `/heal [player]` | Heals a player | `Axentra.heal` |
 | `/feed [player]` | Feeds a player | `Axentra.feed` |
+| `/hat` | Places your held item on your head | `Axentra.hat` |
+| `/ping [player]` | Shows ping in milliseconds | `Axentra.ping` |
+| `/suicide` | Kills yourself | `Axentra.suicide` |
+| `/time <set\|add> <value>` | Sets or adds to the world time | `Axentra.time` |
+| `/weather <clear\|rain\|storm>` | Sets the weather | `Axentra.weather` |
 | `/warn <player> [reason]` | Warns a player | `Axentra.warn` |
 | `/warns [player]` | View a player's warnings | `Axentra.warns` |
 | `/clearwarns <player>` | Clears a player's warnings | `Axentra.clearwarns` |
@@ -76,7 +91,7 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 | `/axentra reload` | Reloads config and messages | `Axentra.admin` |
 | `/axentra upgrade` | Checks for updates | `Axentra.admin` |
 | `/axentra help` | Shows all commands | — |
-| `/axentra information` | Shows plugin information | — |
+| `/axentra information` | Shows plugin, server and player information | — |
 
 For a full list of commands and usage, check out the [Commands Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki/Commands).
 
@@ -87,6 +102,14 @@ For a full list of commands and usage, check out the [Commands Wiki](https://git
 | Permission | Default | Description |
 |---|---|---|
 | `Axentra.admin` | OP | Access to all `/axentra` subcommands |
+| `Axentra.anvil` | OP | Use `/anvil` |
+| `Axentra.workbench` | OP | Use `/workbench` |
+| `Axentra.cartography` | OP | Use `/cartography` |
+| `Axentra.grindstone` | OP | Use `/grindstone` |
+| `Axentra.loom` | OP | Use `/loom` |
+| `Axentra.smithingtable` | OP | Use `/smithingtable` |
+| `Axentra.stonecutter` | OP | Use `/stonecutter` |
+| `Axentra.enderchest` | OP | Use `/enderchest` |
 | `Axentra.clear` | OP | Use `/clear` on yourself |
 | `Axentra.clear.others` | OP | Use `/clear` on others |
 | `Axentra.repair` | OP | Use `/repair` |
@@ -96,6 +119,12 @@ For a full list of commands and usage, check out the [Commands Wiki](https://git
 | `Axentra.heal.others` | OP | Use `/heal` on others |
 | `Axentra.feed` | OP | Use `/feed` on yourself |
 | `Axentra.feed.others` | OP | Use `/feed` on others |
+| `Axentra.hat` | OP | Use `/hat` |
+| `Axentra.ping` | OP | Use `/ping` on yourself |
+| `Axentra.ping.others` | OP | Use `/ping` on others |
+| `Axentra.suicide` | OP | Use `/suicide` |
+| `Axentra.time` | OP | Use `/time` and shortcuts |
+| `Axentra.weather` | OP | Use `/weather` and shortcuts |
 | `Axentra.warn` | OP | Use `/warn` |
 | `Axentra.warns` | OP | Use `/warns` |
 | `Axentra.clearwarns` | OP | Use `/clearwarns` |
