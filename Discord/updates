@@ -1,0 +1,47 @@
+# 「 Axentra v1.2.0 」
+
+### Added
+- /anvil - Open an anvil without a physical block
+- /workbench - Open a crafting table without a physical block
+- /cartography - Open a cartography table without a physical block
+- /grindstone - Open a grindstone without a physical block
+- /loom - Open a loom without a physical block
+- /smithingtable - Open a smithing table without a physical block
+- /stonecutter - Open a stonecutter without a physical block
+- /enderchest - Open your ender chest from anywhere
+- /fly [player] - Toggle flight for yourself or another player
+- /hat - Place the item in your hand on your head
+- /ping [player] - Check your ping or another player's ping
+- /suicide - Kill yourself
+- /time <set|add> <day|noon|night|midnight|ticks> - Set or add to the world time
+- /weather <clear|rain|storm> - Set the weather
+- /clearwarns <player> - Clear all warnings for a player
+
+### Other
+- Time shortcuts: /day, /noon, /night, /midnight
+- Weather shortcuts: /sun, /sky, /rain, /storm
+- /axentra information now shows the support Discord link
+
+Download: https://www.spigotmc.org/resources/axentra.133221/ @Updates
+
+---
+
+# 「 Axentra v1.1.0 」
+
+### Added
+- /mute <player> [reason] - Mute a player from the chat
+- /unmute <player> - Unmute a player
+- /warn <player> [reason] - Warn a player
+- /warns [player] - View warnings for a player
+- /heal [player] - Heal yourself or another player
+- /feed [player] - Feed yourself or another player
+- /banip <player|ip> [reason] - Ban a player's IP address
+- /unbanip <ip> - Unban an IP address
+- /tempban <player> <duration> [reason] - Temporarily ban a player
+- /tempbanip <player|ip> <duration> [reason] - Temporarily ban an IP address
+
+### Other
+- Warn punishments system - automatically kick, mute, tempban or ban at set warn counts
+- Duration format support (e.g. 1d2h30m) for tempban commands
+
+Download: https://www.spigotmc.org/resources/axentra.133221/ @Updates
