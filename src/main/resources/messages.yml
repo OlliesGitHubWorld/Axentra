@@ -1,9 +1,9 @@
-#       _____                        __            _____   
-#      /  _  \ ___  ___ ____   _____/  |________  /  _  \  
-#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \ 
+#       _____                        __            _____
+#      /  _  \ ___  ___ ____   _____/  |________  /  _  \
+#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \
 #    /    |    \>    <\  ___/|   |  \  |  |  | \/    |    \
 #    \____|__  /__/\_ \\___  >___|  /__|  |__|  \____|__  /
-#            \/      \/    \/     \/                    \/ 
+#            \/      \/    \/     \/                    \/
 #
 # ┌─────────────────────────────────────────────────────────┐
 # │                   Axentra Messages                      │
@@ -77,28 +77,13 @@ kick-success: "%prefix%&aSuccessfully kicked &e%player% &afor: &7%reason%"
 kick-announce: "%prefix%&e%player% &chas been kicked for: &7%reason%"
 
 # ┌─────────────────────────────────────────────────────────┐
-# │                   Axentra Command                       │
-# └─────────────────────────────────────────────────────────┘
-#
-#  Variables:
-#    %version% - The current plugin version
-#    %current% - The current plugin version (upgrade)
-#    %latest%  - The latest available version (upgrade)
-
-axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information>"
-reload-success: "%prefix%&aThe plugin has been reloaded!"
-upgrade-checking: "%prefix%&eChecking for updates..."
-upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
-upgrade-available: "%prefix% &aNew update available! &7%current% &f→ &a%latest%"
-upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
-
-# ┌─────────────────────────────────────────────────────────┐
-# │                     Ban Command                         │
+# │                 TempBan & Ban Commands                  │
 # └─────────────────────────────────────────────────────────┘
 #
 #  Variables:
 #    %player%    - The banned player's name
 #    %reason%    - The ban reason
+#    %duration%  - The ban duration (tempban only)
 #    %banned-by% - The staff member who issued the ban
 #    %appeal%    - The ban appeal link from config.yml
 
@@ -129,14 +114,16 @@ unban-announce: "%prefix%&e%player% &ahas been unbanned!"
 unban-not-banned: "%prefix%&e%player% &cis not banned!"
 
 # ┌─────────────────────────────────────────────────────────┐
-# │                   BanIP Command                         │
+# │              TempBanIP & BanIP Commands                 │
 # └─────────────────────────────────────────────────────────┘
 #
 #  Variables:
-#    %ip%       - The banned IP address
-#    %reason%   - The ban reason
+#    %ip%        - The banned IP address
+#    %player%    - The player associated with the IP
+#    %reason%    - The ban reason
+#    %duration%  - The ban duration (tempbanip only)
 #    %banned-by% - The staff member who issued the ban
-#    %appeal%   - The ban appeal link from config.yml
+#    %appeal%    - The ban appeal link from config.yml
 
 tempbanip-usage: "%prefix%&cUsage: /tempbanip <player|ip> <duration> [reason]"
 tempbanip-default-reason: "Your IP has been temporarily banned!"
@@ -153,7 +140,7 @@ banip-success: "%prefix%&aSuccessfully banned IP &e%ip% &afor: &7%reason%"
 banip-announce: "%prefix%&e%player%'s &cIP has been banned for: &7%reason%"
 
 # ┌─────────────────────────────────────────────────────────┐
-# │                  UnbanIP Command                        │
+# │                   UnbanIP Command                       │
 # └─────────────────────────────────────────────────────────┘
 #
 #  Variables:
@@ -265,23 +252,15 @@ unmute-not-muted: "%prefix%&e%player% &cis not muted!"
 cartography-open: "%prefix%&aOpened a cartography table!"
 
 # ┌─────────────────────────────────────────────────────────┐
-# │                    Hat Command                          │
-# └─────────────────────────────────────────────────────────┘
-
-hat-success: "%prefix%&aYour hat has been equipped!"
-hat-no-item: "%prefix%&cYou must be holding an item!"
-
-# ┌─────────────────────────────────────────────────────────┐
-# │                    Time Command                         │
+# │                    Ping Command                         │
 # └─────────────────────────────────────────────────────────┘
 #
 #  Variables:
-#    %time% - The time value or name that was set/added
+#    %ping%   - The ping in milliseconds
+#    %player% - The target player's name
 
-time-usage: "%prefix%&cUsage: /time <set|add> <day|noon|night|midnight|ticks>"
-time-invalid: "%prefix%&cInvalid time value: &e%value%&c! Use day, noon, night, midnight, or a number."
-time-set: "%prefix%&aTime set to &e%time%&a!"
-time-add: "%prefix%&aAdded &e%time% &aticks to the world time!"
+ping-self: "%prefix%&aYour ping is &e%ping%ms&a!"
+ping-other: "%prefix%&e%player%&a's ping is &e%ping%ms&a!"
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                   Suicide Command                       │
@@ -299,11 +278,19 @@ weather-rain: "%prefix%&aWeather set to &erain&a!"
 weather-storm: "%prefix%&aWeather set to &estorm&a!"
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                    Hat Command                          │
+# └─────────────────────────────────────────────────────────┘
+
+hat-success: "%prefix%&aYour hat has been equipped!"
+hat-no-item: "%prefix%&cYou must be holding an item!"
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                   Speed Command                         │
 # └─────────────────────────────────────────────────────────┘
 #
 #  Variables:
 #    %speed%  - The speed value (1-10)
+#    %type%   - walk or fly
 #    %player% - The target player's name
 
 speed-usage: "%prefix%&cUsage: /speed <1-10|reset> [walk|fly] [player] &8(&71 = default&8)"
@@ -330,15 +317,88 @@ gamemode-other: "%prefix%&aSet &e%player%&a's gamemode to &e%gamemode%&a!"
 gamemode-received: "%prefix%&aYour gamemode has been set to &e%gamemode% &aby &e%player%&a!"
 
 # ┌─────────────────────────────────────────────────────────┐
-# │                    Ping Command                         │
+# │                    Time Command                         │
 # └─────────────────────────────────────────────────────────┘
 #
 #  Variables:
-#    %ping%   - The ping in milliseconds
-#    %player% - The target player's name
+#    %time% - The time value or name that was set/added
 
-ping-self: "%prefix%&aYour ping is &e%ping%ms&a!"
-ping-other: "%prefix%&e%player%&a's ping is &e%ping%ms&a!"
+time-usage: "%prefix%&cUsage: /time <set|add> <day|noon|night|midnight|ticks>"
+time-invalid: "%prefix%&cInvalid time value: &e%value%&c! Use day, noon, night, midnight, or a number."
+time-set: "%prefix%&aTime set to &e%time%&a!"
+time-add: "%prefix%&aAdded &e%time% &aticks to the world time!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Back Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+back-success: "%prefix%&aTeleported to your previous location!"
+back-no-location: "%prefix%&cNo previous location found!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    TPA Commands                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player%  - The other player's name
+#    %seconds% - The request timeout in seconds
+
+tpa-usage: "%prefix%&cUsage: /tpa <player>"
+tpa-self: "%prefix%&cYou cannot send a teleport request to yourself!"
+tpa-sent: "%prefix%&aTeleport request sent to &e%player%&a!"
+tpa-received: "%prefix%&e%player% &ahas requested to teleport to you! Use &e/tpaccept &aor &e/tpdeny &7(&e%seconds%s&7)"
+tpa-expired-requester: "%prefix%&cYour teleport request to &e%player% &chas expired!"
+tpa-expired-target: "%prefix%&cThe teleport request from &e%player% &chas expired!"
+tpa-accept-requester: "%prefix%&aRequest accepted! Stand still..."
+tpa-accept-target: "%prefix%&aYou accepted &e%player%&a's teleport request!"
+tpa-deny-requester: "%prefix%&e%player% &cdenied your teleport request!"
+tpa-deny-target: "%prefix%&cYou denied &e%player%&c's teleport request!"
+tpa-cancel-requester: "%prefix%&aYour teleport request to &e%player% &ahas been cancelled!"
+tpa-cancelled-target: "%prefix%&e%player% &ccancelled their teleport request!"
+tpa-no-request: "%prefix%&cYou have no pending teleport requests!"
+tpa-no-outgoing: "%prefix%&cYou have no outgoing teleport requests!"
+tpa-requester-offline: "%prefix%&cThe player who sent the request is no longer online!"
+tpa-target-offline: "%prefix%&cThe player went offline before you could teleport!"
+tpa-toggled-off: "%prefix%&e%player% &chas teleport requests disabled!"
+tptoggle-enabled: "%prefix%&aYou can now receive teleport requests!"
+tptoggle-disabled: "%prefix%&cYou will no longer receive teleport requests!"
+tpa-countdown-title: "&a%seconds%"
+tpa-countdown-subtitle: "&7Do not move!"
+tpa-moved-title: "&cTeleport Cancelled!"
+tpa-moved-subtitle: "&7You moved."
+tpa-moved: "%prefix%&cTeleport cancelled! Don't move during the countdown."
+tpa-teleported-title: "&aTeleported!"
+tpa-teleported-subtitle: "&7You were teleported to &e%player%&7."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    God Command                          │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The target or sender's name (others only)
+
+god-enabled: "%prefix%&aGod mode &2enabled&a!"
+god-disabled: "%prefix%&cGod mode &4disabled&c!"
+god-enabled-other: "%prefix%&aGod mode enabled for &e%player%&a!"
+god-disabled-other: "%prefix%&cGod mode disabled for &e%player%&c!"
+god-other-enabled: "%prefix%&aYour god mode was enabled by &e%player%&a!"
+god-other-disabled: "%prefix%&cYour god mode was disabled by &e%player%&c!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Axentra Command                       │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %version% - The current plugin version
+#    %current% - The current plugin version (upgrade)
+#    %latest%  - The latest available version (upgrade)
+
+axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information>"
+reload-success: "%prefix%&aThe plugin has been reloaded!"
+upgrade-checking: "%prefix%&eChecking for updates..."
+upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
+upgrade-available: "%prefix% &aNew update available! &7%current% &f→ &a%latest%"
+upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

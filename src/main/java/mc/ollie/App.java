@@ -2,7 +2,9 @@ package mc.ollie;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
+import mc.ollie.listeners.BackListener;
 import mc.ollie.listeners.ChatListener;
+import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.UpdateListener;
@@ -166,6 +168,21 @@ public final class App extends JavaPlugin {
         getCommand("gmsp").setExecutor(gamemodeCommand);
         getCommand("gmsp").setTabCompleter(gamemodeCommand);
 
+        BackCommand backCommand = new BackCommand(this);
+        getCommand("back").setExecutor(backCommand);
+
+        TpaCommand tpaCommand = new TpaCommand(this);
+        getCommand("tpa").setExecutor(tpaCommand);
+        getCommand("tpa").setTabCompleter(tpaCommand);
+        getCommand("tpaccept").setExecutor(tpaCommand);
+        getCommand("tpdeny").setExecutor(tpaCommand);
+        getCommand("tpacancel").setExecutor(tpaCommand);
+        getCommand("tptoggle").setExecutor(tpaCommand);
+
+        GodCommand godCommand = new GodCommand(this);
+        getCommand("god").setExecutor(godCommand);
+        getCommand("god").setTabCompleter(godCommand);
+
         TimeCommand timeCommand = new TimeCommand(this);
         getCommand("time").setExecutor(timeCommand);
         getCommand("time").setTabCompleter(timeCommand);
@@ -203,6 +220,8 @@ public final class App extends JavaPlugin {
             getLogger().warning("Failed to register /help command: " + e.getMessage());
         }
 
+        getServer().getPluginManager().registerEvents(new BackListener(backCommand), this);
+        getServer().getPluginManager().registerEvents(new GodListener(godCommand), this);
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);

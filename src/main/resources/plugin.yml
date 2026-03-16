@@ -238,6 +238,41 @@ commands:
     usage: /midnight
     permission: Axentra.time
     permission-message: ""
+  back:
+    description: Teleport to your previous location
+    usage: /back
+    permission: Axentra.back
+    permission-message: ""
+  tpa:
+    description: Send a teleport request to a player
+    usage: /tpa <player>
+    permission: Axentra.tpa
+    permission-message: ""
+  tpaccept:
+    description: Accept an incoming teleport request
+    usage: /tpaccept
+    permission: Axentra.tpa
+    permission-message: ""
+  tpdeny:
+    description: Deny an incoming teleport request
+    usage: /tpdeny
+    permission: Axentra.tpa
+    permission-message: ""
+  tpacancel:
+    description: Cancel your outgoing teleport request
+    usage: /tpacancel
+    permission: Axentra.tpa
+    permission-message: ""
+  tptoggle:
+    description: Toggle whether you can receive teleport requests
+    usage: /tptoggle
+    permission: Axentra.tpa
+    permission-message: ""
+  god:
+    description: Toggle invincibility for yourself or others
+    usage: /god [player]
+    permission: Axentra.god
+    permission-message: ""
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -363,4 +398,16 @@ permissions:
     default: op
   Axentra.time:
     description: Allows the player to change the world time
+    default: op
+  Axentra.back:
+    description: Allows the player to use /back
+    default: true
+  Axentra.tpa:
+    description: Allows the player to use the TPA commands
+    default: true
+  Axentra.god:
+    description: Allows the player to toggle god mode for themselves
+    default: op
+  Axentra.god.others:
+    description: Allows the player to toggle god mode for others
     default: op

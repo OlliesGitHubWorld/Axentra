@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"E:/8. code/old/MIneceraft plugins/Axentra/axentra\" && rm -rf .classpath .project axentra.iml dependency-reduced-pom.xml .settings/ Discord/ Wiki/ Resources/ \".github/java-upgrade/\")"
+    ]
+  }
+}

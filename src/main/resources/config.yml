@@ -85,6 +85,14 @@ warn-punishments:
     action: ban
     reason: "You have accumulated 10 warnings."
 
+# ┌─────────────────────────────────────────────────────────┐
+# │                     TPA Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+# Show a countdown title on screen when a TPA request is accepted.
+# Set to false to only use chat messages.
+tpa-title-countdown: true
+
 # ══════════════════════════════════════════════════════════
 #                     End of Config
 # ══════════════════════════════════════════════════════════
