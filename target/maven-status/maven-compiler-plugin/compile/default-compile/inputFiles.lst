@@ -9,6 +9,7 @@ E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\EnderChestCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\FeedCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\FlyCommand.java
+E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\GamemodeCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\GrindstoneCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\HatCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\HealCommand.java
@@ -19,6 +20,7 @@ E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\PingCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\RepairCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\SmithingTableCommand.java
+E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\SpeedCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\StonecutterCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\SuicideCommand.java
 E:\8. code\old\MIneceraft plugins\Axentra\axentra\src\main\java\mc\ollie\command\TempBanCommand.java

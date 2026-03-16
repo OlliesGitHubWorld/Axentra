@@ -299,6 +299,37 @@ weather-rain: "%prefix%&aWeather set to &erain&a!"
 weather-storm: "%prefix%&aWeather set to &estorm&a!"
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                   Speed Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %speed%  - The speed value (1-10)
+#    %player% - The target player's name
+
+speed-usage: "%prefix%&cUsage: /speed <1-10|reset> [walk|fly] [player] &8(&71 = default&8)"
+speed-invalid: "%prefix%&cInvalid speed! Use a number &e1&c-&e10 &cor &ereset&c."
+speed-self: "%prefix%&a%type% speed set to &e%speed%&a!"
+speed-other: "%prefix%&aSet &e%player%&a's %type% speed to &e%speed%&a!"
+speed-received: "%prefix%&aYour %type% speed was set to &e%speed% &aby &e%player%&a!"
+speed-reset: "%prefix%&a%type% speed reset to default!"
+speed-reset-other: "%prefix%&aReset &e%player%&a's %type% speed to default!"
+speed-reset-received: "%prefix%&aYour %type% speed was reset to default by &e%player%&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  Gamemode Command                       │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %gamemode% - The gamemode name (e.g. Creative)
+#    %player%   - The target player's name
+
+gamemode-usage: "%prefix%&cUsage: /gamemode <survival|creative|adventure|spectator> [player]"
+gamemode-invalid: "%prefix%&cInvalid gamemode: &e%mode%&c! Use survival, creative, adventure, or spectator."
+gamemode-self: "%prefix%&aGamemode set to &e%gamemode%&a!"
+gamemode-other: "%prefix%&aSet &e%player%&a's gamemode to &e%gamemode%&a!"
+gamemode-received: "%prefix%&aYour gamemode has been set to &e%gamemode% &aby &e%player%&a!"
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                    Ping Command                         │
 # └─────────────────────────────────────────────────────────┘
 #

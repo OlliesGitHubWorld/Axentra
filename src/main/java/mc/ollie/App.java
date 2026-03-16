@@ -148,6 +148,24 @@ public final class App extends JavaPlugin {
         getCommand("hat").setExecutor(hatCommand);
         getCommand("hat").setTabCompleter(hatCommand);
 
+        SpeedCommand speedCommand = new SpeedCommand(this);
+        getCommand("speed").setExecutor(speedCommand);
+        getCommand("speed").setTabCompleter(speedCommand);
+
+        GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
+        getCommand("gamemode").setExecutor(gamemodeCommand);
+        getCommand("gamemode").setTabCompleter(gamemodeCommand);
+        getCommand("gm").setExecutor(gamemodeCommand);
+        getCommand("gm").setTabCompleter(gamemodeCommand);
+        getCommand("gms").setExecutor(gamemodeCommand);
+        getCommand("gms").setTabCompleter(gamemodeCommand);
+        getCommand("gmc").setExecutor(gamemodeCommand);
+        getCommand("gmc").setTabCompleter(gamemodeCommand);
+        getCommand("gma").setExecutor(gamemodeCommand);
+        getCommand("gma").setTabCompleter(gamemodeCommand);
+        getCommand("gmsp").setExecutor(gamemodeCommand);
+        getCommand("gmsp").setTabCompleter(gamemodeCommand);
+
         TimeCommand timeCommand = new TimeCommand(this);
         getCommand("time").setExecutor(timeCommand);
         getCommand("time").setTabCompleter(timeCommand);

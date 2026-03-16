@@ -3,6 +3,8 @@ mc\ollie\command\BanCommand.class
 mc\ollie\App.class
 mc\ollie\command\WorkbenchCommand.class
 mc\ollie\listeners\JoinLeaveListener.class
+mc\ollie\command\GamemodeCommand$1.class
+mc\ollie\command\GamemodeCommand.class
 mc\ollie\command\HelpCommand$HelpEntry.class
 mc\ollie\command\MuteCommand.class
 mc\ollie\command\WarnCommand.class
@@ -29,6 +31,7 @@ mc\ollie\command\HelpCommand.class
 mc\ollie\command\FlyCommand.class
 mc\ollie\DatabaseManager.class
 mc\ollie\listeners\LoginListener.class
+mc\ollie\command\SpeedCommand.class
 mc\ollie\command\TimeCommand.class
 mc\ollie\command\WeatherCommand.class
 mc\ollie\command\HealCommand.class
