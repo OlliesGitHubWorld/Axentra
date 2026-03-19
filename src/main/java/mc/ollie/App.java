@@ -8,6 +8,7 @@ import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.UpdateListener;
+import mc.ollie.listeners.VanishListener;
 import org.bukkit.command.SimpleCommandMap;
 import org.bstats.bukkit.Metrics;
 
@@ -52,7 +53,9 @@ public final class App extends JavaPlugin {
         getCommand("tempban").setExecutor(tempBanCommand);
         getCommand("tempban").setTabCompleter(tempBanCommand);
 
-        getCommand("unban").setExecutor(new UnbanCommand(this));
+        UnbanCommand unbanCommand = new UnbanCommand(this);
+        getCommand("unban").setExecutor(unbanCommand);
+        getCommand("unban").setTabCompleter(unbanCommand);
 
         BanIpCommand banIpCommand = new BanIpCommand(this);
         getCommand("banip").setExecutor(banIpCommand);
@@ -92,7 +95,9 @@ public final class App extends JavaPlugin {
         getCommand("mute").setExecutor(muteCommand);
         getCommand("mute").setTabCompleter(muteCommand);
 
-        getCommand("unmute").setExecutor(new UnmuteCommand(this));
+        UnmuteCommand unmuteCommand = new UnmuteCommand(this);
+        getCommand("unmute").setExecutor(unmuteCommand);
+        getCommand("unmute").setTabCompleter(unmuteCommand);
 
         AnvilCommand anvilCommand = new AnvilCommand(this);
         getCommand("anvil").setExecutor(anvilCommand);
@@ -183,6 +188,25 @@ public final class App extends JavaPlugin {
         getCommand("god").setExecutor(godCommand);
         getCommand("god").setTabCompleter(godCommand);
 
+        VanishCommand vanishCommand = new VanishCommand(this);
+        getCommand("vanish").setExecutor(vanishCommand);
+        getCommand("vanish").setTabCompleter(vanishCommand);
+
+        EnderChestSeeCommand enderChestSeeCommand = new EnderChestSeeCommand(this);
+        getCommand("enderchestsee").setExecutor(enderChestSeeCommand);
+        getCommand("enderchestsee").setTabCompleter(enderChestSeeCommand);
+
+        InvSeeCommand invSeeCommand = new InvSeeCommand(this);
+        getCommand("invsee").setExecutor(invSeeCommand);
+        getCommand("invsee").setTabCompleter(invSeeCommand);
+        getServer().getPluginManager().registerEvents(invSeeCommand, this);
+
+        SpawnCommand spawnCommand = new SpawnCommand(this);
+        getCommand("spawn").setExecutor(spawnCommand);
+        getCommand("spawn").setTabCompleter(spawnCommand);
+
+        getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
+
         TimeCommand timeCommand = new TimeCommand(this);
         getCommand("time").setExecutor(timeCommand);
         getCommand("time").setTabCompleter(timeCommand);
@@ -226,6 +250,7 @@ public final class App extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
 
         String CYAN = "\u001B[36m";
         String GREEN = "\u001B[32m";

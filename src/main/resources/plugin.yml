@@ -273,6 +273,33 @@ commands:
     usage: /god [player]
     permission: Axentra.god
     permission-message: ""
+  vanish:
+    description: Toggle vanish mode for yourself or others
+    usage: /vanish [player]
+    aliases: [v]
+    permission: Axentra.vanish
+    permission-message: ""
+  enderchestsee:
+    description: View another player's ender chest
+    usage: /enderchestsee <player>
+    aliases: [ecsee, echestsee]
+    permission: Axentra.enderchestsee
+    permission-message: ""
+  invsee:
+    description: View another player's inventory
+    usage: /invsee <player>
+    permission: Axentra.invsee
+    permission-message: ""
+  spawn:
+    description: Teleport to world spawn
+    usage: /spawn [player]
+    permission: Axentra.spawn
+    permission-message: ""
+  setspawn:
+    description: Set the world spawn to your current location
+    usage: /setspawn
+    permission: Axentra.setspawn
+    permission-message: ""
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -410,4 +437,31 @@ permissions:
     default: op
   Axentra.god.others:
     description: Allows the player to toggle god mode for others
+    default: op
+  Axentra.vanish:
+    description: Allows the player to toggle vanish for themselves
+    default: op
+  Axentra.vanish.others:
+    description: Allows the player to toggle vanish for others
+    default: op
+  Axentra.vanish.see:
+    description: Allows the player to see vanished players
+    default: op
+  Axentra.enderchestsee:
+    description: Allows the player to view other players' ender chests
+    default: op
+  Axentra.invsee:
+    description: Allows the player to view other players' inventories
+    default: op
+  Axentra.spawn:
+    description: Allows the player to teleport to spawn
+    default: true
+  Axentra.spawn.others:
+    description: Allows the player to teleport others to spawn
+    default: op
+  Axentra.spawn.bypass:
+    description: Allows the player to skip the /spawn countdown
+    default: op
+  Axentra.setspawn:
+    description: Allows the player to set the world spawn
     default: op

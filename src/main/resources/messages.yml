@@ -385,6 +385,64 @@ god-other-enabled: "%prefix%&aYour god mode was enabled by &e%player%&a!"
 god-other-disabled: "%prefix%&cYour god mode was disabled by &e%player%&c!"
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                   Vanish Command                        │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The target player's name (others only)
+
+vanish-enabled: "%prefix%&aYou are now &7vanished&a!"
+vanish-disabled: "%prefix%&cYou are no longer vanished!"
+vanish-enabled-other: "%prefix%&aVanish enabled for &e%player%&a!"
+vanish-disabled-other: "%prefix%&cVanish disabled for &e%player%&c!"
+vanish-actionbar: "&8[&7Vanished&8]"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  InvSee Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The target player's name
+
+invsee-usage: "%prefix%&cUsage: /invsee <player>"
+invsee-opened: "%prefix%&aViewing &e%player%&a's inventory!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │               EnderChestSee Command                     │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The target player's name
+
+enderchestsee-usage: "%prefix%&cUsage: /enderchestsee <player>"
+enderchestsee-opened: "%prefix%&aViewing &e%player%&a's ender chest!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  SetSpawn Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+setspawn-success: "%prefix%&aSpawn has been set to your current location!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Spawn Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player%  - The sender's name (spawn-received) or target's name (spawn-other)
+#    %seconds% - The countdown value (spawn-countdown-title only)
+
+spawn-self: "%prefix%&aTeleported to spawn!"
+spawn-other: "%prefix%&aTeleported &e%player% &ato spawn!"
+spawn-received: "%prefix%&aYou were teleported to spawn by &e%player%&a!"
+spawn-cancelled: "%prefix%&cTeleport cancelled! Don't move during the countdown."
+spawn-countdown-title: "&a%seconds%"
+spawn-countdown-subtitle: "&7Teleporting to spawn..."
+spawn-cancelled-title: "&cCancelled!"
+spawn-cancelled-subtitle: "&7You moved."
+spawn-teleported-title: "&aTeleported!"
+spawn-teleported-subtitle: "&7You are now at spawn."
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                   Axentra Command                       │
 # └─────────────────────────────────────────────────────────┘
 #

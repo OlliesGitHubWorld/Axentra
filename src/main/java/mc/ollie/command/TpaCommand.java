@@ -34,7 +34,6 @@ public class TpaCommand implements CommandExecutor, TabCompleter {
     private final java.util.Set<UUID> tpToggled = new java.util.HashSet<>();
 
     private static final int TIMEOUT_SECONDS = 60;
-    private static final int COUNTDOWN_SECONDS = 3;
 
     public TpaCommand(App plugin) {
         this.plugin = plugin;
@@ -202,9 +201,10 @@ public class TpaCommand implements CommandExecutor, TabCompleter {
         cancelCountdown(requester.getUniqueId());
 
         Location startLocation = requester.getLocation().clone();
+        int seconds = plugin.getFileManager().getSettings().getInt("tpa-countdown-seconds", 3);
 
         BukkitTask task = new BukkitRunnable() {
-            int remaining = COUNTDOWN_SECONDS;
+            int remaining = seconds;
 
             @Override
             public void run() {

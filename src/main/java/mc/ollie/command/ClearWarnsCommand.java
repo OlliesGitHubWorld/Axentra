@@ -31,13 +31,10 @@ public class ClearWarnsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> completions = new ArrayList<>();
         if (args.length == 1) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                completions.add(player.getName());
-            }
+            return plugin.getDatabaseManager().getActiveWarnedNames();
         }
-        return completions;
+        return java.util.Collections.emptyList();
     }
 
     @Override

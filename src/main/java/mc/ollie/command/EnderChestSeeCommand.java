@@ -1,20 +1,22 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
-public class UnbanCommand implements CommandExecutor, TabCompleter {
+public class EnderChestSeeCommand implements CommandExecutor, TabCompleter {
 
     private final App plugin;
 
-    public UnbanCommand(App plugin) {
+    public EnderChestSeeCommand(App plugin) {
         this.plugin = plugin;
     }
 
@@ -29,39 +31,42 @@ public class UnbanCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        List<String> completions = new ArrayList<>();
         if (args.length == 1) {
-            return plugin.getDatabaseManager().getActiveBannedNames();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (sender instanceof Player && player == sender) continue;
+                completions.add(player.getName());
+            }
         }
-        return Collections.emptyList();
+        return completions;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("Axentra.unban")) {
+        if (!sender.hasPermission("Axentra.enderchestsee")) {
             sender.sendMessage(getMessage("no-permission"));
             return true;
         }
 
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(getMessage("no-player"));
+            return true;
+        }
+
         if (args.length == 0) {
-            sender.sendMessage(getMessage("unban-usage"));
+            sender.sendMessage(getMessage("enderchestsee-usage"));
             return true;
         }
 
-        String playerName = args[0];
-
-        if (!plugin.getDatabaseManager().isBannedByName(playerName)) {
-            sender.sendMessage(getMessage("unban-not-banned").replace("%player%", playerName));
+        Player target = Bukkit.getPlayer(args[0]);
+        if (target == null) {
+            sender.sendMessage(getMessage("player-not-found").replace("%player%", args[0]));
             return true;
         }
 
-        plugin.getDatabaseManager().unbanPlayer(playerName);
-        sender.sendMessage(getMessage("unban-success").replace("%player%", playerName));
-
-        if (plugin.getFileManager().getSettings().getBoolean("announce-unban")) {
-            plugin.getServer().broadcastMessage(getMessage("unban-announce")
-                    .replace("%player%", playerName));
-        }
-
+        Player player = (Player) sender;
+        player.openInventory(target.getEnderChest());
+        player.sendMessage(getMessage("enderchestsee-opened").replace("%player%", target.getName()));
         return true;
     }
 }
