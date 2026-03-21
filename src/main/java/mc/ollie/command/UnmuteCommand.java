@@ -5,8 +5,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
-public class UnmuteCommand implements CommandExecutor {
+import java.util.Collections;
+import java.util.List;
+
+public class UnmuteCommand implements CommandExecutor, TabCompleter {
 
     private final App plugin;
 
@@ -21,6 +25,14 @@ public class UnmuteCommand implements CommandExecutor {
         if (message == null) return "Message not found: " + path;
         message = message.replace("%prefix%", prefix);
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length == 1) {
+            return plugin.getDatabaseManager().getActiveMutedNames();
+        }
+        return Collections.emptyList();
     }
 
     @Override

@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.2.0
+version: 1.3.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -182,6 +182,37 @@ commands:
     usage: /hat
     permission: Axentra.hat
     permission-message: ""
+  speed:
+    description: Set your walk or fly speed
+    usage: /speed <1-10|reset> [walk|fly] [player]
+    permission: Axentra.speed
+    permission-message: ""
+  gamemode:
+    description: Change your or another player's gamemode
+    usage: /gamemode <survival|creative|adventure|spectator> [player]
+    aliases: [gm]
+    permission: Axentra.gamemode
+    permission-message: ""
+  gms:
+    description: Switch to survival mode
+    usage: /gms [player]
+    permission: Axentra.gamemode
+    permission-message: ""
+  gmc:
+    description: Switch to creative mode
+    usage: /gmc [player]
+    permission: Axentra.gamemode
+    permission-message: ""
+  gma:
+    description: Switch to adventure mode
+    usage: /gma [player]
+    permission: Axentra.gamemode
+    permission-message: ""
+  gmsp:
+    description: Switch to spectator mode
+    usage: /gmsp [player]
+    permission: Axentra.gamemode
+    permission-message: ""
   time:
     description: Set or add time in the world
     usage: /time <set|add> <day|noon|night|midnight|ticks>
@@ -206,6 +237,68 @@ commands:
     description: Set the time to midnight
     usage: /midnight
     permission: Axentra.time
+    permission-message: ""
+  back:
+    description: Teleport to your previous location
+    usage: /back
+    permission: Axentra.back
+    permission-message: ""
+  tpa:
+    description: Send a teleport request to a player
+    usage: /tpa <player>
+    permission: Axentra.tpa
+    permission-message: ""
+  tpaccept:
+    description: Accept an incoming teleport request
+    usage: /tpaccept
+    permission: Axentra.tpa
+    permission-message: ""
+  tpdeny:
+    description: Deny an incoming teleport request
+    usage: /tpdeny
+    permission: Axentra.tpa
+    permission-message: ""
+  tpacancel:
+    description: Cancel your outgoing teleport request
+    usage: /tpacancel
+    permission: Axentra.tpa
+    permission-message: ""
+  tptoggle:
+    description: Toggle whether you can receive teleport requests
+    usage: /tptoggle
+    permission: Axentra.tpa
+    permission-message: ""
+  god:
+    description: Toggle invincibility for yourself or others
+    usage: /god [player]
+    permission: Axentra.god
+    permission-message: ""
+  vanish:
+    description: Toggle vanish mode for yourself or others
+    usage: /vanish [player]
+    aliases: [v]
+    permission: Axentra.vanish
+    permission-message: ""
+  enderchestsee:
+    description: View another player's ender chest
+    usage: /enderchestsee <player>
+    aliases: [ecsee, echestsee]
+    permission: Axentra.enderchestsee
+    permission-message: ""
+  invsee:
+    description: View another player's inventory
+    usage: /invsee <player>
+    permission: Axentra.invsee
+    permission-message: ""
+  spawn:
+    description: Teleport to world spawn
+    usage: /spawn [player]
+    permission: Axentra.spawn
+    permission-message: ""
+  setspawn:
+    description: Set the world spawn to your current location
+    usage: /setspawn
+    permission: Axentra.setspawn
     permission-message: ""
   axentra:
     description: Main Axentra command
@@ -318,6 +411,57 @@ permissions:
   Axentra.hat:
     description: Allows the player to use /hat
     default: op
+  Axentra.speed:
+    description: Allows the player to set their own speed
+    default: op
+  Axentra.speed.others:
+    description: Allows the player to set other players' speed
+    default: op
+  Axentra.gamemode:
+    description: Allows the player to change their own gamemode
+    default: op
+  Axentra.gamemode.others:
+    description: Allows the player to change other players' gamemode
+    default: op
   Axentra.time:
     description: Allows the player to change the world time
+    default: op
+  Axentra.back:
+    description: Allows the player to use /back
+    default: true
+  Axentra.tpa:
+    description: Allows the player to use the TPA commands
+    default: true
+  Axentra.god:
+    description: Allows the player to toggle god mode for themselves
+    default: op
+  Axentra.god.others:
+    description: Allows the player to toggle god mode for others
+    default: op
+  Axentra.vanish:
+    description: Allows the player to toggle vanish for themselves
+    default: op
+  Axentra.vanish.others:
+    description: Allows the player to toggle vanish for others
+    default: op
+  Axentra.vanish.see:
+    description: Allows the player to see vanished players
+    default: op
+  Axentra.enderchestsee:
+    description: Allows the player to view other players' ender chests
+    default: op
+  Axentra.invsee:
+    description: Allows the player to view other players' inventories
+    default: op
+  Axentra.spawn:
+    description: Allows the player to teleport to spawn
+    default: true
+  Axentra.spawn.others:
+    description: Allows the player to teleport others to spawn
+    default: op
+  Axentra.spawn.bypass:
+    description: Allows the player to skip the /spawn countdown
+    default: op
+  Axentra.setspawn:
+    description: Allows the player to set the world spawn
     default: op

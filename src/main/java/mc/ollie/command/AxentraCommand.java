@@ -134,15 +134,10 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
             case "information":
                 sender.sendMessage(ChatColor.BOLD + "" + ChatColor.AQUA + "---- Axentra Information ----");
-                sender.sendMessage(ChatColor.AQUA + "Version: "       + ChatColor.GRAY + plugin.getDescription().getVersion());
-                sender.sendMessage(ChatColor.AQUA + "Author: "        + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
-                sender.sendMessage(ChatColor.AQUA + "Commands: "      + ChatColor.GRAY + plugin.getDescription().getCommands().size());
-                sender.sendMessage(ChatColor.AQUA + "Server: "        + ChatColor.GRAY + Bukkit.getName() + " " + Bukkit.getVersion());
-                sender.sendMessage(ChatColor.AQUA + "Bukkit API: "    + ChatColor.GRAY + Bukkit.getBukkitVersion());
-                sender.sendMessage(ChatColor.AQUA + "Online Players: "+ ChatColor.GRAY + Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers());
-                sender.sendMessage(ChatColor.AQUA + "Worlds: "        + ChatColor.GRAY + Bukkit.getWorlds().size());
-                sender.sendMessage(ChatColor.AQUA + "TPS: "           + ChatColor.GRAY + String.format("%.2f", Bukkit.getTPS()[0]));
-                sender.sendMessage(ChatColor.AQUA + "Uptime: "        + ChatColor.GRAY + formatUptime());
+                sender.sendMessage(ChatColor.AQUA + "Version: "  + ChatColor.GRAY + plugin.getDescription().getVersion());
+                sender.sendMessage(ChatColor.AQUA + "Author: "   + ChatColor.GRAY + String.join(", ", plugin.getDescription().getAuthors()));
+                sender.sendMessage(ChatColor.AQUA + "Commands: " + ChatColor.GRAY + plugin.getDescription().getCommands().size());
+                sender.sendMessage(ChatColor.AQUA + "Support: "  + ChatColor.GRAY + "https://discord.gg/kNjvQPNTw");
                 break;
 
             default:

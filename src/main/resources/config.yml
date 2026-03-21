@@ -19,6 +19,29 @@
 # ══════════════════════════════════════════════════════════
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                   Spawn Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+# The world whose spawn is used for join-location: spawn and the /spawn command.
+# Leave empty to always use the server's default world (recommended).
+# On multiworld servers, set this to prevent players in the nether/end being
+# sent to those worlds' spawns instead of your main world's spawn.
+spawn-world: ""
+
+# Where should players be sent when they join the server?
+#   last-location - Players join where they left off (default Minecraft behaviour)
+#   spawn         - Players are always teleported to world spawn on join
+join-location: last-location
+
+# Show a countdown when a player uses /spawn.
+# If the player moves during the countdown, the teleport is cancelled.
+# Set to false to teleport instantly.
+spawn-countdown: true
+
+# Duration of the /spawn countdown in seconds. Only applies if spawn-countdown is true.
+spawn-countdown-seconds: 3
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                    Kick Settings                        │
 # └─────────────────────────────────────────────────────────┘
 
@@ -84,6 +107,53 @@ warn-punishments:
   10:
     action: ban
     reason: "You have accumulated 10 warnings."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                     TPA Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+# Show a countdown title on screen when a TPA request is accepted.
+# Set to false to only use chat messages.
+tpa-title-countdown: true
+
+# Duration of the TPA teleport countdown in seconds.
+tpa-countdown-seconds: 3
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   InvSee Settings                       │
+# └─────────────────────────────────────────────────────────┘
+
+# When true, players viewing another player's inventory via /invsee cannot
+# move, take, or modify any items. Set to false to allow full interaction.
+invsee-read-only: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Vanish Settings                       │
+# └─────────────────────────────────────────────────────────┘
+
+# Broadcast a fake quit message to non-staff when a player vanishes,
+# and a fake join message when they unvanish — making it look like they disconnected.
+vanish-fake-join-quit: true
+
+# Show a ghost/transparent effect (spectator appearance) to staff with
+# the Axentra.vanish.see permission. Requires NMS reflection at runtime.
+# Disable this if you experience issues with your server version.
+vanish-ghost-effect: true
+
+# Apply night vision to the vanished player so they can see in dark areas.
+vanish-night-vision: true
+
+# Prevent the vanished player from taking any damage.
+vanish-god-mode: true
+
+# Prevent the vanished player from picking up items.
+vanish-no-pickup: true
+
+# Show a persistent action bar reminder to the vanished player.
+vanish-action-bar: true
+
+# How often the action bar reminder is shown, in ticks (20 ticks = 1 second).
+vanish-action-bar-interval: 40
 
 # ══════════════════════════════════════════════════════════
 #                     End of Config

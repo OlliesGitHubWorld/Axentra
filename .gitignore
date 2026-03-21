@@ -23,3 +23,14 @@
 hs_err_pid*
 replay_pid*
 /target/
+/Discord/
+/Wiki/
+/Resources/
+dependency-reduced-pom.xml
+
+# IDE files
+.classpath
+.project
+.settings/
+*.iml
+.idea/

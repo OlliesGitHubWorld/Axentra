@@ -3,6 +3,7 @@ package mc.ollie.listeners;
 import mc.ollie.App;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +19,16 @@ public class JoinLeaveListener implements Listener {
     }
 
     private static final String DEFAULT_JOIN = "%player% joined the game";
+
+    private World resolveSpawnWorld() {
+        String name = plugin.getFileManager().getSettings().getString("spawn-world", "");
+        if (name != null && !name.isEmpty()) {
+            World world = Bukkit.getWorld(name);
+            if (world != null) return world;
+            plugin.getLogger().warning("spawn-world '" + name + "' not found, falling back to default world.");
+        }
+        return Bukkit.getWorlds().get(0);
+    }
     private static final String DEFAULT_QUIT = "%player% left the game";
 
     private String getMessage(String path, Player player, String defaultMessage, int playerCount) {
@@ -46,6 +57,11 @@ public class JoinLeaveListener implements Listener {
             event.setJoinMessage(getMessage("first-join", player, DEFAULT_JOIN, count));
         } else {
             event.setJoinMessage(getMessage("join", player, DEFAULT_JOIN, count));
+        }
+
+        String joinLocation = plugin.getFileManager().getSettings().getString("join-location", "last-location");
+        if (joinLocation.equalsIgnoreCase("spawn")) {
+            player.teleport(resolveSpawnWorld().getSpawnLocation());
         }
     }
 

@@ -12,38 +12,28 @@ import java.util.List;
 public class HelpCommand implements CommandExecutor {
 
     private final App plugin;
-    private static final int ENTRIES_PER_PAGE = 7;
+    private static final int ENTRIES_PER_PAGE = 8;
 
     public HelpCommand(App plugin) {
         this.plugin = plugin;
     }
 
-    /** A single line in the help list — either a section header or a command entry. */
     private static class HelpEntry {
-        final boolean isHeader;
+        final String section;
         final String usage;
         final String description;
 
-        HelpEntry(String header) {
-            this.isHeader = true;
-            this.usage = header;
-            this.description = null;
-        }
-
-        HelpEntry(String usage, String description) {
-            this.isHeader = false;
+        HelpEntry(String section, String usage, String description) {
+            this.section = section;
             this.usage = usage;
             this.description = description;
         }
     }
 
-    private void addHeader(List<HelpEntry> list, String title) {
-        list.add(new HelpEntry(title));
-    }
-
-    private void addEntry(List<HelpEntry> list, CommandSender sender, String permission, String usage, String description) {
+    private void add(List<HelpEntry> list, CommandSender sender, String permission,
+                     String section, String usage, String description) {
         if (sender.hasPermission(permission)) {
-            list.add(new HelpEntry(usage, description));
+            list.add(new HelpEntry(section, usage, description));
         }
     }
 
@@ -52,75 +42,65 @@ public class HelpCommand implements CommandExecutor {
 
         // Admin
         if (sender.hasPermission("Axentra.admin")) {
-            addHeader(entries, "Admin");
-            entries.add(new HelpEntry("/axentra reload",      "Reloads config and messages"));
-            entries.add(new HelpEntry("/axentra upgrade",     "Checks for updates"));
-            entries.add(new HelpEntry("/axentra information", "Shows plugin information"));
+            entries.add(new HelpEntry("Admin", "/axentra reload",      "Reload config and messages"));
+            entries.add(new HelpEntry("Admin", "/axentra upgrade",     "Check for updates"));
+            entries.add(new HelpEntry("Admin", "/axentra information", "Show plugin information"));
         }
 
         // Moderation
-        List<HelpEntry> mod = new ArrayList<>();
-        addEntry(mod, sender, "Axentra.warn",       "/warn <player> [reason]",                    "Warns a player");
-        addEntry(mod, sender, "Axentra.warns",       "/warns [player]",                            "View a player's warnings");
-        addEntry(mod, sender, "Axentra.clearwarns",  "/clearwarns <player>",                       "Clears a player's warnings");
-        addEntry(mod, sender, "Axentra.mute",        "/mute <player> [reason]",                    "Mutes a player");
-        addEntry(mod, sender, "Axentra.unmute",      "/unmute <player>",                           "Unmutes a player");
-        addEntry(mod, sender, "Axentra.kick",        "/kick <player> [reason]",                    "Kicks a player");
-        addEntry(mod, sender, "Axentra.ban",         "/ban <player> [reason]",                     "Permanently bans a player");
-        addEntry(mod, sender, "Axentra.tempban",     "/tempban <player> <duration> [reason]",      "Temporarily bans a player");
-        addEntry(mod, sender, "Axentra.banip",       "/banip <player|ip> [reason]",                "Bans an IP address");
-        addEntry(mod, sender, "Axentra.tempbanip",   "/tempbanip <player|ip> <duration> [reason]", "Temporarily bans an IP");
-        addEntry(mod, sender, "Axentra.unban",       "/unban <player>",                            "Unbans a player");
-        addEntry(mod, sender, "Axentra.unbanip",     "/unbanip <ip>",                              "Unbans an IP address");
-        if (!mod.isEmpty()) {
-            addHeader(entries, "Moderation");
-            entries.addAll(mod);
-        }
+        add(entries, sender, "Axentra.warn",          "Moderation", "/warn <player> [reason]",                    "Warn a player");
+        add(entries, sender, "Axentra.warns",         "Moderation", "/warns [player]",                            "View a player's warnings");
+        add(entries, sender, "Axentra.clearwarns",    "Moderation", "/clearwarns <player>",                       "Clear a player's warnings");
+        add(entries, sender, "Axentra.mute",          "Moderation", "/mute <player> [reason]",                    "Mute a player");
+        add(entries, sender, "Axentra.unmute",        "Moderation", "/unmute <player>",                           "Unmute a player");
+        add(entries, sender, "Axentra.kick",          "Moderation", "/kick <player> [reason]",                    "Kick a player");
+        add(entries, sender, "Axentra.ban",           "Moderation", "/ban <player> [reason]",                     "Permanently ban a player");
+        add(entries, sender, "Axentra.tempban",       "Moderation", "/tempban <player> <duration> [reason]",      "Temporarily ban a player");
+        add(entries, sender, "Axentra.banip",         "Moderation", "/banip <player|ip> [reason]",                "Ban an IP address");
+        add(entries, sender, "Axentra.tempbanip",     "Moderation", "/tempbanip <player|ip> <duration> [reason]", "Temporarily ban an IP");
+        add(entries, sender, "Axentra.unban",         "Moderation", "/unban <player>",                            "Unban a player");
+        add(entries, sender, "Axentra.unbanip",       "Moderation", "/unbanip <ip>",                              "Unban an IP address");
+        add(entries, sender, "Axentra.invsee",        "Moderation", "/invsee <player>",                           "View a player's inventory");
+        add(entries, sender, "Axentra.enderchestsee", "Moderation", "/enderchestsee <player>",                    "View a player's ender chest");
 
         // Player
-        List<HelpEntry> player = new ArrayList<>();
-        addEntry(player, sender, "Axentra.fly",      "/fly [player]",   "Toggles flight");
-        addEntry(player, sender, "Axentra.heal",     "/heal [player]",  "Heals a player");
-        addEntry(player, sender, "Axentra.feed",     "/feed [player]",  "Feeds a player");
-        addEntry(player, sender, "Axentra.clear",    "/clear [player]", "Clears inventory");
-        addEntry(player, sender, "Axentra.repair",   "/repair",         "Repairs held item");
-        addEntry(player, sender, "Axentra.hat",      "/hat",            "Wear item as a hat");
-        addEntry(player, sender, "Axentra.ping",     "/ping [player]",  "Check ping");
-        addEntry(player, sender, "Axentra.suicide",  "/suicide",        "Kill yourself");
-        if (!player.isEmpty()) {
-            addHeader(entries, "Player");
-            entries.addAll(player);
-        }
+        add(entries, sender, "Axentra.fly",      "Player", "/fly [player]",       "Toggle flight");
+        add(entries, sender, "Axentra.heal",     "Player", "/heal [player]",      "Heal a player");
+        add(entries, sender, "Axentra.feed",     "Player", "/feed [player]",      "Feed a player");
+        add(entries, sender, "Axentra.god",      "Player", "/god [player]",       "Toggle god mode");
+        add(entries, sender, "Axentra.vanish",   "Player", "/vanish [player]",    "Toggle vanish");
+        add(entries, sender, "Axentra.speed",    "Player", "/speed <1-10|reset>", "Set walk/fly speed");
+        add(entries, sender, "Axentra.gamemode", "Player", "/gamemode <mode>",    "Change gamemode");
+        add(entries, sender, "Axentra.clear",    "Player", "/clear [player]",     "Clear inventory");
+        add(entries, sender, "Axentra.repair",   "Player", "/repair",             "Repair held item");
+        add(entries, sender, "Axentra.hat",      "Player", "/hat",                "Wear item as a hat");
+        add(entries, sender, "Axentra.ping",     "Player", "/ping [player]",      "Check ping");
+        add(entries, sender, "Axentra.suicide",  "Player", "/suicide",            "Kill yourself");
+
+        // Teleport
+        add(entries, sender, "Axentra.spawn",  "Teleport", "/spawn [player]", "Teleport to spawn");
+        add(entries, sender, "Axentra.back",   "Teleport", "/back",           "Return to last location");
+        add(entries, sender, "Axentra.tpa",    "Teleport", "/tpa <player>",   "Request teleport to a player");
 
         // Utility
-        List<HelpEntry> utility = new ArrayList<>();
-        addEntry(utility, sender, "Axentra.anvil",        "/anvil",        "Opens an anvil");
-        addEntry(utility, sender, "Axentra.workbench",    "/workbench",    "Opens a crafting table");
-        addEntry(utility, sender, "Axentra.cartography",  "/cartography",  "Opens a cartography table");
-        addEntry(utility, sender, "Axentra.grindstone",   "/grindstone",   "Opens a grindstone");
-        addEntry(utility, sender, "Axentra.loom",         "/loom",         "Opens a loom");
-        addEntry(utility, sender, "Axentra.smithingtable","/smithingtable","Opens a smithing table");
-        addEntry(utility, sender, "Axentra.stonecutter",  "/stonecutter",  "Opens a stonecutter");
-        addEntry(utility, sender, "Axentra.enderchest",   "/enderchest",   "Opens your ender chest");
-        if (!utility.isEmpty()) {
-            addHeader(entries, "Utility");
-            entries.addAll(utility);
-        }
+        add(entries, sender, "Axentra.anvil",         "Utility", "/anvil",         "Open an anvil");
+        add(entries, sender, "Axentra.workbench",     "Utility", "/workbench",     "Open a crafting table");
+        add(entries, sender, "Axentra.cartography",   "Utility", "/cartography",   "Open a cartography table");
+        add(entries, sender, "Axentra.grindstone",    "Utility", "/grindstone",    "Open a grindstone");
+        add(entries, sender, "Axentra.loom",          "Utility", "/loom",          "Open a loom");
+        add(entries, sender, "Axentra.smithingtable", "Utility", "/smithingtable", "Open a smithing table");
+        add(entries, sender, "Axentra.stonecutter",   "Utility", "/stonecutter",   "Open a stonecutter");
+        add(entries, sender, "Axentra.enderchest",    "Utility", "/enderchest",    "Open your ender chest");
 
         // World
-        List<HelpEntry> world = new ArrayList<>();
-        addEntry(world, sender, "Axentra.time",    "/time <set|add> <value>", "Set or add world time");
-        addEntry(world, sender, "Axentra.weather", "/weather <clear|rain|storm>", "Set the weather");
-        if (!world.isEmpty()) {
-            addHeader(entries, "World");
-            entries.addAll(world);
-        }
+        add(entries, sender, "Axentra.time",     "World", "/time <set|add> <value>",    "Set or add world time");
+        add(entries, sender, "Axentra.weather",  "World", "/weather <clear|rain|storm>", "Set the weather");
+        add(entries, sender, "Axentra.setspawn", "World", "/setspawn",                   "Set the world spawn");
 
-        // General (always visible)
-        addHeader(entries, "General");
+        // General — always visible
         if (!sender.hasPermission("Axentra.admin"))
-            entries.add(new HelpEntry("/axentra information", "Shows plugin information"));
-        entries.add(new HelpEntry("/help [page]", "Shows this menu"));
+            entries.add(new HelpEntry("General", "/axentra information", "Show plugin information"));
+        entries.add(new HelpEntry("General", "/help [page]", "Show this help menu"));
 
         return entries;
     }
@@ -150,19 +130,20 @@ public class HelpCommand implements CommandExecutor {
         int start = (page - 1) * ENTRIES_PER_PAGE;
         int end = Math.min(start + ENTRIES_PER_PAGE, entries.size());
 
-        sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "---- Axentra Help (" + page + "/" + totalPages + ") ----");
+        sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "   ---- Axentra Help (" + page + "/" + totalPages + ") ----");
 
+        String prevSection = start > 0 ? entries.get(start - 1).section : null;
         for (int i = start; i < end; i++) {
             HelpEntry entry = entries.get(i);
-            if (entry.isHeader) {
-                sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "  [" + entry.usage + "]");
-            } else {
-                sender.sendMessage(ChatColor.AQUA + "  " + entry.usage + ChatColor.GRAY + " - " + entry.description);
+            if (!entry.section.equals(prevSection)) {
+                sender.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + " [" + entry.section + "]");
+                prevSection = entry.section;
             }
+            sender.sendMessage(ChatColor.AQUA + "  " + entry.usage + ChatColor.GRAY + " - " + entry.description);
         }
 
         if (page < totalPages) {
-            sender.sendMessage(ChatColor.GRAY + "  Next page: " + ChatColor.AQUA + "/help " + (page + 1));
+            sender.sendMessage(ChatColor.GRAY + "  Next: " + ChatColor.AQUA + "/help " + (page + 1));
         }
 
         return true;

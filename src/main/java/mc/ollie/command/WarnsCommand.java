@@ -33,13 +33,14 @@ public class WarnsCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> completions = new ArrayList<>();
         if (args.length == 1) {
+            List<String> completions = new ArrayList<>(plugin.getDatabaseManager().getActiveWarnedNames());
             for (Player player : Bukkit.getOnlinePlayers()) {
-                completions.add(player.getName());
+                if (!completions.contains(player.getName())) completions.add(player.getName());
             }
+            return completions;
         }
-        return completions;
+        return java.util.Collections.emptyList();
     }
 
     @Override

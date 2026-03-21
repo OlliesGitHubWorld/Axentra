@@ -2,6 +2,8 @@ package mc.ollie;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
 
@@ -320,6 +322,46 @@ public class DatabaseManager {
             plugin.getLogger().severe("Failed to check mute by name: " + e.getMessage());
             return false;
         }
+    }
+
+    public List<String> getActiveBannedNames() {
+        List<String> names = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT DISTINCT player_name FROM bans WHERE active = 1 AND (expires_at IS NULL OR expires_at > ?)");
+            stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) names.add(rs.getString("player_name"));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get banned names: " + e.getMessage());
+        }
+        return names;
+    }
+
+    public List<String> getActiveMutedNames() {
+        List<String> names = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT DISTINCT player_name FROM mutes WHERE active = 1");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) names.add(rs.getString("player_name"));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get muted names: " + e.getMessage());
+        }
+        return names;
+    }
+
+    public List<String> getActiveWarnedNames() {
+        List<String> names = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT DISTINCT player_name FROM warns WHERE active = 1");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) names.add(rs.getString("player_name"));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get warned names: " + e.getMessage());
+        }
+        return names;
     }
 
     public ResultSet getBan(String playerUuid) {

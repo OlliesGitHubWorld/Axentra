@@ -2,10 +2,13 @@ package mc.ollie;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
+import mc.ollie.listeners.BackListener;
 import mc.ollie.listeners.ChatListener;
+import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.UpdateListener;
+import mc.ollie.listeners.VanishListener;
 import org.bukkit.command.SimpleCommandMap;
 import org.bstats.bukkit.Metrics;
 
@@ -50,7 +53,9 @@ public final class App extends JavaPlugin {
         getCommand("tempban").setExecutor(tempBanCommand);
         getCommand("tempban").setTabCompleter(tempBanCommand);
 
-        getCommand("unban").setExecutor(new UnbanCommand(this));
+        UnbanCommand unbanCommand = new UnbanCommand(this);
+        getCommand("unban").setExecutor(unbanCommand);
+        getCommand("unban").setTabCompleter(unbanCommand);
 
         BanIpCommand banIpCommand = new BanIpCommand(this);
         getCommand("banip").setExecutor(banIpCommand);
@@ -90,7 +95,9 @@ public final class App extends JavaPlugin {
         getCommand("mute").setExecutor(muteCommand);
         getCommand("mute").setTabCompleter(muteCommand);
 
-        getCommand("unmute").setExecutor(new UnmuteCommand(this));
+        UnmuteCommand unmuteCommand = new UnmuteCommand(this);
+        getCommand("unmute").setExecutor(unmuteCommand);
+        getCommand("unmute").setTabCompleter(unmuteCommand);
 
         AnvilCommand anvilCommand = new AnvilCommand(this);
         getCommand("anvil").setExecutor(anvilCommand);
@@ -148,6 +155,58 @@ public final class App extends JavaPlugin {
         getCommand("hat").setExecutor(hatCommand);
         getCommand("hat").setTabCompleter(hatCommand);
 
+        SpeedCommand speedCommand = new SpeedCommand(this);
+        getCommand("speed").setExecutor(speedCommand);
+        getCommand("speed").setTabCompleter(speedCommand);
+
+        GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
+        getCommand("gamemode").setExecutor(gamemodeCommand);
+        getCommand("gamemode").setTabCompleter(gamemodeCommand);
+        getCommand("gm").setExecutor(gamemodeCommand);
+        getCommand("gm").setTabCompleter(gamemodeCommand);
+        getCommand("gms").setExecutor(gamemodeCommand);
+        getCommand("gms").setTabCompleter(gamemodeCommand);
+        getCommand("gmc").setExecutor(gamemodeCommand);
+        getCommand("gmc").setTabCompleter(gamemodeCommand);
+        getCommand("gma").setExecutor(gamemodeCommand);
+        getCommand("gma").setTabCompleter(gamemodeCommand);
+        getCommand("gmsp").setExecutor(gamemodeCommand);
+        getCommand("gmsp").setTabCompleter(gamemodeCommand);
+
+        BackCommand backCommand = new BackCommand(this);
+        getCommand("back").setExecutor(backCommand);
+
+        TpaCommand tpaCommand = new TpaCommand(this);
+        getCommand("tpa").setExecutor(tpaCommand);
+        getCommand("tpa").setTabCompleter(tpaCommand);
+        getCommand("tpaccept").setExecutor(tpaCommand);
+        getCommand("tpdeny").setExecutor(tpaCommand);
+        getCommand("tpacancel").setExecutor(tpaCommand);
+        getCommand("tptoggle").setExecutor(tpaCommand);
+
+        GodCommand godCommand = new GodCommand(this);
+        getCommand("god").setExecutor(godCommand);
+        getCommand("god").setTabCompleter(godCommand);
+
+        VanishCommand vanishCommand = new VanishCommand(this);
+        getCommand("vanish").setExecutor(vanishCommand);
+        getCommand("vanish").setTabCompleter(vanishCommand);
+
+        EnderChestSeeCommand enderChestSeeCommand = new EnderChestSeeCommand(this);
+        getCommand("enderchestsee").setExecutor(enderChestSeeCommand);
+        getCommand("enderchestsee").setTabCompleter(enderChestSeeCommand);
+
+        InvSeeCommand invSeeCommand = new InvSeeCommand(this);
+        getCommand("invsee").setExecutor(invSeeCommand);
+        getCommand("invsee").setTabCompleter(invSeeCommand);
+        getServer().getPluginManager().registerEvents(invSeeCommand, this);
+
+        SpawnCommand spawnCommand = new SpawnCommand(this);
+        getCommand("spawn").setExecutor(spawnCommand);
+        getCommand("spawn").setTabCompleter(spawnCommand);
+
+        getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
+
         TimeCommand timeCommand = new TimeCommand(this);
         getCommand("time").setExecutor(timeCommand);
         getCommand("time").setTabCompleter(timeCommand);
@@ -185,10 +244,13 @@ public final class App extends JavaPlugin {
             getLogger().warning("Failed to register /help command: " + e.getMessage());
         }
 
+        getServer().getPluginManager().registerEvents(new BackListener(backCommand), this);
+        getServer().getPluginManager().registerEvents(new GodListener(godCommand), this);
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
 
         String CYAN = "\u001B[36m";
         String GREEN = "\u001B[32m";
