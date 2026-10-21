@@ -59,6 +59,14 @@ public class JoinLeaveListener implements Listener {
             event.setJoinMessage(getMessage("join", player, DEFAULT_JOIN, count));
         }
 
+        // Load saved nickname
+        String nickname = plugin.getDatabaseManager().getNickname(player.getUniqueId().toString());
+        if (nickname != null) {
+            String coloredNick = ChatColor.translateAlternateColorCodes('&', nickname);
+            player.setDisplayName(coloredNick + ChatColor.RESET);
+            player.setPlayerListName(coloredNick);
+        }
+
         String joinLocation = plugin.getFileManager().getSettings().getString("join-location", "last-location");
         if (joinLocation.equalsIgnoreCase("spawn")) {
             player.teleport(resolveSpawnWorld().getSpawnLocation());

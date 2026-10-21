@@ -1,11 +1,83 @@
 name: Axentra
-version: 1.3.0
+version: 1.4.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
 author: OlliesWorld
 
 commands:
+  broadcast:
+    description: Broadcast a message to all players
+    usage: /broadcast <message>
+    aliases: [bc]
+    permission: Axentra.broadcast
+    permission-message: ""
+  clearchat:
+    description: Clear the chat for all players
+    usage: /clearchat
+    aliases: [cc]
+    permission: Axentra.clearchat
+    permission-message: ""
+  mutechat:
+    description: Toggle global chat mute
+    usage: /mutechat
+    aliases: [mc]
+    permission: Axentra.mutechat
+    permission-message: ""
+  slowchat:
+    description: Toggle slow chat mode
+    usage: /slowchat [seconds|off]
+    aliases: [slowmode]
+    permission: Axentra.slowchat
+    permission-message: ""
+  staffchat:
+    description: Send a message to staff or toggle staff chat mode
+    usage: /staffchat [message]
+    aliases: [sc]
+    permission: Axentra.staffchat
+    permission-message: ""
+  msg:
+    description: Send a private message to a player
+    usage: /msg <player> <message>
+    aliases: [tell, whisper, w, message, pm]
+    permission: Axentra.msg
+    permission-message: ""
+  reply:
+    description: Reply to the last private message
+    usage: /reply <message>
+    aliases: [r]
+    permission: Axentra.msg
+    permission-message: ""
+  msgtoggle:
+    description: Toggle receiving private messages
+    usage: /msgtoggle
+    permission: Axentra.msg
+    permission-message: ""
+  nick:
+    description: Set your or another player's nickname
+    usage: /nick <nickname|off> [player]
+    aliases: [nickname]
+    permission: Axentra.nick
+    permission-message: ""
+  realname:
+    description: Find the real name of a nicknamed player
+    usage: /realname <nickname>
+    permission: Axentra.realname
+    permission-message: ""
+  me:
+    description: Send an action message
+    usage: /me <action>
+    permission: Axentra.me
+    permission-message: ""
+  discord:
+    description: Show the server's Discord link
+    usage: /discord
+  website:
+    description: Show the server's website
+    usage: /website
+  store:
+    description: Show the server's store link
+    usage: /store
   help:
     description: Shows all available commands
     usage: /help
@@ -90,6 +162,11 @@ commands:
     description: Mutes a player, preventing them from chatting
     usage: /mute <player> [reason]
     permission: Axentra.mute
+    permission-message: ""
+  tempmute:
+    description: Temporarily mutes a player
+    usage: /tempmute <player> <duration> [reason]
+    permission: Axentra.tempmute
     permission-message: ""
   unmute:
     description: Unmutes a player
@@ -369,8 +446,17 @@ permissions:
   Axentra.mute:
     description: Allows the player to mute others
     default: op
+  Axentra.tempmute:
+    description: Allows the player to temporarily mute others
+    default: op
   Axentra.unmute:
     description: Allows the player to unmute others
+    default: op
+  Axentra.notify.warn:
+    description: Allows the player to see warn announcements
+    default: op
+  Axentra.notify.mute:
+    description: Allows the player to see mute/unmute announcements
     default: op
   Axentra.anvil:
     description: Allows the player to use /anvil
@@ -465,3 +551,51 @@ permissions:
   Axentra.setspawn:
     description: Allows the player to set the world spawn
     default: op
+  Axentra.broadcast:
+    description: Allows the player to broadcast messages
+    default: op
+  Axentra.clearchat:
+    description: Allows the player to clear the chat
+    default: op
+  Axentra.clearchat.bypass:
+    description: Prevents the player's chat from being cleared
+    default: op
+  Axentra.mutechat:
+    description: Allows the player to toggle global chat mute
+    default: op
+  Axentra.mutechat.bypass:
+    description: Allows the player to chat when chat is muted
+    default: op
+  Axentra.slowchat:
+    description: Allows the player to toggle slow chat
+    default: op
+  Axentra.slowchat.bypass:
+    description: Bypasses the slow chat cooldown
+    default: op
+  Axentra.staffchat:
+    description: Allows the player to use staff chat
+    default: op
+  Axentra.msg:
+    description: Allows the player to send private messages
+    default: true
+  Axentra.msg.bypass:
+    description: Allows the player to message players with msgtoggle off
+    default: op
+  Axentra.socialspy:
+    description: Allows the player to see private messages between others
+    default: op
+  Axentra.nick:
+    description: Allows the player to set their own nickname
+    default: op
+  Axentra.nick.others:
+    description: Allows the player to set other players' nicknames
+    default: op
+  Axentra.nick.color:
+    description: Allows the player to use color codes in nicknames
+    default: op
+  Axentra.realname:
+    description: Allows the player to look up real names
+    default: true
+  Axentra.me:
+    description: Allows the player to use /me
+    default: true

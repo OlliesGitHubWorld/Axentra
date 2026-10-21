@@ -7,6 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -59,7 +62,12 @@ public class UnmuteCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(getMessage("unmute-success").replace("%player%", playerName));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-unmute")) {
-            plugin.getServer().broadcastMessage(getMessage("unmute-announce").replace("%player%", playerName));
+            String announceMsg = getMessage("unmute-announce").replace("%player%", playerName);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.mute")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

@@ -69,7 +69,8 @@ public class BanCommand implements CommandExecutor, TabCompleter {
         }
 
         String bannedBy = sender.getName();
-        String uuid = target != null ? target.getUniqueId().toString() : playerName;
+        String uuid = target != null ? target.getUniqueId().toString()
+                : org.bukkit.Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
 
         // Check if already banned
         if (plugin.getDatabaseManager().isBannedByName(playerName)) {

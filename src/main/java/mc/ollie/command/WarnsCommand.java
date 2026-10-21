@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,8 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,37 +60,19 @@ public class WarnsCommand implements CommandExecutor, TabCompleter {
             playerName = args[0];
         }
 
-        ResultSet warns = plugin.getDatabaseManager().getWarnsByName(playerName);
-        if (warns == null) {
-            sender.sendMessage(getMessage("warns-error"));
+        List<DatabaseManager.WarnInfo> warns = plugin.getDatabaseManager().getWarnsByName(playerName);
+
+        if (warns.isEmpty()) {
+            sender.sendMessage(getMessage("warns-none").replace("%player%", playerName));
             return true;
         }
 
-        try {
-            List<String[]> entries = new ArrayList<>();
-            while (warns.next()) {
-                entries.add(new String[]{
-                        warns.getString("reason"),
-                        warns.getString("warned_by"),
-                        warns.getString("warned_at")
-                });
-            }
-
-            if (entries.isEmpty()) {
-                sender.sendMessage(getMessage("warns-none").replace("%player%", playerName));
-                return true;
-            }
-
-            sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "---- Warnings for " + playerName + " (" + entries.size() + ") ----");
-            for (int i = 0; i < entries.size(); i++) {
-                String[] entry = entries.get(i);
-                sender.sendMessage(ChatColor.GRAY + "#" + (i + 1) + " " + ChatColor.WHITE + entry[0]
-                        + ChatColor.GRAY + " by " + ChatColor.YELLOW + entry[1]
-                        + ChatColor.GRAY + " on " + entry[2]);
-            }
-        } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to read warns: " + e.getMessage());
-            sender.sendMessage(getMessage("warns-error"));
+        sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "---- Warnings for " + playerName + " (" + warns.size() + ") ----");
+        for (int i = 0; i < warns.size(); i++) {
+            DatabaseManager.WarnInfo warn = warns.get(i);
+            sender.sendMessage(ChatColor.GRAY + "#" + (i + 1) + " " + ChatColor.WHITE + warn.reason
+                    + ChatColor.GRAY + " by " + ChatColor.YELLOW + warn.warnedBy
+                    + ChatColor.GRAY + " on " + warn.warnedAt);
         }
 
         return true;

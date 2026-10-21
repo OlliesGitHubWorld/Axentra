@@ -9,6 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
+import mc.ollie.gui.StaffGUI;
+import org.bukkit.entity.Player;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -19,9 +22,15 @@ import java.util.List;
 public class AxentraCommand implements CommandExecutor, TabCompleter {
 
     private final App plugin;
+    private StaffGUI staffGUI;
 
     public AxentraCommand(App plugin) {
         this.plugin = plugin;
+        this.staffGUI = new StaffGUI(plugin);
+    }
+
+    public StaffGUI getStaffGUI() {
+        return staffGUI;
     }
 
     private String getMessage(String path) {
@@ -77,6 +86,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
             if (sender.hasPermission("Axentra.admin")) {
                 tabs.add("reload");
                 tabs.add("upgrade");
+                tabs.add("settings");
             }
             return tabs;
         }
@@ -130,6 +140,18 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
 
             case "help":
                 new HelpCommand(plugin).onCommand(sender, command, label, args);
+                break;
+
+            case "settings":
+                if (!sender.hasPermission("Axentra.admin")) {
+                    sender.sendMessage(getMessage("no-permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(getMessage("no-player"));
+                    return true;
+                }
+                staffGUI.open((Player) sender);
                 break;
 
             case "information":
