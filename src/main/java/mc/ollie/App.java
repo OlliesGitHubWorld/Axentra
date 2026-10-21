@@ -1,5 +1,6 @@
 package mc.ollie;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
 import mc.ollie.listeners.BackListener;
@@ -7,16 +8,33 @@ import mc.ollie.listeners.ChatListener;
 import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
+import mc.ollie.listeners.StaffGUIListener;
 import mc.ollie.listeners.UpdateListener;
 import mc.ollie.listeners.VanishListener;
 import org.bukkit.command.SimpleCommandMap;
 import org.bstats.bukkit.Metrics;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public final class App extends JavaPlugin {
 
     private FileManager fileManager;
     private MessageManager messageManager;
     private DatabaseManager databaseManager;
+
+    // Chat control state
+    private boolean chatMuted = false;
+    private int slowChatSeconds = 0;
+    private final Map<UUID, Long> lastChatTime = new HashMap<>();
+    private final Set<UUID> staffChatToggled = new HashSet<>();
+
+    // Messaging state
+    private final Map<UUID, UUID> lastMessaged = new HashMap<>();
+    private final Set<UUID> msgToggleOff = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -30,6 +48,8 @@ public final class App extends JavaPlugin {
 
         int pluginId = 30019;
         Metrics metrics = new Metrics(this, pluginId);
+
+        FileConfiguration settings = fileManager.getSettings();
 
         ClearCommand clearCommand = new ClearCommand(this);
         getCommand("clear").setExecutor(clearCommand);
@@ -61,7 +81,9 @@ public final class App extends JavaPlugin {
         getCommand("banip").setExecutor(banIpCommand);
         getCommand("banip").setTabCompleter(banIpCommand);
 
-        getCommand("unbanip").setExecutor(new UnbanIpCommand(this));
+        UnbanIpCommand unbanIpCommand = new UnbanIpCommand(this);
+        getCommand("unbanip").setExecutor(unbanIpCommand);
+        getCommand("unbanip").setTabCompleter(unbanIpCommand);
 
         TempBanIpCommand tempBanIpCommand = new TempBanIpCommand(this);
         getCommand("tempbanip").setExecutor(tempBanIpCommand);
@@ -94,6 +116,10 @@ public final class App extends JavaPlugin {
         MuteCommand muteCommand = new MuteCommand(this);
         getCommand("mute").setExecutor(muteCommand);
         getCommand("mute").setTabCompleter(muteCommand);
+
+        TempMuteCommand tempMuteCommand = new TempMuteCommand(this);
+        getCommand("tempmute").setExecutor(tempMuteCommand);
+        getCommand("tempmute").setTabCompleter(tempMuteCommand);
 
         UnmuteCommand unmuteCommand = new UnmuteCommand(this);
         getCommand("unmute").setExecutor(unmuteCommand);
@@ -173,16 +199,21 @@ public final class App extends JavaPlugin {
         getCommand("gmsp").setExecutor(gamemodeCommand);
         getCommand("gmsp").setTabCompleter(gamemodeCommand);
 
-        BackCommand backCommand = new BackCommand(this);
-        getCommand("back").setExecutor(backCommand);
+        BackCommand backCommand = null;
+        if (settings.getBoolean("enabled-modules.back", true)) {
+            backCommand = new BackCommand(this);
+            getCommand("back").setExecutor(backCommand);
+        }
 
-        TpaCommand tpaCommand = new TpaCommand(this);
-        getCommand("tpa").setExecutor(tpaCommand);
-        getCommand("tpa").setTabCompleter(tpaCommand);
-        getCommand("tpaccept").setExecutor(tpaCommand);
-        getCommand("tpdeny").setExecutor(tpaCommand);
-        getCommand("tpacancel").setExecutor(tpaCommand);
-        getCommand("tptoggle").setExecutor(tpaCommand);
+        if (settings.getBoolean("enabled-modules.tpa", true)) {
+            TpaCommand tpaCommand = new TpaCommand(this);
+            getCommand("tpa").setExecutor(tpaCommand);
+            getCommand("tpa").setTabCompleter(tpaCommand);
+            getCommand("tpaccept").setExecutor(tpaCommand);
+            getCommand("tpdeny").setExecutor(tpaCommand);
+            getCommand("tpacancel").setExecutor(tpaCommand);
+            getCommand("tptoggle").setExecutor(tpaCommand);
+        }
 
         GodCommand godCommand = new GodCommand(this);
         getCommand("god").setExecutor(godCommand);
@@ -201,11 +232,70 @@ public final class App extends JavaPlugin {
         getCommand("invsee").setTabCompleter(invSeeCommand);
         getServer().getPluginManager().registerEvents(invSeeCommand, this);
 
-        SpawnCommand spawnCommand = new SpawnCommand(this);
-        getCommand("spawn").setExecutor(spawnCommand);
-        getCommand("spawn").setTabCompleter(spawnCommand);
+        if (settings.getBoolean("enabled-modules.spawn", true)) {
+            SpawnCommand spawnCommand = new SpawnCommand(this);
+            getCommand("spawn").setExecutor(spawnCommand);
+            getCommand("spawn").setTabCompleter(spawnCommand);
 
-        getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
+            getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
+        }
+
+        // Chat control
+        BroadcastCommand broadcastCommand = new BroadcastCommand(this);
+        getCommand("broadcast").setExecutor(broadcastCommand);
+        getCommand("broadcast").setTabCompleter(broadcastCommand);
+
+        ClearchatCommand clearchatCommand = new ClearchatCommand(this);
+        getCommand("clearchat").setExecutor(clearchatCommand);
+        getCommand("clearchat").setTabCompleter(clearchatCommand);
+
+        MutechatCommand mutechatCommand = new MutechatCommand(this);
+        getCommand("mutechat").setExecutor(mutechatCommand);
+        getCommand("mutechat").setTabCompleter(mutechatCommand);
+
+        SlowchatCommand slowchatCommand = new SlowchatCommand(this);
+        getCommand("slowchat").setExecutor(slowchatCommand);
+        getCommand("slowchat").setTabCompleter(slowchatCommand);
+
+        StaffchatCommand staffchatCommand = new StaffchatCommand(this);
+        getCommand("staffchat").setExecutor(staffchatCommand);
+        getCommand("staffchat").setTabCompleter(staffchatCommand);
+
+        // Messaging
+        if (settings.getBoolean("enabled-modules.messaging", true)) {
+            MsgCommand msgCommand = new MsgCommand(this);
+            getCommand("msg").setExecutor(msgCommand);
+            getCommand("msg").setTabCompleter(msgCommand);
+
+            ReplyCommand replyCommand = new ReplyCommand(this);
+            getCommand("reply").setExecutor(replyCommand);
+            getCommand("reply").setTabCompleter(replyCommand);
+
+            MsgtoggleCommand msgtoggleCommand = new MsgtoggleCommand(this);
+            getCommand("msgtoggle").setExecutor(msgtoggleCommand);
+            getCommand("msgtoggle").setTabCompleter(msgtoggleCommand);
+        }
+
+        // Formatting
+        MeCommand meCommand = new MeCommand(this);
+        getCommand("me").setExecutor(meCommand);
+        getCommand("me").setTabCompleter(meCommand);
+
+        NickCommand nickCommand = new NickCommand(this);
+        getCommand("nick").setExecutor(nickCommand);
+        getCommand("nick").setTabCompleter(nickCommand);
+
+        RealnameCommand realnameCommand = new RealnameCommand(this);
+        getCommand("realname").setExecutor(realnameCommand);
+        getCommand("realname").setTabCompleter(realnameCommand);
+
+        SocialCommand socialCommand = new SocialCommand(this);
+        getCommand("discord").setExecutor(socialCommand);
+        getCommand("discord").setTabCompleter(socialCommand);
+        getCommand("website").setExecutor(socialCommand);
+        getCommand("website").setTabCompleter(socialCommand);
+        getCommand("store").setExecutor(socialCommand);
+        getCommand("store").setTabCompleter(socialCommand);
 
         TimeCommand timeCommand = new TimeCommand(this);
         getCommand("time").setExecutor(timeCommand);
@@ -244,11 +334,14 @@ public final class App extends JavaPlugin {
             getLogger().warning("Failed to register /help command: " + e.getMessage());
         }
 
-        getServer().getPluginManager().registerEvents(new BackListener(backCommand), this);
+        if (backCommand != null) {
+            getServer().getPluginManager().registerEvents(new BackListener(backCommand), this);
+        }
         getServer().getPluginManager().registerEvents(new GodListener(godCommand), this);
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
-        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(this, staffchatCommand), this);
+        getServer().getPluginManager().registerEvents(new StaffGUIListener(this, axentraCommand.getStaffGUI()), this);
         getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
         getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
 
@@ -288,5 +381,32 @@ public final class App extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    // Chat control
+    public boolean isChatMuted() { return chatMuted; }
+    public void setChatMuted(boolean muted) { this.chatMuted = muted; }
+
+    public int getSlowChatSeconds() { return slowChatSeconds; }
+    public void setSlowChatSeconds(int seconds) { this.slowChatSeconds = seconds; }
+
+    public Map<UUID, Long> getLastChatTime() { return lastChatTime; }
+
+    public boolean isStaffChatToggled(UUID uuid) { return staffChatToggled.contains(uuid); }
+    public boolean toggleStaffChat(UUID uuid) {
+        if (staffChatToggled.contains(uuid)) { staffChatToggled.remove(uuid); return false; }
+        else { staffChatToggled.add(uuid); return true; }
+    }
+
+    // Messaging
+    public UUID getLastMessaged(UUID uuid) { return lastMessaged.get(uuid); }
+    public void setLastMessaged(UUID sender, UUID target) {
+        if (target != null) lastMessaged.put(sender, target);
+    }
+
+    public boolean isMsgToggleOff(UUID uuid) { return msgToggleOff.contains(uuid); }
+    public boolean toggleMsgToggle(UUID uuid) {
+        if (msgToggleOff.contains(uuid)) { msgToggleOff.remove(uuid); return false; }
+        else { msgToggleOff.add(uuid); return true; }
     }
 }

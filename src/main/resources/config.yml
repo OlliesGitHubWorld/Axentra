@@ -76,6 +76,45 @@ announce-mute: true
 # Should the server announce in chat when a player is unmuted?
 announce-unmute: true
 
+# Commands that muted players are blocked from using.
+# Add any commands that allow communication (e.g. msg, reply, tell, me).
+# Do NOT include the "/" prefix.
+mute-blocked-commands:
+  - msg
+  - tell
+  - whisper
+  - w
+  - reply
+  - r
+  - me
+  - mail
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  Slowchat Settings                      │
+# └─────────────────────────────────────────────────────────┘
+
+# Default slowchat cooldown in seconds when /slowchat is used without arguments.
+slowchat-default-seconds: 5
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Messaging Settings                      │
+# └─────────────────────────────────────────────────────────┘
+
+# The format used for /msg sent/received messages.
+# Configured in messages.yml.
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Social Media Links                      │
+# └─────────────────────────────────────────────────────────┘
+#
+# Set URLs for social media commands. Players can use /discord, /website, /store
+# to see these links. Set to "" to disable a specific command.
+
+social-links:
+  discord: "https://discord.gg/yourlink"
+  website: "https://yourwebsite.com"
+  store: "https://yourstore.com"
+
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Warn Settings                        │
 # └─────────────────────────────────────────────────────────┘
@@ -154,6 +193,20 @@ vanish-action-bar: true
 
 # How often the action bar reminder is shown, in ticks (20 ticks = 1 second).
 vanish-action-bar-interval: 40
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  Module Toggles                         │
+# └─────────────────────────────────────────────────────────┘
+#
+# Enable or disable entire features/commands.
+# Set to false to completely disable the module.
+# Requires a server restart (not just /axentra reload) to take effect.
+
+enabled-modules:
+  tpa: true
+  spawn: true
+  back: true
+  messaging: true
 
 # ══════════════════════════════════════════════════════════
 #                     End of Config

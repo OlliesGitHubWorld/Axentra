@@ -76,15 +76,20 @@ public class MuteCommand implements CommandExecutor, TabCompleter {
             reason = plugin.getFileManager().getMessages().getString("mute-default-reason", "You have been muted!");
         }
 
-        plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName());
+        plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName(), null);
 
         target.sendMessage(getMessage("mute-message").replace("%reason%", reason));
         sender.sendMessage(getMessage("mute-success").replace("%player%", target.getName()).replace("%reason%", reason));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-mute")) {
-            plugin.getServer().broadcastMessage(getMessage("mute-announce")
+            String announceMsg = getMessage("mute-announce")
                     .replace("%player%", target.getName())
-                    .replace("%reason%", reason));
+                    .replace("%reason%", reason);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.mute")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

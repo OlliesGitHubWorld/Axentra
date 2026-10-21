@@ -232,6 +232,23 @@ mute-success: "%prefix%&aSuccessfully muted &e%player% &afor: &7%reason%"
 mute-announce: "%prefix%&e%player% &chas been muted for: &7%reason%"
 mute-already-muted: "%prefix%&e%player% &cis already muted!"
 mute-blocked: "%prefix%&cYou are muted and cannot chat!"
+mute-command-blocked: "%prefix%&cYou are muted and cannot use this command!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  TempMute Command                       │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player%   - The muted player's name
+#    %reason%   - The mute reason
+#    %duration% - The mute duration
+
+tempmute-usage: "%prefix%&cUsage: /tempmute <player> <duration> [reason]"
+tempmute-invalid-duration: "%prefix%&cInvalid duration! Use a combination of &e1d&c, &e2h&c, &e30m&c, &e10s&c."
+tempmute-default-reason: "You have been temporarily muted!"
+tempmute-message: "%prefix%&cYou have been temporarily muted!\n&7Reason: &f%reason%\n&7Duration: &f%duration%"
+tempmute-success: "%prefix%&aSuccessfully temp-muted &e%player% &afor &e%duration% &afor: &7%reason%"
+tempmute-announce: "%prefix%&e%player% &chas been temp-muted for &e%duration%&c: &7%reason%"
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                   Unmute Command                        │
@@ -457,6 +474,144 @@ upgrade-checking: "%prefix%&eChecking for updates..."
 upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
 upgrade-available: "%prefix% &aNew update available! &7%current% &f→ &a%latest%"
 upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Broadcast Command                      │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %message% - The broadcast message
+
+broadcast-usage: "%prefix%&cUsage: /broadcast <message>"
+broadcast-format: "&8&l[&c&lBroadcast&8&l] &f%message%"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Clearchat Command                       │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The staff member who cleared chat
+
+clearchat-cleared: "%prefix%&eChat has been cleared by &c%player%&e!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Mutechat Command                        │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The staff member who toggled chat mute
+
+mutechat-enabled: "%prefix%&cChat has been muted by &e%player%&c!"
+mutechat-disabled: "%prefix%&aChat has been unmuted by &e%player%&a!"
+mutechat-blocked: "%prefix%&cChat is currently muted!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Slowchat Command                        │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %seconds% - The slowchat cooldown in seconds
+
+slowchat-usage: "%prefix%&cUsage: /slowchat [seconds|off]"
+slowchat-invalid: "%prefix%&cInvalid duration! Use a number between &e1 &cand &e300&c."
+slowchat-enabled: "%prefix%&eSlow chat enabled! &7(%seconds%s cooldown)"
+slowchat-disabled: "%prefix%&aSlow chat has been disabled!"
+slowchat-wait: "%prefix%&cPlease wait &e%seconds%s &cbefore chatting again!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                Staffchat Command                        │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player%  - The sender's name
+#    %message% - The staff chat message
+
+staffchat-enabled: "%prefix%&aStaff chat mode &2enabled&a! Your messages now go to staff chat."
+staffchat-disabled: "%prefix%&cStaff chat mode &4disabled&c! You are back to public chat."
+staffchat-format: "&8[&c&lStaff&8] &e%player% &8» &f%message%"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Msg Command                          │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player%   - The other player's name
+#    %message%  - The private message
+#    %sender%   - The sender's name (spy only)
+#    %receiver% - The receiver's name (spy only)
+
+msg-usage: "%prefix%&cUsage: /msg <player> <message>"
+msg-self: "%prefix%&cYou cannot message yourself!"
+msg-sent: "&8[&ame &8→ &e%player%&8] &f%message%"
+msg-received: "&8[&e%player% &8→ &ame&8] &f%message%"
+msg-spy: "&8[&7SocialSpy&8] &e%sender% &8→ &e%receiver%&8: &7%message%"
+msg-toggled-off: "%prefix%&e%player% &chas private messages disabled!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Reply Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+reply-usage: "%prefix%&cUsage: /reply <message>"
+reply-no-target: "%prefix%&cYou have no one to reply to!"
+reply-offline: "%prefix%&cThe player you are trying to reply to is no longer online!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Msgtoggle Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+msgtoggle-enabled: "%prefix%&aYou can now receive private messages!"
+msgtoggle-disabled: "%prefix%&cYou will no longer receive private messages!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Nick Command                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %nick%   - The nickname (formatted)
+#    %player% - The target player's name
+
+nick-usage: "%prefix%&cUsage: /nick <nickname|off> [player]"
+nick-set: "%prefix%&aYour nickname has been set to %nick%&a!"
+nick-set-other: "%prefix%&aSet &e%player%&a's nickname to %nick%&a!"
+nick-reset: "%prefix%&aYour nickname has been reset!"
+nick-reset-other: "%prefix%&aReset &e%player%&a's nickname!"
+nick-no-color: "%prefix%&cYou don't have permission to use color codes in nicknames!"
+nick-invalid-length: "%prefix%&cNickname must be between 2 and 16 characters!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                  Realname Command                       │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %nick%   - The nickname searched for
+#    %player% - The real player name
+
+realname-usage: "%prefix%&cUsage: /realname <nickname>"
+realname-found: "%prefix%&e%nick% &7is &a%player%"
+realname-not-found: "%prefix%&cNo player found with nickname &e%nick%&c!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Me Command                           │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %player% - The player's display name
+#    %action% - The action message
+
+me-usage: "%prefix%&cUsage: /me <action>"
+me-format: "&d* %player% %action%"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Social Commands                         │
+# └─────────────────────────────────────────────────────────┘
+#
+#  Variables:
+#    %link% - The configured URL from config.yml
+
+social-not-configured: "%prefix%&cThe &e/%command% &clink has not been configured!"
+social-discord: "%prefix%&9Discord: &b%link%"
+social-website: "%prefix%&aWebsite: &b%link%"
+social-store: "%prefix%&6Store: &b%link%"
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

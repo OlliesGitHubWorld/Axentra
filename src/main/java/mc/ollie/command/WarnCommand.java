@@ -114,10 +114,15 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 .replace("%count%", String.valueOf(warnCount)));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-warn")) {
-            plugin.getServer().broadcastMessage(getMessage("warn-announce")
+            String announceMsg = getMessage("warn-announce")
                     .replace("%player%", target.getName())
                     .replace("%reason%", reason)
-                    .replace("%count%", String.valueOf(warnCount)));
+                    .replace("%count%", String.valueOf(warnCount));
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.warn")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         // Check for punishment at this warn count
@@ -132,6 +137,14 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private void broadcastToStaff(String message) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (online.hasPermission("Axentra.notify.warn")) {
+                online.sendMessage(message);
+            }
+        }
+    }
+
     private void applyPunishment(Player target, ConfigurationSection entry, int warnCount, CommandSender issuer) {
         String action = entry.getString("action", "").toLowerCase();
         String punishReason = entry.getString("reason", "Reached " + warnCount + " warnings");
@@ -140,7 +153,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
             case "kick": {
                 String kickMsg = getMessage("warn-punishment-kick-message").replace("%reason%", punishReason);
                 target.kickPlayer(kickMsg);
-                plugin.getServer().broadcastMessage(getMessage("warn-punishment-announce")
+                broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
                         .replace("%action%", "kicked")
                         .replace("%count%", String.valueOf(warnCount)));
@@ -148,10 +161,10 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
             }
             case "mute": {
                 if (!plugin.getDatabaseManager().isMuted(target.getUniqueId().toString())) {
-                    plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName());
+                    plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), null);
                     target.sendMessage(getMessage("mute-message").replace("%reason%", punishReason));
                 }
-                plugin.getServer().broadcastMessage(getMessage("warn-punishment-announce")
+                broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
                         .replace("%action%", "muted")
                         .replace("%count%", String.valueOf(warnCount)));
@@ -179,7 +192,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 }
                 target.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMsg));
 
-                plugin.getServer().broadcastMessage(getMessage("warn-punishment-announce")
+                broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
                         .replace("%action%", "temp-banned (" + formattedDuration + ")")
                         .replace("%count%", String.valueOf(warnCount)));
@@ -200,7 +213,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 }
                 target.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMsg));
 
-                plugin.getServer().broadcastMessage(getMessage("warn-punishment-announce")
+                broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
                         .replace("%action%", "banned")
                         .replace("%count%", String.valueOf(warnCount)));

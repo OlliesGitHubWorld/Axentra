@@ -122,7 +122,8 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
         }
 
         Player target = Bukkit.getPlayer(playerName);
-        String uuid = target != null ? target.getUniqueId().toString() : playerName;
+        String uuid = target != null ? target.getUniqueId().toString()
+                : Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
         String bannedBy = sender.getName();
         String formattedDuration = formatDuration(durationMillis);
         Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + durationMillis);
