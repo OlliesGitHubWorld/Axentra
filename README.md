@@ -1,6 +1,6 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.3.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.4.0-blue?style=flat-square)
 ![Minecraft](https://img.shields.io/badge/minecraft-1.21-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
@@ -10,54 +10,62 @@
 
 **A powerful, lightweight Minecraft server management plugin.**
 
-**[⬇️ Download](https://github.com/OlliesGitHubWorld/Axentra/releases/latest)** • **[📖 Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki)** • **[🐛 Report Bug](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=bug_report.md)** • **[✨ Request Feature](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=feature_request.md)**
+**[Download](https://github.com/OlliesGitHubWorld/Axentra/releases/latest)** | **[Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki)** | **[Report Bug](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=bug_report.md)** | **[Request Feature](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=feature_request.md)**
 
 </div>
 
 ---
 
-## 🆕 What's New in v1.3.0
+## What's New in v1.4.0
 
-- **Teleportation** — `/spawn` with configurable countdown, `/setspawn`, `/tpa` request system, and `/back` on death or teleport
-- **God Mode** — Toggle invincibility for yourself or others with `/god`
-- **Vanish** — Full vanish system with see-vanished permission support
-- **Gamemode & Speed** — Quick switching via `/gms`, `/gmc`, `/gma`, `/gmsp` and walk/fly speed control
-- **Inventory Inspection** — `/invsee` and `/enderchestsee` with optional read-only mode
-
----
-
-## 📖 About
-
-Axentra is a Minecraft Bukkit/Spigot plugin that adds custom join/leave messages, inventory management, teleportation, god mode, vanish, and powerful server administration commands — all fully configurable through simple YAML files. No external databases or dependencies required!
+- **Chat Control** — `/broadcast`, `/clearchat`, `/mutechat`, `/slowchat`, and `/staffchat`
+- **Private Messaging** — `/msg`, `/reply`, `/msgtoggle` with social spy support
+- **Nicknames** — `/nick` with color code support, `/realname` lookup
+- **Social Commands** — `/discord`, `/website`, `/store` with configurable links
+- **Temp Mute** — `/tempmute` with duration parsing (e.g. `5m`, `1h30m`)
+- **Staff Settings GUI** — In-game settings panel via `/axentra settings` with toggleable features
+- **Action Message** — `/me` for roleplay-style action messages
+- **Bug Fixes** — Database resource leak fixes, offline player UUID handling, improved stability
 
 ---
 
-## ✨ Features
+## About
 
-- 🎉 **Custom Join & Leave Messages** — Fully customizable with color codes and placeholders
-- 🌟 **First Join Detection** — Special message for first time players
-- 🔨 **Staff Commands** — Kick, ban, tempban, mute, warn and more with full reason support
-- ⚠️ **Warning System** — Warn players with configurable auto-punishments at thresholds
-- 🔇 **Mute System** — Mute and unmute players to block chat messages
-- 🚫 **IP Banning** — Ban and temp-ban IP addresses to block alt accounts
-- 🛠️ **Utility Commands** — Clear inventory, repair items, fly, heal, feed, hat and more
-- 🧰 **GUI Commands** — Open anvil, workbench, cartography, grindstone, loom, smithing table, stonecutter and ender chest anywhere
-- 🌍 **World Control** — Set weather and time with dedicated shortcut commands
-- 🚀 **Teleportation** — `/spawn` with countdown, `/tpa` request system, and `/back` on death or teleport
-- 👻 **Vanish** — Toggle vanish for yourself or others, with see-vanished permission support
-- ☠️ **God Mode** — Toggle invincibility for yourself or others
-- 🎮 **Gamemode & Speed** — Quick gamemode switching (gms/gmc/gma/gmsp) and walk/fly speed control
-- 👁️ **Inventory Inspection** — View other players' inventories and ender chests (read-only mode configurable)
-- 📢 **Announcements** — Announce kicks, bans and warns to the whole server
-- 🔗 **Ban Appeal Link** — Show a Discord or website link on the ban screen
-- 🗃️ **SQLite Database** — Persistent ban, mute and warn storage, no external database needed
-- 📝 **Fully Configurable** — Every message and setting is editable in YAML
-- 🔄 **Live Reload** — Reload config and messages without restarting the server
-- 🔔 **Update Notifications** — Automatically notifies admins of new updates on join
+Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, moderation, chat control, private messaging, teleportation, vanish, and utility commands — all fully configurable through YAML files with a built-in SQLite database.
 
 ---
 
-## 🚀 Installation
+## Features
+
+- **Custom Join & Leave Messages** — Fully customizable with color codes and placeholders
+- **First Join Detection** — Special message for first time players
+- **Staff Commands** — Kick, ban, tempban, mute, tempmute, warn and more with full reason support
+- **Warning System** — Warn players with configurable auto-punishments at thresholds
+- **Mute System** — Permanent and temporary mutes with command blocking
+- **IP Banning** — Ban and temp-ban IP addresses to block alt accounts
+- **Chat Control** — Broadcast, clear chat, mute chat, slow chat, and staff-only chat
+- **Private Messaging** — `/msg`, `/reply`, `/msgtoggle` with social spy for staff
+- **Nicknames** — Set display names with optional color codes, persistent in database
+- **Social Links** — Configurable `/discord`, `/website`, `/store` commands
+- **Staff Settings GUI** — In-game clickable menu to toggle server settings in real-time
+- **Utility Commands** — Clear inventory, repair items, fly, heal, feed, hat and more
+- **GUI Commands** — Open anvil, workbench, cartography, grindstone, loom, smithing table, stonecutter and ender chest anywhere
+- **World Control** — Set weather and time with dedicated shortcut commands
+- **Teleportation** — `/spawn` with countdown, `/tpa` request system, and `/back` on death or teleport
+- **Vanish** — Full vanish system with ghost effect, night vision, god mode, no pickup, fake join/quit messages
+- **God Mode** — Toggle invincibility for yourself or others
+- **Gamemode & Speed** — Quick gamemode switching (gms/gmc/gma/gmsp) and walk/fly speed control
+- **Inventory Inspection** — View other players' inventories and ender chests (read-only mode configurable)
+- **Announcements** — Configurable announce toggles for kicks, bans, mutes, warns
+- **Ban Appeal Link** — Show a Discord or website link on the ban screen
+- **SQLite Database** — Persistent ban, mute, warn and nickname storage
+- **Fully Configurable** — Every message and setting is editable in YAML
+- **Live Reload** — Reload config and messages without restarting the server
+- **Update Notifications** — Automatically notifies admins of new updates on join
+
+---
+
+## Installation
 
 1. Download the latest `axentra-x.x.x.jar` from the [Releases](https://github.com/OlliesGitHubWorld/Axentra/releases/latest) page
 2. Place it in your server's `plugins/` folder
@@ -69,7 +77,36 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 
 ---
 
-## 🎮 Commands
+## Commands
+
+### Chat Control
+
+| Command | Aliases | Description | Permission |
+|---|---|---|---|
+| `/broadcast <message>` | `/bc` | Broadcast a message to all players | `Axentra.broadcast` |
+| `/clearchat` | `/cc` | Clear the chat for all players | `Axentra.clearchat` |
+| `/mutechat` | `/mc` | Toggle global chat mute | `Axentra.mutechat` |
+| `/slowchat [seconds\|off]` | `/slowmode` | Toggle slow chat mode | `Axentra.slowchat` |
+| `/staffchat [message]` | `/sc` | Send or toggle staff chat | `Axentra.staffchat` |
+
+### Messaging
+
+| Command | Aliases | Description | Permission |
+|---|---|---|---|
+| `/msg <player> <message>` | `/tell`, `/whisper`, `/w`, `/pm` | Send a private message | `Axentra.msg` |
+| `/reply <message>` | `/r` | Reply to the last private message | `Axentra.msg` |
+| `/msgtoggle` | — | Toggle receiving private messages | `Axentra.msg` |
+
+### Formatting
+
+| Command | Aliases | Description | Permission |
+|---|---|---|---|
+| `/nick <name\|off> [player]` | `/nickname` | Set your or another player's nickname | `Axentra.nick` |
+| `/realname <nickname>` | — | Find the real name of a nicknamed player | `Axentra.realname` |
+| `/me <action>` | — | Send an action message | `Axentra.me` |
+| `/discord` | — | Show the server's Discord link | — |
+| `/website` | — | Show the server's website | — |
+| `/store` | — | Show the server's store link | — |
 
 ### Moderation
 
@@ -85,7 +122,8 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 | `/warn <player> [reason]` | — | Warns a player | `Axentra.warn` |
 | `/warns [player]` | — | View a player's warnings | `Axentra.warns` |
 | `/clearwarns <player>` | — | Clears a player's warnings | `Axentra.clearwarns` |
-| `/mute <player> [reason]` | — | Mutes a player | `Axentra.mute` |
+| `/mute <player> [reason]` | — | Permanently mutes a player | `Axentra.mute` |
+| `/tempmute <player> <duration> [reason]` | — | Temporarily mutes a player | `Axentra.tempmute` |
 | `/unmute <player>` | — | Unmutes a player | `Axentra.unmute` |
 
 ### Utility
@@ -157,6 +195,7 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 |---|---|---|---|
 | `/axentra reload` | `/ax reload` | Reloads config and messages | `Axentra.admin` |
 | `/axentra upgrade` | `/ax upgrade` | Checks for updates | `Axentra.admin` |
+| `/axentra settings` | `/ax settings` | Opens the staff settings GUI | `Axentra.admin` |
 | `/axentra help` | `/ax help` | Shows all commands | — |
 | `/axentra information` | `/ax information` | Shows plugin information | — |
 
@@ -164,13 +203,29 @@ For a full list of commands and usage, check out the [Commands Wiki](https://git
 
 ---
 
-## 🔒 Permissions
+## Permissions
 
 Permissions with **Everyone** as default are granted to all players automatically. All others default to **OP**.
 
 | Permission | Default | Description |
 |---|---|---|
 | `Axentra.admin` | OP | Access to all `/axentra` subcommands |
+| `Axentra.broadcast` | OP | Use `/broadcast` |
+| `Axentra.clearchat` | OP | Use `/clearchat` |
+| `Axentra.clearchat.bypass` | OP | Chat not cleared by `/clearchat` |
+| `Axentra.mutechat` | OP | Use `/mutechat` |
+| `Axentra.mutechat.bypass` | OP | Chat when chat is globally muted |
+| `Axentra.slowchat` | OP | Use `/slowchat` |
+| `Axentra.slowchat.bypass` | OP | Bypass slow chat cooldown |
+| `Axentra.staffchat` | OP | Use `/staffchat` |
+| `Axentra.msg` | Everyone | Use `/msg`, `/reply`, `/msgtoggle` |
+| `Axentra.msg.bypass` | OP | Message players with msgtoggle off |
+| `Axentra.socialspy` | OP | See private messages between others |
+| `Axentra.nick` | OP | Set your own nickname |
+| `Axentra.nick.others` | OP | Set other players' nicknames |
+| `Axentra.nick.color` | OP | Use color codes in nicknames |
+| `Axentra.realname` | Everyone | Use `/realname` |
+| `Axentra.me` | Everyone | Use `/me` |
 | `Axentra.spawn` | Everyone | Use `/spawn` on yourself |
 | `Axentra.spawn.others` | OP | Teleport others to spawn |
 | `Axentra.spawn.bypass` | OP | Skip the `/spawn` countdown |
@@ -208,7 +263,10 @@ Permissions with **Everyone** as default are granted to all players automaticall
 | `Axentra.warns` | OP | Use `/warns` |
 | `Axentra.clearwarns` | OP | Use `/clearwarns` |
 | `Axentra.mute` | OP | Use `/mute` |
+| `Axentra.tempmute` | OP | Use `/tempmute` |
 | `Axentra.unmute` | OP | Use `/unmute` |
+| `Axentra.notify.warn` | OP | See warn announcements |
+| `Axentra.notify.mute` | OP | See mute/unmute announcements |
 | `Axentra.weather` | OP | Use weather commands |
 | `Axentra.time` | OP | Use time commands |
 | `Axentra.ping` | OP | Check your own ping |
@@ -228,18 +286,18 @@ For the full permissions reference, check out the [Permissions Wiki](https://git
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 Axentra is fully configurable through two files:
 
-- **`config.yml`** — General plugin settings such as announcements, ban appeal link, warn punishments, spawn countdown, TPA countdown, and invsee read-only mode
+- **`config.yml`** — General plugin settings: announcements, ban appeal link, warn punishments, spawn/TPA countdowns, invsee read-only mode, slow chat defaults, social media links, vanish options, and module toggles
 - **`messages.yml`** — Every message the plugin sends, supports color codes and placeholders
 
 After making changes run `/axentra reload` to apply them without restarting the server.
 
 ---
 
-## 🛠️ Requirements
+## Requirements
 
 - Minecraft server running **Spigot** or **Paper**
 - Minecraft **1.21** or higher
@@ -247,25 +305,25 @@ After making changes run `/axentra reload` to apply them without restarting the 
 
 ---
 
-## 📦 Building from Source
+## Building from Source
 
 ```bash
 git clone https://github.com/OlliesGitHubWorld/Axentra.git
 cd Axentra
-mvn clean package
+./mvnw clean package
 ```
 
 The compiled jar will be in the `target/` folder.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to open a [Pull Request](https://github.com/OlliesGitHubWorld/Axentra/pulls) or an [Issue](https://github.com/OlliesGitHubWorld/Axentra/issues).
 
 ---
 
-## 📜 License
+## License
 
 Axentra is licensed under the [MIT License](LICENSE).
 
@@ -273,6 +331,6 @@ Axentra is licensed under the [MIT License](LICENSE).
 
 <div align="center">
 
-Made with ❤️ by [OlliesWorld](https://github.com/OlliesGitHubWorld)
+Made with love by [OlliesWorld](https://github.com/OlliesGitHubWorld)
 
 </div>
