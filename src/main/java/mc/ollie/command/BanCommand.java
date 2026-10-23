@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -77,8 +78,25 @@ public class BanCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(getMessage("ban-already-banned").replace("%player%", playerName));
             return true;
         }
+
+        // Get chat snapshot before banning
+        String chatLog = null;
+        if (target != null) {
+            ChatListener chatListener = plugin.getChatListener();
+            if (chatListener != null) {
+                chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+            }
+        }
+
         // Ban the player
         plugin.getDatabaseManager().banPlayer(playerName, uuid, reason, bannedBy, null);
+
+        // Create case
+        int caseId = plugin.getDatabaseManager().createCase("BAN", playerName, uuid, reason, bannedBy, null, chatLog);
+
+        // Audit log
+        String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+        plugin.getDatabaseManager().logAction(bannedBy, staffUuid, "BAN", playerName, reason);
 
         if (target != null) {
             String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
@@ -98,7 +116,8 @@ public class BanCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage(getMessage("ban-success")
                 .replace("%player%", playerName)
-                .replace("%reason%", reason));
+                .replace("%reason%", reason)
+                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         // Announce if enabled
         if (plugin.getFileManager().getSettings().getBoolean("announce-ban")) {

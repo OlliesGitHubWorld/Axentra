@@ -14,6 +14,8 @@ public class DatabaseManager {
         this.plugin = plugin;
     }
 
+    // ── Data classes ────────────────────────────────────────
+
     public static class BanInfo {
         public final String playerName;
         public final String playerUuid;
@@ -55,6 +57,75 @@ public class DatabaseManager {
             this.warnedAt = warnedAt;
         }
     }
+
+    public static class CaseInfo {
+        public final int id;
+        public final String type;
+        public final String playerName;
+        public final String playerUuid;
+        public final String reason;
+        public final String issuedBy;
+        public final String issuedAt;
+        public final String expiresAt;
+        public final boolean active;
+        public final String chatLog;
+
+        public CaseInfo(int id, String type, String playerName, String playerUuid,
+                        String reason, String issuedBy, String issuedAt, String expiresAt,
+                        boolean active, String chatLog) {
+            this.id = id;
+            this.type = type;
+            this.playerName = playerName;
+            this.playerUuid = playerUuid;
+            this.reason = reason;
+            this.issuedBy = issuedBy;
+            this.issuedAt = issuedAt;
+            this.expiresAt = expiresAt;
+            this.active = active;
+            this.chatLog = chatLog;
+        }
+    }
+
+    public static class NoteInfo {
+        public final int id;
+        public final String playerName;
+        public final String playerUuid;
+        public final String note;
+        public final String addedBy;
+        public final String addedAt;
+
+        public NoteInfo(int id, String playerName, String playerUuid, String note, String addedBy, String addedAt) {
+            this.id = id;
+            this.playerName = playerName;
+            this.playerUuid = playerUuid;
+            this.note = note;
+            this.addedBy = addedBy;
+            this.addedAt = addedAt;
+        }
+    }
+
+    public static class AuditEntry {
+        public final int id;
+        public final String staffName;
+        public final String staffUuid;
+        public final String action;
+        public final String target;
+        public final String details;
+        public final String timestamp;
+
+        public AuditEntry(int id, String staffName, String staffUuid, String action,
+                          String target, String details, String timestamp) {
+            this.id = id;
+            this.staffName = staffName;
+            this.staffUuid = staffUuid;
+            this.action = action;
+            this.target = target;
+            this.details = details;
+            this.timestamp = timestamp;
+        }
+    }
+
+    // ── Setup ───────────────────────────────────────────────
 
     public void setup() {
         try {
@@ -127,6 +198,46 @@ public class DatabaseManager {
                                 "nickname TEXT NOT NULL" +
                                 ")"
                 );
+
+                // ── Smart Moderation tables (v1.5.0) ──
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS cases (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "type TEXT NOT NULL," +
+                                "player_name TEXT NOT NULL," +
+                                "player_uuid TEXT NOT NULL," +
+                                "reason TEXT," +
+                                "issued_by TEXT NOT NULL," +
+                                "issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                                "expires_at TIMESTAMP," +
+                                "active INTEGER DEFAULT 1," +
+                                "chat_log TEXT" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS staff_notes (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "player_name TEXT NOT NULL," +
+                                "player_uuid TEXT NOT NULL," +
+                                "note TEXT NOT NULL," +
+                                "added_by TEXT NOT NULL," +
+                                "added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS audit_log (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "staff_name TEXT NOT NULL," +
+                                "staff_uuid TEXT NOT NULL," +
+                                "action TEXT NOT NULL," +
+                                "target TEXT," +
+                                "details TEXT," +
+                                "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                                ")"
+                );
             }
 
             plugin.getLogger().info("Database connected!");
@@ -144,6 +255,8 @@ public class DatabaseManager {
             plugin.getLogger().severe("Failed to close database: " + e.getMessage());
         }
     }
+
+    // ── Bans ────────────────────────────────────────────────
 
     public void banPlayer(String playerName, String playerUuid, String reason, String bannedBy, Timestamp expiresAt) {
         try (PreparedStatement stmt = connection.prepareStatement(
@@ -255,6 +368,8 @@ public class DatabaseManager {
         return null;
     }
 
+    // ── Warns ───────────────────────────────────────────────
+
     public void warnPlayer(String playerName, String playerUuid, String reason, String warnedBy) {
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO warns (player_name, player_uuid, reason, warned_by) VALUES (?, ?, ?, ?)")) {
@@ -324,6 +439,8 @@ public class DatabaseManager {
         }
     }
 
+    // ── Mutes ───────────────────────────────────────────────
+
     public void mutePlayer(String playerName, String playerUuid, String reason, String mutedBy, Timestamp expiresAt) {
         try (PreparedStatement stmt = connection.prepareStatement(
                 "INSERT INTO mutes (player_name, player_uuid, reason, muted_by, expires_at) VALUES (?, ?, ?, ?, ?)")) {
@@ -376,6 +493,8 @@ public class DatabaseManager {
         }
     }
 
+    // ── Name lists ──────────────────────────────────────────
+
     public List<String> getActiveBannedNames() {
         List<String> names = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(
@@ -416,6 +535,8 @@ public class DatabaseManager {
         }
         return names;
     }
+
+    // ── Nicknames ───────────────────────────────────────────
 
     public void setNickname(String playerUuid, String nickname) {
         try (PreparedStatement stmt = connection.prepareStatement(
@@ -471,5 +592,301 @@ public class DatabaseManager {
             plugin.getLogger().severe("Failed to get ban: " + e.getMessage());
         }
         return null;
+    }
+
+    // ── Cases (v1.5.0) ─────────────────────────────────────
+
+    public int createCase(String type, String playerName, String playerUuid,
+                          String reason, String issuedBy, Timestamp expiresAt, String chatLog) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO cases (type, player_name, player_uuid, reason, issued_by, expires_at, chat_log) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, type);
+            stmt.setString(2, playerName);
+            stmt.setString(3, playerUuid);
+            stmt.setString(4, reason);
+            stmt.setString(5, issuedBy);
+            stmt.setTimestamp(6, expiresAt);
+            stmt.setString(7, chatLog);
+            stmt.executeUpdate();
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to create case: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    public CaseInfo getCase(int caseId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM cases WHERE id = ?")) {
+            stmt.setInt(1, caseId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new CaseInfo(
+                            rs.getInt("id"),
+                            rs.getString("type"),
+                            rs.getString("player_name"),
+                            rs.getString("player_uuid"),
+                            rs.getString("reason"),
+                            rs.getString("issued_by"),
+                            rs.getString("issued_at"),
+                            rs.getString("expires_at"),
+                            rs.getInt("active") == 1,
+                            rs.getString("chat_log")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get case: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<CaseInfo> getCasesByPlayer(String playerName) {
+        List<CaseInfo> cases = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM cases WHERE LOWER(player_name) = LOWER(?) ORDER BY issued_at DESC")) {
+            stmt.setString(1, playerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    cases.add(new CaseInfo(
+                            rs.getInt("id"),
+                            rs.getString("type"),
+                            rs.getString("player_name"),
+                            rs.getString("player_uuid"),
+                            rs.getString("reason"),
+                            rs.getString("issued_by"),
+                            rs.getString("issued_at"),
+                            rs.getString("expires_at"),
+                            rs.getInt("active") == 1,
+                            rs.getString("chat_log")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get cases: " + e.getMessage());
+        }
+        return cases;
+    }
+
+    public List<CaseInfo> getCasesByPlayerUuid(String playerUuid) {
+        List<CaseInfo> cases = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM cases WHERE player_uuid = ? ORDER BY issued_at DESC")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    cases.add(new CaseInfo(
+                            rs.getInt("id"),
+                            rs.getString("type"),
+                            rs.getString("player_name"),
+                            rs.getString("player_uuid"),
+                            rs.getString("reason"),
+                            rs.getString("issued_by"),
+                            rs.getString("issued_at"),
+                            rs.getString("expires_at"),
+                            rs.getInt("active") == 1,
+                            rs.getString("chat_log")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get cases by UUID: " + e.getMessage());
+        }
+        return cases;
+    }
+
+    public List<String> getKnownPlayerNames() {
+        List<String> names = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT DISTINCT player_name FROM cases")) {
+            while (rs.next()) {
+                names.add(rs.getString("player_name"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get known player names: " + e.getMessage());
+        }
+        return names;
+    }
+
+    public int getCaseCountByPlayer(String playerName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT COUNT(*) FROM cases WHERE LOWER(player_name) = LOWER(?)")) {
+            stmt.setString(1, playerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get case count: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int getActiveCaseCountByType(String playerUuid, String type) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT COUNT(*) FROM cases WHERE player_uuid = ? AND type = ? AND active = 1")) {
+            stmt.setString(1, playerUuid);
+            stmt.setString(2, type);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get active case count: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // ── Staff Notes (v1.5.0) ────────────────────────────────
+
+    public void addNote(String playerName, String playerUuid, String note, String addedBy) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO staff_notes (player_name, player_uuid, note, added_by) VALUES (?, ?, ?, ?)")) {
+            stmt.setString(1, playerName);
+            stmt.setString(2, playerUuid);
+            stmt.setString(3, note);
+            stmt.setString(4, addedBy);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to add note: " + e.getMessage());
+        }
+    }
+
+    public void removeNote(int noteId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "DELETE FROM staff_notes WHERE id = ?")) {
+            stmt.setInt(1, noteId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to remove note: " + e.getMessage());
+        }
+    }
+
+    public List<NoteInfo> getNotesByPlayer(String playerName) {
+        List<NoteInfo> notes = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM staff_notes WHERE LOWER(player_name) = LOWER(?) ORDER BY added_at DESC")) {
+            stmt.setString(1, playerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    notes.add(new NoteInfo(
+                            rs.getInt("id"),
+                            rs.getString("player_name"),
+                            rs.getString("player_uuid"),
+                            rs.getString("note"),
+                            rs.getString("added_by"),
+                            rs.getString("added_at")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get notes: " + e.getMessage());
+        }
+        return notes;
+    }
+
+    public List<NoteInfo> getNotesByUuid(String playerUuid) {
+        List<NoteInfo> notes = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM staff_notes WHERE player_uuid = ? ORDER BY added_at DESC")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    notes.add(new NoteInfo(
+                            rs.getInt("id"),
+                            rs.getString("player_name"),
+                            rs.getString("player_uuid"),
+                            rs.getString("note"),
+                            rs.getString("added_by"),
+                            rs.getString("added_at")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get notes by UUID: " + e.getMessage());
+        }
+        return notes;
+    }
+
+    public boolean hasNotes(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT 1 FROM staff_notes WHERE player_uuid = ? LIMIT 1")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to check notes: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ── Audit Log (v1.5.0) ──────────────────────────────────
+
+    public void logAction(String staffName, String staffUuid, String action, String target, String details) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO audit_log (staff_name, staff_uuid, action, target, details) VALUES (?, ?, ?, ?, ?)")) {
+            stmt.setString(1, staffName);
+            stmt.setString(2, staffUuid);
+            stmt.setString(3, action);
+            stmt.setString(4, target);
+            stmt.setString(5, details);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to log action: " + e.getMessage());
+        }
+    }
+
+    public List<AuditEntry> getAuditLogByStaff(String staffName, int limit) {
+        List<AuditEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM audit_log WHERE LOWER(staff_name) = LOWER(?) ORDER BY timestamp DESC LIMIT ?")) {
+            stmt.setString(1, staffName);
+            stmt.setInt(2, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    entries.add(new AuditEntry(
+                            rs.getInt("id"),
+                            rs.getString("staff_name"),
+                            rs.getString("staff_uuid"),
+                            rs.getString("action"),
+                            rs.getString("target"),
+                            rs.getString("details"),
+                            rs.getString("timestamp")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get audit log: " + e.getMessage());
+        }
+        return entries;
+    }
+
+    public List<AuditEntry> getAuditLogByStaffAndDate(String staffName, String dateFrom, String dateTo, int limit) {
+        List<AuditEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM audit_log WHERE LOWER(staff_name) = LOWER(?) AND timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC LIMIT ?")) {
+            stmt.setString(1, staffName);
+            stmt.setString(2, dateFrom);
+            stmt.setString(3, dateTo);
+            stmt.setInt(4, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    entries.add(new AuditEntry(
+                            rs.getInt("id"),
+                            rs.getString("staff_name"),
+                            rs.getString("staff_uuid"),
+                            rs.getString("action"),
+                            rs.getString("target"),
+                            rs.getString("details"),
+                            rs.getString("timestamp")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get filtered audit log: " + e.getMessage());
+        }
+        return entries;
     }
 }

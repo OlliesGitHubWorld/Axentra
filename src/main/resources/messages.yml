@@ -263,10 +263,52 @@ unmute-announce: "%prefix%&e%player% &ahas been unmuted!"
 unmute-not-muted: "%prefix%&e%player% &cis not muted!"
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                   Anvil Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+anvil-open: "%prefix%&aOpened an anvil!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Workbench Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+workbench-open: "%prefix%&aOpened a crafting table!"
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                 Cartography Command                     │
 # └─────────────────────────────────────────────────────────┘
 
 cartography-open: "%prefix%&aOpened a cartography table!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Grindstone Command                      │
+# └─────────────────────────────────────────────────────────┘
+
+grindstone-open: "%prefix%&aOpened a grindstone!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Loom Command                          │
+# └─────────────────────────────────────────────────────────┘
+
+loom-open: "%prefix%&aOpened a loom!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │               Smithing Table Command                    │
+# └─────────────────────────────────────────────────────────┘
+
+smithingtable-open: "%prefix%&aOpened a smithing table!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                Stonecutter Command                      │
+# └─────────────────────────────────────────────────────────┘
+
+stonecutter-open: "%prefix%&aOpened a stonecutter!"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                Enderchest Command                       │
+# └─────────────────────────────────────────────────────────┘
+
+enderchest-open: "%prefix%&aOpened your ender chest!"
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Ping Command                         │
@@ -460,6 +502,13 @@ spawn-teleported-title: "&aTeleported!"
 spawn-teleported-subtitle: "&7You are now at spawn."
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                    Help Command                         │
+# └─────────────────────────────────────────────────────────┘
+
+help-header: "&8&m─────────&r &b&lAxentra Help &8&m─────────"
+help-footer: "&8&m──────────────────────────────────"
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                   Axentra Command                       │
 # └─────────────────────────────────────────────────────────┘
 #
@@ -612,6 +661,36 @@ social-not-configured: "%prefix%&cThe &e/%command% &clink has not been configure
 social-discord: "%prefix%&9Discord: &b%link%"
 social-website: "%prefix%&aWebsite: &b%link%"
 social-store: "%prefix%&6Store: &b%link%"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │              Smart Moderation (v1.5.0)                  │
+# └─────────────────────────────────────────────────────────┘
+
+# Case Command
+case-usage: "%prefix%&cUsage: /case <id>"
+case-invalid-id: "%prefix%&cInvalid case ID! Must be a number."
+case-not-found: "%prefix%&cCase #%id% was not found."
+
+# History Command
+history-usage: "%prefix%&cUsage: /history <player>"
+history-empty: "%prefix%&e%player% &ahas no moderation history."
+
+# Note Command
+note-usage: "%prefix%&cUsage: /note <add|remove> <player|id> [note]"
+note-invalid-id: "%prefix%&cInvalid note ID! Must be a number."
+note-added: "%prefix%&aNote added for &e%player%&a: &7%note%"
+note-removed: "%prefix%&aNote #%id% has been removed."
+
+# Notes Command
+notes-usage: "%prefix%&cUsage: /notes <player>"
+notes-empty: "%prefix%&e%player% &ahas no staff notes."
+
+# Punish Command
+punish-usage: "%prefix%&cUsage: /punish <player>"
+
+# Audit Log Command
+auditlog-usage: "%prefix%&cUsage: /auditlog <staff> [page]"
+auditlog-empty: "%prefix%&e%staff% &ahas no audit log entries."
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

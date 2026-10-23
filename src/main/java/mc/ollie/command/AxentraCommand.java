@@ -139,7 +139,8 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                 break;
 
             case "help":
-                new HelpCommand(plugin).onCommand(sender, command, label, args);
+                String[] helpArgs = args.length > 1 ? java.util.Arrays.copyOfRange(args, 1, args.length) : new String[0];
+                new HelpCommand(plugin).onCommand(sender, command, label, helpArgs);
                 break;
 
             case "settings":

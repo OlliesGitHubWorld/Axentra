@@ -14,6 +14,9 @@ public class FileManager {
     private File messagesFile;
     private FileConfiguration messagesConfig;
 
+    private File punishmentsFile;
+    private FileConfiguration punishmentsConfig;
+
     public FileManager(App plugin) {
         this.plugin = plugin;
     }
@@ -40,6 +43,25 @@ public class FileManager {
                 plugin.getLogger().warning("Could not save messages.yml: " + e.getMessage());
             }
         }
+
+        // Load punishments.yml
+        punishmentsFile = new File(plugin.getDataFolder(), "punishments.yml");
+        if (!punishmentsFile.exists()) {
+            plugin.saveResource("punishments.yml", false);
+        }
+        punishmentsConfig = YamlConfiguration.loadConfiguration(punishmentsFile);
+
+        InputStream defaultPunishments = plugin.getResource("punishments.yml");
+        if (defaultPunishments != null) {
+            YamlConfiguration defaultPunishConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultPunishments));
+            punishmentsConfig.setDefaults(defaultPunishConfig);
+            punishmentsConfig.options().copyDefaults(true);
+            try {
+                punishmentsConfig.save(punishmentsFile);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Could not save punishments.yml: " + e.getMessage());
+            }
+        }
     }
 
     public void reload() {
@@ -57,6 +79,20 @@ public class FileManager {
                 plugin.getLogger().warning("Could not save messages.yml: " + e.getMessage());
             }
         }
+
+        // Reload punishments.yml
+        punishmentsConfig = YamlConfiguration.loadConfiguration(punishmentsFile);
+        InputStream defaultPunishments = plugin.getResource("punishments.yml");
+        if (defaultPunishments != null) {
+            YamlConfiguration defaultPunishConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultPunishments));
+            punishmentsConfig.setDefaults(defaultPunishConfig);
+            punishmentsConfig.options().copyDefaults(true);
+            try {
+                punishmentsConfig.save(punishmentsFile);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Could not save punishments.yml: " + e.getMessage());
+            }
+        }
     }
 
     public FileConfiguration getMessages() {
@@ -65,5 +101,9 @@ public class FileManager {
 
     public FileConfiguration getSettings() {
         return plugin.getConfig();
+    }
+
+    public FileConfiguration getPunishments() {
+        return punishmentsConfig;
     }
 }

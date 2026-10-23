@@ -1,6 +1,7 @@
 package mc.ollie.listeners;
 
 import mc.ollie.App;
+import mc.ollie.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -9,6 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.List;
 
 public class JoinLeaveListener implements Listener {
 
@@ -71,11 +74,41 @@ public class JoinLeaveListener implements Listener {
         if (joinLocation.equalsIgnoreCase("spawn")) {
             player.teleport(resolveSpawnWorld().getSpawnLocation());
         }
+
+        // Notify staff about notes on this player
+        notifyStaffNotes(player);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         int count = Bukkit.getOnlinePlayers().size() - 1; // exclude the leaving player
         event.setQuitMessage(getMessage("quit", event.getPlayer(), DEFAULT_QUIT, count));
+    }
+
+    private void notifyStaffNotes(Player joiningPlayer) {
+        if (!plugin.getDatabaseManager().hasNotes(joiningPlayer.getUniqueId().toString())) {
+            return;
+        }
+
+        List<DatabaseManager.NoteInfo> notes = plugin.getDatabaseManager().getNotesByUuid(joiningPlayer.getUniqueId().toString());
+        if (notes.isEmpty()) return;
+
+        String prefix = plugin.getFileManager().getMessages().getString("prefix", "");
+        String prefixFormatted = ChatColor.translateAlternateColorCodes('&', prefix);
+
+        String alertMsg = prefixFormatted + ChatColor.YELLOW + joiningPlayer.getName()
+                + ChatColor.GRAY + " has " + ChatColor.YELLOW + notes.size()
+                + ChatColor.GRAY + " staff note" + (notes.size() != 1 ? "s" : "")
+                + ChatColor.GRAY + ". Use " + ChatColor.WHITE + "/notes " + joiningPlayer.getName()
+                + ChatColor.GRAY + " to view.";
+
+        // Delay by 1 tick to ensure join message shows first
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Player staff : Bukkit.getOnlinePlayers()) {
+                if (staff.hasPermission("Axentra.note")) {
+                    staff.sendMessage(alertMsg);
+                }
+            }
+        }, 1L);
     }
 }

@@ -8,6 +8,7 @@ import mc.ollie.listeners.ChatListener;
 import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
+import mc.ollie.listeners.ModerationGUIListener;
 import mc.ollie.listeners.StaffGUIListener;
 import mc.ollie.listeners.UpdateListener;
 import mc.ollie.listeners.VanishListener;
@@ -25,6 +26,7 @@ public final class App extends JavaPlugin {
     private FileManager fileManager;
     private MessageManager messageManager;
     private DatabaseManager databaseManager;
+    private ChatListener chatListener;
 
     // Chat control state
     private boolean chatMuted = false;
@@ -309,6 +311,34 @@ public final class App extends JavaPlugin {
         getCommand("midnight").setExecutor(timeCommand);
         getCommand("midnight").setTabCompleter(timeCommand);
 
+        // ── Smart Moderation commands (v1.5.0) ──
+
+        CaseCommand caseCommand = new CaseCommand(this);
+        getCommand("case").setExecutor(caseCommand);
+        getCommand("case").setTabCompleter(caseCommand);
+
+        HistoryCommand historyCommand = new HistoryCommand(this);
+        getCommand("history").setExecutor(historyCommand);
+        getCommand("history").setTabCompleter(historyCommand);
+
+        NoteCommand noteCommand = new NoteCommand(this);
+        getCommand("note").setExecutor(noteCommand);
+        getCommand("note").setTabCompleter(noteCommand);
+
+        NotesCommand notesCommand = new NotesCommand(this);
+        getCommand("notes").setExecutor(notesCommand);
+        getCommand("notes").setTabCompleter(notesCommand);
+
+        PunishCommand punishCommand = new PunishCommand(this);
+        getCommand("punish").setExecutor(punishCommand);
+        getCommand("punish").setTabCompleter(punishCommand);
+
+        AuditLogCommand auditLogCommand = new AuditLogCommand(this);
+        getCommand("auditlog").setExecutor(auditLogCommand);
+        getCommand("auditlog").setTabCompleter(auditLogCommand);
+
+        // ── /help override ──
+
         try {
             java.lang.reflect.Field commandMapField = getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
@@ -329,10 +359,17 @@ public final class App extends JavaPlugin {
                 public boolean execute(org.bukkit.command.CommandSender sender, String label, String[] args) {
                     return helpCommand.onCommand(sender, this, label, args);
                 }
+
+                @Override
+                public java.util.List<String> tabComplete(org.bukkit.command.CommandSender sender, String alias, String[] args) {
+                    return helpCommand.onTabComplete(sender, this, alias, args);
+                }
             });
         } catch (Exception e) {
             getLogger().warning("Failed to register /help command: " + e.getMessage());
         }
+
+        // ── Listeners ──
 
         if (backCommand != null) {
             getServer().getPluginManager().registerEvents(new BackListener(backCommand), this);
@@ -340,10 +377,14 @@ public final class App extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GodListener(godCommand), this);
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
-        getServer().getPluginManager().registerEvents(new ChatListener(this, staffchatCommand), this);
+
+        this.chatListener = new ChatListener(this, staffchatCommand);
+        getServer().getPluginManager().registerEvents(chatListener, this);
+
         getServer().getPluginManager().registerEvents(new StaffGUIListener(this, axentraCommand.getStaffGUI()), this);
         getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
         getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
+        getServer().getPluginManager().registerEvents(new ModerationGUIListener(this), this);
 
         String CYAN = "\u001B[36m";
         String GREEN = "\u001B[32m";
@@ -381,6 +422,10 @@ public final class App extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public ChatListener getChatListener() {
+        return chatListener;
     }
 
     // Chat control
