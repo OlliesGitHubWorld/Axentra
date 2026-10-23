@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,10 +34,6 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    /**
-     * Parses a duration string like "1d2h30m" into milliseconds.
-     * Returns -1 if the string is invalid or results in zero duration.
-     */
     private long parseDuration(String input) {
         Matcher matcher = DURATION_PATTERN.matcher(input);
         if (!matcher.matches()) return -1;
@@ -50,7 +47,6 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
         return millis > 0 ? millis : -1;
     }
 
-    /** Formats milliseconds into a human-readable string like "1d 2h 30m". */
     private String formatDuration(long millis) {
         long seconds = millis / 1000;
         long days    = seconds / 86400; seconds %= 86400;
@@ -128,7 +124,23 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
         String formattedDuration = formatDuration(durationMillis);
         Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + durationMillis);
 
+        // Get chat snapshot
+        String chatLog = null;
+        if (target != null) {
+            ChatListener chatListener = plugin.getChatListener();
+            if (chatListener != null) {
+                chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+            }
+        }
+
         plugin.getDatabaseManager().banPlayer(playerName, uuid, reason, bannedBy, expiresAt);
+
+        // Create case
+        String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+        int caseId = plugin.getDatabaseManager().createCase("TEMPBAN", playerName, uuid, reason, bannedBy, expiresAt, chatLog);
+
+        // Audit log
+        plugin.getDatabaseManager().logAction(bannedBy, staffUuid, "TEMPBAN", playerName, reason + " (" + formattedDuration + ")");
 
         if (target != null) {
             String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
@@ -151,7 +163,8 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(getMessage("tempban-success")
                 .replace("%player%", playerName)
                 .replace("%duration%", formattedDuration)
-                .replace("%reason%", reason));
+                .replace("%reason%", reason)
+                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-ban")) {
             plugin.getServer().broadcastMessage(getMessage("tempban-announce")

@@ -9,13 +9,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatListener implements Listener {
 
     private final App plugin;
     private final StaffchatCommand staffchatCommand;
+
+    private static final int MAX_CHAT_HISTORY = 20;
+    private final Map<UUID, LinkedList<String>> chatHistory = new ConcurrentHashMap<>();
 
     public ChatListener(App plugin, StaffchatCommand staffchatCommand) {
         this.plugin = plugin;
@@ -29,6 +32,14 @@ public class ChatListener implements Listener {
         if (message == null) return "Message not found: " + path;
         message = message.replace("%prefix%", prefix);
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    public String getChatSnapshot(UUID playerUuid) {
+        LinkedList<String> history = chatHistory.get(playerUuid);
+        if (history == null || history.isEmpty()) return null;
+        synchronized (history) {
+            return String.join("\n", history);
+        }
     }
 
     @EventHandler
@@ -72,6 +83,16 @@ public class ChatListener implements Listener {
                 }
             }
             plugin.getLastChatTime().put(uuid, now);
+        }
+
+        // Track chat history for case snapshots
+        chatHistory.computeIfAbsent(uuid, k -> new LinkedList<>());
+        LinkedList<String> history = chatHistory.get(uuid);
+        synchronized (history) {
+            history.addLast(player.getName() + ": " + event.getMessage());
+            while (history.size() > MAX_CHAT_HISTORY) {
+                history.removeFirst();
+            }
         }
     }
 

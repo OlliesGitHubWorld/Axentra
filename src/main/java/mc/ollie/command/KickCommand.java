@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -71,12 +72,29 @@ public class KickCommand implements CommandExecutor, TabCompleter {
             reason = plugin.getFileManager().getMessages().getString("kick-default-reason", "You have been kicked!");
         }
 
+        // Get chat snapshot before kicking
+        String chatLog = null;
+        ChatListener chatListener = plugin.getChatListener();
+        if (chatListener != null) {
+            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+        }
+
+        // Create case
+        String staffName = sender.getName();
+        String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+        int caseId = plugin.getDatabaseManager().createCase("KICK", target.getName(),
+                target.getUniqueId().toString(), reason, staffName, null, chatLog);
+
+        // Audit log
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "KICK", target.getName(), reason);
+
         String kickMessage = getMessage("kick-message").replace("%reason%", reason);
         target.kickPlayer(ChatColor.translateAlternateColorCodes('&', kickMessage));
 
         sender.sendMessage(getMessage("kick-success")
                 .replace("%player%", target.getName())
-                .replace("%reason%", reason));
+                .replace("%reason%", reason)
+                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-kick")) {
             plugin.getServer().broadcastMessage(getMessage("kick-announce")

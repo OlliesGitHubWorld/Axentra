@@ -1,0 +1,125 @@
+#       _____                        __            _____
+#      /  _  \ ___  ___ ____   _____/  |________  /  _  \
+#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \
+#    /    |    \>    <\  ___/|   |  \  |  |  | \/    |    \
+#    \____|__  /__/\_ \\___  >___|  /__|  |__|  \____|__  /
+#            \/      \/    \/     \/                    \/
+#
+# ┌─────────────────────────────────────────────────────────┐
+# │              Axentra Punishment Templates                │
+# │                  Made by OlliesWorld                    │
+# └─────────────────────────────────────────────────────────┘
+#
+#  These templates are shown in the /punish GUI.
+#  Staff can click a template to apply it to a player.
+#
+#  Each template has:
+#    display-name - The name shown in the GUI (supports & color codes)
+#    action       - The punishment type: warn, kick, mute, tempmute, ban, tempban
+#    reason       - The reason shown to the player
+#    duration     - Required for tempban/tempmute (e.g. "1h", "7d", "30d")
+#    icon         - The Minecraft material used as the GUI icon
+#
+#  Escalation works automatically: the case system tracks all previous
+#  punishments. Use /history <player> to review before punishing.
+#
+# ══════════════════════════════════════════════════════════
+
+templates:
+
+  # ── Chat Offenses ──────────────────────────────────────
+  spam:
+    display-name: "&eSpam"
+    action: warn
+    reason: "Spamming in chat"
+    icon: PAPER
+
+  caps:
+    display-name: "&eCaps Abuse"
+    action: warn
+    reason: "Excessive use of caps"
+    icon: PAPER
+
+  toxicity:
+    display-name: "&6Toxicity"
+    action: tempmute
+    duration: "1h"
+    reason: "Toxic behavior in chat"
+    icon: ORANGE_DYE
+
+  advertising:
+    display-name: "&cAdvertising"
+    action: tempban
+    duration: "7d"
+    reason: "Advertising other servers"
+    icon: RED_DYE
+
+  # ── Gameplay Offenses ──────────────────────────────────
+  minor-grief:
+    display-name: "&eMinor Grief"
+    action: warn
+    reason: "Minor griefing"
+    icon: DIRT
+
+  major-grief:
+    display-name: "&cMajor Grief"
+    action: tempban
+    duration: "7d"
+    reason: "Major griefing"
+    icon: TNT
+
+  xray:
+    display-name: "&cX-Ray"
+    action: tempban
+    duration: "30d"
+    reason: "Using X-Ray or similar mods"
+    icon: DIAMOND_ORE
+
+  hacking:
+    display-name: "&4Hacking"
+    action: ban
+    reason: "Using hacked client or exploits"
+    icon: BARRIER
+
+  # ── General ────────────────────────────────────────────
+  inappropriate-name:
+    display-name: "&6Inappropriate Name"
+    action: kick
+    reason: "Inappropriate username or nickname"
+    icon: NAME_TAG
+
+  inappropriate-skin:
+    display-name: "&6Inappropriate Skin"
+    action: kick
+    reason: "Inappropriate player skin"
+    icon: LEATHER_CHESTPLATE
+
+  general-warn:
+    display-name: "&eGeneral Warning"
+    action: warn
+    reason: "Breaking server rules"
+    icon: YELLOW_DYE
+
+  general-mute:
+    display-name: "&6General Mute"
+    action: tempmute
+    duration: "30m"
+    reason: "Breaking chat rules"
+    icon: IRON_BARS
+
+  general-tempban:
+    display-name: "&cGeneral Temp Ban"
+    action: tempban
+    duration: "1d"
+    reason: "Breaking server rules"
+    icon: IRON_DOOR
+
+  general-ban:
+    display-name: "&4General Ban"
+    action: ban
+    reason: "Severe rule violation"
+    icon: BEDROCK
+
+# ══════════════════════════════════════════════════════════
+#                   End of Punishments
+# ══════════════════════════════════════════════════════════

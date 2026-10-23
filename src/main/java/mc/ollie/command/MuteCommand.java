@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -76,10 +77,27 @@ public class MuteCommand implements CommandExecutor, TabCompleter {
             reason = plugin.getFileManager().getMessages().getString("mute-default-reason", "You have been muted!");
         }
 
+        // Get chat snapshot
+        String chatLog = null;
+        ChatListener chatListener = plugin.getChatListener();
+        if (chatListener != null) {
+            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+        }
+
         plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName(), null);
 
+        // Create case
+        String staffName = sender.getName();
+        String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+        int caseId = plugin.getDatabaseManager().createCase("MUTE", target.getName(),
+                target.getUniqueId().toString(), reason, staffName, null, chatLog);
+
+        // Audit log
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.getName(), reason);
+
         target.sendMessage(getMessage("mute-message").replace("%reason%", reason));
-        sender.sendMessage(getMessage("mute-success").replace("%player%", target.getName()).replace("%reason%", reason));
+        sender.sendMessage(getMessage("mute-success").replace("%player%", target.getName()).replace("%reason%", reason)
+                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-mute")) {
             String announceMsg = getMessage("mute-announce")

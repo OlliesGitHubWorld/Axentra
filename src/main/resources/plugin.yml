@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.4.0
+version: 1.5.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -11,64 +11,64 @@ commands:
     usage: /broadcast <message>
     aliases: [bc]
     permission: Axentra.broadcast
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   clearchat:
     description: Clear the chat for all players
     usage: /clearchat
     aliases: [cc]
     permission: Axentra.clearchat
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   mutechat:
     description: Toggle global chat mute
     usage: /mutechat
     aliases: [mc]
     permission: Axentra.mutechat
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   slowchat:
     description: Toggle slow chat mode
     usage: /slowchat [seconds|off]
     aliases: [slowmode]
     permission: Axentra.slowchat
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   staffchat:
     description: Send a message to staff or toggle staff chat mode
     usage: /staffchat [message]
     aliases: [sc]
     permission: Axentra.staffchat
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   msg:
     description: Send a private message to a player
     usage: /msg <player> <message>
     aliases: [tell, whisper, w, message, pm]
     permission: Axentra.msg
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   reply:
     description: Reply to the last private message
     usage: /reply <message>
     aliases: [r]
     permission: Axentra.msg
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   msgtoggle:
     description: Toggle receiving private messages
     usage: /msgtoggle
     permission: Axentra.msg
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   nick:
     description: Set your or another player's nickname
     usage: /nick <nickname|off> [player]
     aliases: [nickname]
     permission: Axentra.nick
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   realname:
     description: Find the real name of a nicknamed player
     usage: /realname <nickname>
     permission: Axentra.realname
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   me:
     description: Send an action message
     usage: /me <action>
     permission: Axentra.me
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   discord:
     description: Show the server's Discord link
     usage: /discord
@@ -86,297 +86,326 @@ commands:
     usage: /clear [player]
     aliases: [c]
     permission: Axentra.clear
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   repair:
     description: Repairs the item in your hand
     usage: /repair
-    aliases: [r]
     permission: Axentra.repair
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   kick:
     description: Kicks a player from the server
     usage: /kick <player> [reason]
     permission: Axentra.kick
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tempban:
     description: Temporarily bans a player from the server
     usage: /tempban <player> <duration> [reason]
     permission: Axentra.tempban
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   ban:
     description: Bans a player from the server
     usage: /ban <player> [reason]
     permission: Axentra.ban
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tempbanip:
     description: Temporarily bans an IP address from the server
     usage: /tempbanip <player|ip> <duration> [reason]
     permission: Axentra.tempbanip
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   banip:
     description: Bans an IP address from the server
     usage: /banip <player|ip> [reason]
     permission: Axentra.banip
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   unbanip:
     description: Unbans an IP address from the server
     usage: /unbanip <ip>
     permission: Axentra.unbanip
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   unban:
     description: Unbans a player from the server
     usage: /unban <player>
     permission: Axentra.unban
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   fly:
     description: Toggle flight mode for yourself or others
     usage: /fly [player]
     permission: Axentra.fly
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   feed:
     description: Feed yourself or another player
     usage: /feed [player]
     permission: Axentra.feed
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   heal:
     description: Heal yourself or another player
     usage: /heal [player]
     permission: Axentra.heal
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   warn:
     description: Warns a player
     usage: /warn <player> [reason]
     permission: Axentra.warn
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   warns:
     description: View a player's warnings
     usage: /warns [player]
     permission: Axentra.warns
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   clearwarns:
     description: Clears all warnings for a player
     usage: /clearwarns <player>
     permission: Axentra.clearwarns
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   mute:
     description: Mutes a player, preventing them from chatting
     usage: /mute <player> [reason]
     permission: Axentra.mute
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tempmute:
     description: Temporarily mutes a player
     usage: /tempmute <player> <duration> [reason]
     permission: Axentra.tempmute
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   unmute:
     description: Unmutes a player
     usage: /unmute <player>
     permission: Axentra.unmute
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   anvil:
     description: Opens an anvil
     usage: /anvil
     permission: Axentra.anvil
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   workbench:
     description: Opens a crafting table
     usage: /workbench
     aliases: [wb, craft, craftingtable]
     permission: Axentra.workbench
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   cartography:
     description: Opens a cartography table
     usage: /cartography
     aliases: [cartographytable, carto]
     permission: Axentra.cartography
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   grindstone:
     description: Opens a grindstone
     usage: /grindstone
     aliases: [grind]
     permission: Axentra.grindstone
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   loom:
     description: Opens a loom
     usage: /loom
     permission: Axentra.loom
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   smithingtable:
     description: Opens a smithing table
     usage: /smithingtable
     aliases: [smithing, smith]
     permission: Axentra.smithingtable
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   stonecutter:
     description: Opens a stonecutter
     usage: /stonecutter
     aliases: [stone]
     permission: Axentra.stonecutter
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   enderchest:
     description: Opens your ender chest
     usage: /enderchest
     aliases: [ec, echest]
     permission: Axentra.enderchest
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   ping:
     description: Check your ping or another player's ping
     usage: /ping [player]
     permission: Axentra.ping
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   suicide:
     description: Kill yourself
     usage: /suicide
     permission: Axentra.suicide
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   weather:
     description: Set the weather in the world
     usage: /weather <clear|rain|storm>
     permission: Axentra.weather
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   sun:
     description: Set the weather to clear
     usage: /sun
     permission: Axentra.weather
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   sky:
     description: Set the weather to clear
     usage: /sky
     permission: Axentra.weather
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   rain:
     description: Set the weather to rain
     usage: /rain
     permission: Axentra.weather
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   storm:
     description: Set the weather to a thunderstorm
     usage: /storm
     permission: Axentra.weather
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   hat:
     description: Place the item in your hand on your head
     usage: /hat
     permission: Axentra.hat
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   speed:
     description: Set your walk or fly speed
     usage: /speed <1-10|reset> [walk|fly] [player]
     permission: Axentra.speed
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   gamemode:
     description: Change your or another player's gamemode
     usage: /gamemode <survival|creative|adventure|spectator> [player]
     aliases: [gm]
     permission: Axentra.gamemode
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   gms:
     description: Switch to survival mode
     usage: /gms [player]
     permission: Axentra.gamemode
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   gmc:
     description: Switch to creative mode
     usage: /gmc [player]
     permission: Axentra.gamemode
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   gma:
     description: Switch to adventure mode
     usage: /gma [player]
     permission: Axentra.gamemode
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   gmsp:
     description: Switch to spectator mode
     usage: /gmsp [player]
     permission: Axentra.gamemode
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   time:
     description: Set or add time in the world
     usage: /time <set|add> <day|noon|night|midnight|ticks>
     permission: Axentra.time
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   day:
     description: Set the time to day
     usage: /day
     permission: Axentra.time
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   night:
     description: Set the time to night
     usage: /night
     permission: Axentra.time
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   noon:
     description: Set the time to noon
     usage: /noon
     permission: Axentra.time
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   midnight:
     description: Set the time to midnight
     usage: /midnight
     permission: Axentra.time
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   back:
     description: Teleport to your previous location
     usage: /back
     permission: Axentra.back
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tpa:
     description: Send a teleport request to a player
     usage: /tpa <player>
     permission: Axentra.tpa
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tpaccept:
     description: Accept an incoming teleport request
     usage: /tpaccept
     permission: Axentra.tpa
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tpdeny:
     description: Deny an incoming teleport request
     usage: /tpdeny
     permission: Axentra.tpa
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tpacancel:
     description: Cancel your outgoing teleport request
     usage: /tpacancel
     permission: Axentra.tpa
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   tptoggle:
     description: Toggle whether you can receive teleport requests
     usage: /tptoggle
     permission: Axentra.tpa
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   god:
     description: Toggle invincibility for yourself or others
     usage: /god [player]
     permission: Axentra.god
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   vanish:
     description: Toggle vanish mode for yourself or others
     usage: /vanish [player]
     aliases: [v]
     permission: Axentra.vanish
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   enderchestsee:
     description: View another player's ender chest
     usage: /enderchestsee <player>
     aliases: [ecsee, echestsee]
     permission: Axentra.enderchestsee
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   invsee:
     description: View another player's inventory
     usage: /invsee <player>
     permission: Axentra.invsee
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   spawn:
     description: Teleport to world spawn
     usage: /spawn [player]
     permission: Axentra.spawn
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
   setspawn:
     description: Set the world spawn to your current location
     usage: /setspawn
     permission: Axentra.setspawn
-    permission-message: ""
+    permission-message: "&cYou don't have permission to use this command!"
+  case:
+    description: View details of a moderation case
+    usage: /case <id>
+    permission: Axentra.case
+    permission-message: "&cYou don't have permission to use this command!"
+  history:
+    description: View a player's full moderation history
+    usage: /history <player>
+    permission: Axentra.history
+    permission-message: "&cYou don't have permission to use this command!"
+  note:
+    description: Add or remove staff notes on a player
+    usage: /note <add|remove> <player|id> [note]
+    permission: Axentra.note
+    permission-message: "&cYou don't have permission to use this command!"
+  notes:
+    description: View all staff notes on a player
+    usage: /notes <player>
+    permission: Axentra.note
+    permission-message: "&cYou don't have permission to use this command!"
+  punish:
+    description: Open the punishment GUI for a player
+    usage: /punish <player>
+    permission: Axentra.punish
+    permission-message: "&cYou don't have permission to use this command!"
+  auditlog:
+    description: View a staff member's action log
+    usage: /auditlog <staff> [page]
+    permission: Axentra.auditlog
+    permission-message: "&cYou don't have permission to use this command!"
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -599,3 +628,18 @@ permissions:
   Axentra.me:
     description: Allows the player to use /me
     default: true
+  Axentra.case:
+    description: Allows the player to view moderation cases
+    default: op
+  Axentra.history:
+    description: Allows the player to view player moderation history
+    default: op
+  Axentra.note:
+    description: Allows the player to manage staff notes
+    default: op
+  Axentra.punish:
+    description: Allows the player to use the punishment GUI
+    default: op
+  Axentra.auditlog:
+    description: Allows the player to view the audit log
+    default: op

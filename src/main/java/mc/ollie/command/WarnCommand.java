@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -100,9 +101,26 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
             reason = plugin.getFileManager().getMessages().getString("warn-default-reason", "Breaking the rules!");
         }
 
+        // Get chat snapshot
+        String chatLog = null;
+        ChatListener chatListener = plugin.getChatListener();
+        if (chatListener != null) {
+            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+        }
+
         plugin.getDatabaseManager().warnPlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName());
 
         int warnCount = plugin.getDatabaseManager().getWarnCount(target.getUniqueId().toString());
+
+        // Create case
+        String staffName = sender.getName();
+        String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+        int caseId = plugin.getDatabaseManager().createCase("WARN", target.getName(),
+                target.getUniqueId().toString(), reason, staffName, null, chatLog);
+
+        // Audit log
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "WARN", target.getName(),
+                reason + " (warn #" + warnCount + ")");
 
         target.sendMessage(getMessage("warn-message")
                 .replace("%reason%", reason)
@@ -111,7 +129,8 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(getMessage("warn-success")
                 .replace("%player%", target.getName())
                 .replace("%reason%", reason)
-                .replace("%count%", String.valueOf(warnCount)));
+                .replace("%count%", String.valueOf(warnCount))
+                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-warn")) {
             String announceMsg = getMessage("warn-announce")
@@ -148,11 +167,19 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
     private void applyPunishment(Player target, ConfigurationSection entry, int warnCount, CommandSender issuer) {
         String action = entry.getString("action", "").toLowerCase();
         String punishReason = entry.getString("reason", "Reached " + warnCount + " warnings");
+        String staffName = issuer.getName();
+        String staffUuid = issuer instanceof Player ? ((Player) issuer).getUniqueId().toString() : "CONSOLE";
 
         switch (action) {
             case "kick": {
                 String kickMsg = getMessage("warn-punishment-kick-message").replace("%reason%", punishReason);
                 target.kickPlayer(kickMsg);
+
+                plugin.getDatabaseManager().createCase("KICK", target.getName(),
+                        target.getUniqueId().toString(), punishReason, staffName, null, null);
+                plugin.getDatabaseManager().logAction(staffName, staffUuid, "KICK", target.getName(),
+                        punishReason + " (auto: " + warnCount + " warns)");
+
                 broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
                         .replace("%action%", "kicked")
@@ -163,6 +190,11 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 if (!plugin.getDatabaseManager().isMuted(target.getUniqueId().toString())) {
                     plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), null);
                     target.sendMessage(getMessage("mute-message").replace("%reason%", punishReason));
+
+                    plugin.getDatabaseManager().createCase("MUTE", target.getName(),
+                            target.getUniqueId().toString(), punishReason, staffName, null, null);
+                    plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.getName(),
+                            punishReason + " (auto: " + warnCount + " warns)");
                 }
                 broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
@@ -178,6 +210,11 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + durationMillis);
 
                 plugin.getDatabaseManager().banPlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), expiresAt);
+
+                plugin.getDatabaseManager().createCase("TEMPBAN", target.getName(),
+                        target.getUniqueId().toString(), punishReason, staffName, expiresAt, null);
+                plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPBAN", target.getName(),
+                        punishReason + " (" + formattedDuration + ", auto: " + warnCount + " warns)");
 
                 String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
                 String rawBanMsg = plugin.getFileManager().getMessages().getString("tempban-message",
@@ -200,6 +237,11 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
             }
             case "ban": {
                 plugin.getDatabaseManager().banPlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), null);
+
+                plugin.getDatabaseManager().createCase("BAN", target.getName(),
+                        target.getUniqueId().toString(), punishReason, staffName, null, null);
+                plugin.getDatabaseManager().logAction(staffName, staffUuid, "BAN", target.getName(),
+                        punishReason + " (auto: " + warnCount + " warns)");
 
                 String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
                 String rawBanMsg = plugin.getFileManager().getMessages().getString("ban-message",

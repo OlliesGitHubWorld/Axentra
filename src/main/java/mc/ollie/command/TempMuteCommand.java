@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -120,7 +121,24 @@ public class TempMuteCommand implements CommandExecutor, TabCompleter {
         String formattedDuration = formatDuration(durationMillis);
         Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + durationMillis);
 
+        // Get chat snapshot
+        String chatLog = null;
+        ChatListener chatListener = plugin.getChatListener();
+        if (chatListener != null) {
+            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+        }
+
         plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName(), expiresAt);
+
+        // Create case
+        String staffName = sender.getName();
+        String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+        int caseId = plugin.getDatabaseManager().createCase("TEMPMUTE", target.getName(),
+                target.getUniqueId().toString(), reason, staffName, expiresAt, chatLog);
+
+        // Audit log
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPMUTE", target.getName(),
+                reason + " (" + formattedDuration + ")");
 
         target.sendMessage(getMessage("tempmute-message")
                 .replace("%reason%", reason)
@@ -129,7 +147,8 @@ public class TempMuteCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(getMessage("tempmute-success")
                 .replace("%player%", target.getName())
                 .replace("%duration%", formattedDuration)
-                .replace("%reason%", reason));
+                .replace("%reason%", reason)
+                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-mute")) {
             for (Player player : Bukkit.getOnlinePlayers()) {
