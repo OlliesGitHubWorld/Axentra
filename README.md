@@ -1,6 +1,6 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.5.0-blue?style=flat-square)
 ![Minecraft](https://img.shields.io/badge/minecraft-1.21-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
@@ -16,16 +16,15 @@
 
 ---
 
-## What's New in v1.4.0
+## What's New in v1.5.0
 
-- **Chat Control** — `/broadcast`, `/clearchat`, `/mutechat`, `/slowchat`, and `/staffchat`
-- **Private Messaging** — `/msg`, `/reply`, `/msgtoggle` with social spy support
-- **Nicknames** — `/nick` with color code support, `/realname` lookup
-- **Social Commands** — `/discord`, `/website`, `/store` with configurable links
-- **Temp Mute** — `/tempmute` with duration parsing (e.g. `5m`, `1h30m`)
-- **Staff Settings GUI** — In-game settings panel via `/axentra settings` with toggleable features
-- **Action Message** — `/me` for roleplay-style action messages
-- **Bug Fixes** — Database resource leak fixes, offline player UUID handling, improved stability
+- **Punishment GUI** — `/punish <player>` with customizable templates organized by category
+- **Case System** — Every punishment creates a tracked case with unique ID, viewable via `/case <id>`
+- **History GUI** — `/history <player>` with color-coded cases and pagination
+- **Staff Notes** — `/note` and `/notes` with automatic join notifications
+- **Audit Log** — `/auditlog <staff>` tracks all staff actions with timestamps
+- **Chat Log Snapshots** — Last 20 messages per player attached to cases automatically
+- **Bug Fixes** — Fixed ban appeal in punish GUI, expiry date formatting, offline tab completion
 
 ---
 
@@ -37,6 +36,7 @@ Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, mod
 
 ## Features
 
+- **Smart Moderation** — Punishment GUI, case system, history GUI, staff notes, audit log, chat log snapshots
 - **Custom Join & Leave Messages** — Fully customizable with color codes and placeholders
 - **First Join Detection** — Special message for first time players
 - **Staff Commands** — Kick, ban, tempban, mute, tempmute, warn and more with full reason support
@@ -58,7 +58,7 @@ Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, mod
 - **Inventory Inspection** — View other players' inventories and ender chests (read-only mode configurable)
 - **Announcements** — Configurable announce toggles for kicks, bans, mutes, warns
 - **Ban Appeal Link** — Show a Discord or website link on the ban screen
-- **SQLite Database** — Persistent ban, mute, warn and nickname storage
+- **SQLite Database** — Persistent ban, mute, warn, nickname, case, note and audit log storage
 - **Fully Configurable** — Every message and setting is editable in YAML
 - **Live Reload** — Reload config and messages without restarting the server
 - **Update Notifications** — Automatically notifies admins of new updates on join
@@ -78,6 +78,18 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 ---
 
 ## Commands
+
+### Smart Moderation
+
+| Command | Description | Permission |
+|---|---|---|
+| `/punish <player>` | Opens the punishment GUI with templates | `Axentra.punish` |
+| `/case <id>` | View details of a moderation case | `Axentra.case` |
+| `/history <player>` | View a player's full moderation history | `Axentra.history` |
+| `/note add <player> <text>` | Add a staff note on a player | `Axentra.note` |
+| `/note remove <id>` | Remove a staff note | `Axentra.note` |
+| `/notes <player>` | View all staff notes on a player | `Axentra.note` |
+| `/auditlog <staff> [page]` | View a staff member's action log | `Axentra.auditlog` |
 
 ### Chat Control
 
@@ -131,7 +143,7 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 | Command | Aliases | Description | Permission |
 |---|---|---|---|
 | `/clear [player]` | `/c` | Clears a player's inventory | `Axentra.clear` |
-| `/repair` | `/r` | Repairs the item in your hand | `Axentra.repair` |
+| `/repair` | — | Repairs the item in your hand | `Axentra.repair` |
 | `/fly [player]` | — | Toggles flight mode | `Axentra.fly` |
 | `/heal [player]` | — | Heals a player | `Axentra.heal` |
 | `/feed [player]` | — | Feeds a player | `Axentra.feed` |
@@ -210,6 +222,11 @@ Permissions with **Everyone** as default are granted to all players automaticall
 | Permission | Default | Description |
 |---|---|---|
 | `Axentra.admin` | OP | Access to all `/axentra` subcommands |
+| `Axentra.punish` | OP | Use the punishment GUI |
+| `Axentra.case` | OP | View moderation cases |
+| `Axentra.history` | OP | View player moderation history |
+| `Axentra.note` | OP | Manage staff notes + join notifications |
+| `Axentra.auditlog` | OP | View the audit log |
 | `Axentra.broadcast` | OP | Use `/broadcast` |
 | `Axentra.clearchat` | OP | Use `/clearchat` |
 | `Axentra.clearchat.bypass` | OP | Chat not cleared by `/clearchat` |
@@ -288,10 +305,11 @@ For the full permissions reference, check out the [Permissions Wiki](https://git
 
 ## Configuration
 
-Axentra is fully configurable through two files:
+Axentra is fully configurable through three files:
 
 - **`config.yml`** — General plugin settings: announcements, ban appeal link, warn punishments, spawn/TPA countdowns, invsee read-only mode, slow chat defaults, social media links, vanish options, and module toggles
 - **`messages.yml`** — Every message the plugin sends, supports color codes and placeholders
+- **`punishments.yml`** — Punishment GUI templates with display name, action, reason, duration and icon
 
 After making changes run `/axentra reload` to apply them without restarting the server.
 
