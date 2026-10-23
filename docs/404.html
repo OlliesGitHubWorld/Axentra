@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Axentra</title>
+    <meta name="theme-color" content="#00bcd4">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>const t=localStorage.getItem('axentra-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');</script>
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+        .error-code {
+            font-size: clamp(6rem, 20vw, 12rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .error-desc {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 400px;
+        }
+        .error-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-page">
+        <div>
+            <div class="error-code">404</div>
+            <h1 class="error-title">Page not found</h1>
+            <p class="error-desc">The page you're looking for doesn't exist or has been moved.</p>
+            <div class="error-links">
+                <a href="index.html" class="btn btn-primary">Home</a>
+                <a href="wiki.html" class="btn btn-secondary">Wiki</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

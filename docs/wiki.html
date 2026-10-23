@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki - Axentra</title>
+    <meta name="description" content="Axentra documentation - Installation, commands, permissions, and configuration guide.">
+    <meta name="theme-color" content="#00bcd4">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="wiki.css">
+    <script>const t=localStorage.getItem('axentra-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');</script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Axentra</a>
+            <div class="nav-links">
+                <a href="index.html#features">Features</a>
+                <a href="index.html#screenshots">Screenshots</a>
+                <a href="index.html#commands">Commands</a>
+                <a href="wiki.html" class="active">Wiki</a>
+                <a href="index.html#download" class="nav-cta">Download</a>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile nav tabs (visible on mobile only) -->
+    <div class="wiki-mobile-nav">
+        <div class="wiki-mobile-nav-inner">
+            <a href="#getting-started" class="active">Start</a>
+            <a href="#installation">Installation</a>
+            <a href="#commands">Commands</a>
+            <a href="#permissions">Permissions</a>
+            <a href="#configuration">Configuration</a>
+            <a href="#punishment-gui">Punish GUI</a>
+            <a href="#vanish">Vanish</a>
+            <a href="#faq">FAQ</a>
+        </div>
+    </div>
+
+    <div class="wiki-layout">
+        <!-- Sidebar (desktop only) -->
+        <aside class="wiki-sidebar">
+            <div class="sidebar-header">
+                <h3>Documentation</h3>
+                <div class="sidebar-search">
+                    <input type="text" id="wiki-search" placeholder="Search..." autocomplete="off">
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#getting-started" class="sidebar-link active">Getting Started</a>
+                <a href="#installation" class="sidebar-link">Installation</a>
+                <a href="#commands" class="sidebar-link">Commands</a>
+                <div class="sidebar-sub">
+                    <a href="#cmd-smart-moderation">Smart Moderation</a>
+                    <a href="#cmd-chat">Chat Control</a>
+                    <a href="#cmd-messaging">Messaging</a>
+                    <a href="#cmd-moderation">Moderation</a>
+                    <a href="#cmd-player">Player & Utility</a>
+                    <a href="#cmd-teleport">Teleportation</a>
+                    <a href="#cmd-world">World</a>
+                    <a href="#cmd-plugin">Plugin</a>
+                </div>
+                <a href="#permissions" class="sidebar-link">Permissions</a>
+                <a href="#configuration" class="sidebar-link">Configuration</a>
+                <div class="sidebar-sub">
+                    <a href="#cfg-config">config.yml</a>
+                    <a href="#cfg-messages">messages.yml</a>
+                    <a href="#cfg-punishments">punishments.yml</a>
+                </div>
+                <a href="#punishment-gui" class="sidebar-link">Punishment GUI</a>
+                <a href="#vanish" class="sidebar-link">Vanish System</a>
+                <a href="#faq" class="sidebar-link">FAQ</a>
+            </nav>
+        </aside>
+
+        <!-- Content -->
+        <main class="wiki-content">
+
+            <!-- Getting Started -->
+            <section id="getting-started" class="wiki-section">
+                <h1>Getting Started</h1>
+                <p class="wiki-lead">Axentra is a lightweight, all-in-one server management plugin for Minecraft. It replaces multiple plugins with a single jar &mdash; moderation, chat, teleportation, vanish, and more.</p>
+
+                <div class="wiki-info-box">
+                    <h4>Requirements</h4>
+                    <ul>
+                        <li>Minecraft server running <strong>Spigot</strong> or <strong>Paper</strong></li>
+                        <li>Minecraft <strong>1.21</strong> or higher</li>
+                        <li><strong>Java 21</strong> or higher</li>
+                        <li>No external dependencies required</li>
+                    </ul>
+                </div>
+
+                <h2>Quick Links</h2>
+                <div class="wiki-grid">
+                    <a href="#installation" class="wiki-quick-link">
+                        <h4>Installation</h4>
+                        <p>Download and set up Axentra on your server</p>
+                    </a>
+                    <a href="#commands" class="wiki-quick-link">
+                        <h4>Commands</h4>
+                        <p>Full list of 60+ commands with usage</p>
+                    </a>
+                    <a href="#permissions" class="wiki-quick-link">
+                        <h4>Permissions</h4>
+                        <p>All permission nodes and defaults</p>
+                    </a>
+                    <a href="#configuration" class="wiki-quick-link">
+                        <h4>Configuration</h4>
+                        <p>Customize every setting and message</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Installation -->
+            <section id="installation" class="wiki-section">
+                <h1>Installation</h1>
+
+                <h2>Step 1: Download</h2>
+                <p>Download the latest <code>axentra-x.x.x.jar</code> from one of these sources:</p>
+                <ul>
+                    <li><a href="https://github.com/OlliesGitHubWorld/Axentra/releases/latest" target="_blank">GitHub Releases</a> (recommended)</li>
+                    <li><a href="https://www.spigotmc.org/resources/axentra.122267/" target="_blank">SpigotMC</a></li>
+                    <li><a href="https://modrinth.com/plugin/axentra" target="_blank">Modrinth</a></li>
+                </ul>
+
+                <h2>Step 2: Install</h2>
+                <ol>
+                    <li>Place the <code>.jar</code> file in your server's <code>plugins/</code> folder</li>
+                    <li>Restart your server (or start it for the first time)</li>
+                    <li>Axentra will generate its config files automatically</li>
+                </ol>
+
+                <h2>Step 3: Configure</h2>
+                <p>After the first start, you'll find these files in <code>plugins/Axentra/</code>:</p>
+                <ul>
+                    <li><code>config.yml</code> &mdash; General plugin settings</li>
+                    <li><code>messages.yml</code> &mdash; All plugin messages (fully customizable)</li>
+                    <li><code>punishments.yml</code> &mdash; Punishment GUI templates</li>
+                </ul>
+                <p>Edit the files to your liking, then run <code>/axentra reload</code> to apply changes without restarting.</p>
+
+                <h2>Building from Source</h2>
+                <div class="wiki-code-block">
+                    <pre><code>git clone https://github.com/OlliesGitHubWorld/Axentra.git
+cd Axentra
+./mvnw clean package</code></pre>
+                </div>
+                <p>The compiled jar will be in the <code>target/</code> folder.</p>
+            </section>
+
+            <!-- Commands -->
+            <section id="commands" class="wiki-section">
+                <h1>Commands</h1>
+                <p>Axentra provides 60+ commands organized into categories. All commands, messages, and permissions are fully configurable.</p>
+
+                <h2 id="cmd-smart-moderation">Smart Moderation</h2>
+                <p>The case-based moderation system introduced in v1.5.0. Every punishment creates a tracked case with a unique ID.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/punish &lt;player&gt;</code></td><td>Opens the punishment GUI with templates</td><td><code>Axentra.punish</code></td></tr>
+                            <tr><td><code>/case &lt;id&gt;</code></td><td>View details of a moderation case</td><td><code>Axentra.case</code></td></tr>
+                            <tr><td><code>/history &lt;player&gt;</code></td><td>View a player's full moderation history (GUI)</td><td><code>Axentra.history</code></td></tr>
+                            <tr><td><code>/note add &lt;player&gt; &lt;text&gt;</code></td><td>Add a staff note on a player</td><td><code>Axentra.note</code></td></tr>
+                            <tr><td><code>/note remove &lt;id&gt;</code></td><td>Remove a staff note</td><td><code>Axentra.note</code></td></tr>
+                            <tr><td><code>/notes &lt;player&gt;</code></td><td>View all staff notes on a player</td><td><code>Axentra.note</code></td></tr>
+                            <tr><td><code>/auditlog &lt;staff&gt; [page]</code></td><td>View a staff member's action log</td><td><code>Axentra.auditlog</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-chat">Chat Control</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/broadcast &lt;message&gt;</code></td><td><code>/bc</code></td><td>Broadcast a message to all players</td><td><code>Axentra.broadcast</code></td></tr>
+                            <tr><td><code>/clearchat</code></td><td><code>/cc</code></td><td>Clear the chat for all players</td><td><code>Axentra.clearchat</code></td></tr>
+                            <tr><td><code>/mutechat</code></td><td><code>/mc</code></td><td>Toggle global chat mute</td><td><code>Axentra.mutechat</code></td></tr>
+                            <tr><td><code>/slowchat [seconds|off]</code></td><td><code>/slowmode</code></td><td>Toggle slow chat mode</td><td><code>Axentra.slowchat</code></td></tr>
+                            <tr><td><code>/staffchat [message]</code></td><td><code>/sc</code></td><td>Send or toggle staff chat</td><td><code>Axentra.staffchat</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-messaging">Messaging</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/msg &lt;player&gt; &lt;message&gt;</code></td><td><code>/tell /whisper /w /pm</code></td><td>Send a private message</td><td><code>Axentra.msg</code></td></tr>
+                            <tr><td><code>/reply &lt;message&gt;</code></td><td><code>/r</code></td><td>Reply to the last private message</td><td><code>Axentra.msg</code></td></tr>
+                            <tr><td><code>/msgtoggle</code></td><td>&mdash;</td><td>Toggle receiving private messages</td><td><code>Axentra.msg</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-moderation">Moderation</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/kick &lt;player&gt; [reason]</code></td><td>Kicks a player</td><td><code>Axentra.kick</code></td></tr>
+                            <tr><td><code>/ban &lt;player&gt; [reason]</code></td><td>Permanently bans a player</td><td><code>Axentra.ban</code></td></tr>
+                            <tr><td><code>/tempban &lt;player&gt; &lt;duration&gt; [reason]</code></td><td>Temporarily bans a player</td><td><code>Axentra.tempban</code></td></tr>
+                            <tr><td><code>/unban &lt;player&gt;</code></td><td>Unbans a player</td><td><code>Axentra.unban</code></td></tr>
+                            <tr><td><code>/banip &lt;player|ip&gt; [reason]</code></td><td>Bans an IP address</td><td><code>Axentra.banip</code></td></tr>
+                            <tr><td><code>/tempbanip &lt;player|ip&gt; &lt;duration&gt; [reason]</code></td><td>Temporarily bans an IP</td><td><code>Axentra.tempbanip</code></td></tr>
+                            <tr><td><code>/unbanip &lt;ip&gt;</code></td><td>Unbans an IP address</td><td><code>Axentra.unbanip</code></td></tr>
+                            <tr><td><code>/warn &lt;player&gt; [reason]</code></td><td>Warns a player</td><td><code>Axentra.warn</code></td></tr>
+                            <tr><td><code>/warns [player]</code></td><td>View a player's warnings</td><td><code>Axentra.warns</code></td></tr>
+                            <tr><td><code>/clearwarns &lt;player&gt;</code></td><td>Clears a player's warnings</td><td><code>Axentra.clearwarns</code></td></tr>
+                            <tr><td><code>/mute &lt;player&gt; [reason]</code></td><td>Permanently mutes a player</td><td><code>Axentra.mute</code></td></tr>
+                            <tr><td><code>/tempmute &lt;player&gt; &lt;duration&gt; [reason]</code></td><td>Temporarily mutes a player</td><td><code>Axentra.tempmute</code></td></tr>
+                            <tr><td><code>/unmute &lt;player&gt;</code></td><td>Unmutes a player</td><td><code>Axentra.unmute</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-player">Player & Utility</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/fly [player]</code></td><td>&mdash;</td><td>Toggle flight mode</td><td><code>Axentra.fly</code></td></tr>
+                            <tr><td><code>/heal [player]</code></td><td>&mdash;</td><td>Heal a player</td><td><code>Axentra.heal</code></td></tr>
+                            <tr><td><code>/feed [player]</code></td><td>&mdash;</td><td>Feed a player</td><td><code>Axentra.feed</code></td></tr>
+                            <tr><td><code>/god [player]</code></td><td>&mdash;</td><td>Toggle god mode</td><td><code>Axentra.god</code></td></tr>
+                            <tr><td><code>/vanish [player]</code></td><td><code>/v</code></td><td>Toggle vanish mode</td><td><code>Axentra.vanish</code></td></tr>
+                            <tr><td><code>/gamemode &lt;mode&gt; [player]</code></td><td><code>/gm</code></td><td>Change gamemode</td><td><code>Axentra.gamemode</code></td></tr>
+                            <tr><td><code>/gms [player]</code></td><td>&mdash;</td><td>Switch to survival</td><td><code>Axentra.gamemode</code></td></tr>
+                            <tr><td><code>/gmc [player]</code></td><td>&mdash;</td><td>Switch to creative</td><td><code>Axentra.gamemode</code></td></tr>
+                            <tr><td><code>/gma [player]</code></td><td>&mdash;</td><td>Switch to adventure</td><td><code>Axentra.gamemode</code></td></tr>
+                            <tr><td><code>/gmsp [player]</code></td><td>&mdash;</td><td>Switch to spectator</td><td><code>Axentra.gamemode</code></td></tr>
+                            <tr><td><code>/speed &lt;1-10|reset&gt; [walk|fly] [player]</code></td><td>&mdash;</td><td>Set walk or fly speed</td><td><code>Axentra.speed</code></td></tr>
+                            <tr><td><code>/invsee &lt;player&gt;</code></td><td>&mdash;</td><td>View a player's inventory</td><td><code>Axentra.invsee</code></td></tr>
+                            <tr><td><code>/enderchestsee &lt;player&gt;</code></td><td><code>/ecsee /echestsee</code></td><td>View a player's ender chest</td><td><code>Axentra.enderchestsee</code></td></tr>
+                            <tr><td><code>/clear [player]</code></td><td><code>/c</code></td><td>Clear inventory</td><td><code>Axentra.clear</code></td></tr>
+                            <tr><td><code>/repair</code></td><td>&mdash;</td><td>Repair held item</td><td><code>Axentra.repair</code></td></tr>
+                            <tr><td><code>/hat</code></td><td>&mdash;</td><td>Wear item as hat</td><td><code>Axentra.hat</code></td></tr>
+                            <tr><td><code>/ping [player]</code></td><td>&mdash;</td><td>Check ping</td><td><code>Axentra.ping</code></td></tr>
+                            <tr><td><code>/suicide</code></td><td>&mdash;</td><td>Kill yourself</td><td><code>Axentra.suicide</code></td></tr>
+                            <tr><td><code>/nick &lt;name|off&gt; [player]</code></td><td><code>/nickname</code></td><td>Set nickname</td><td><code>Axentra.nick</code></td></tr>
+                            <tr><td><code>/realname &lt;nickname&gt;</code></td><td>&mdash;</td><td>Find real name of nicknamed player</td><td><code>Axentra.realname</code></td></tr>
+                            <tr><td><code>/me &lt;action&gt;</code></td><td>&mdash;</td><td>Send an action message</td><td><code>Axentra.me</code></td></tr>
+                            <tr><td><code>/anvil</code></td><td>&mdash;</td><td>Open anvil</td><td><code>Axentra.anvil</code></td></tr>
+                            <tr><td><code>/workbench</code></td><td><code>/wb /craft</code></td><td>Open crafting table</td><td><code>Axentra.workbench</code></td></tr>
+                            <tr><td><code>/cartography</code></td><td><code>/carto</code></td><td>Open cartography table</td><td><code>Axentra.cartography</code></td></tr>
+                            <tr><td><code>/grindstone</code></td><td><code>/grind</code></td><td>Open grindstone</td><td><code>Axentra.grindstone</code></td></tr>
+                            <tr><td><code>/loom</code></td><td>&mdash;</td><td>Open loom</td><td><code>Axentra.loom</code></td></tr>
+                            <tr><td><code>/smithingtable</code></td><td><code>/smithing /smith</code></td><td>Open smithing table</td><td><code>Axentra.smithingtable</code></td></tr>
+                            <tr><td><code>/stonecutter</code></td><td><code>/stone</code></td><td>Open stonecutter</td><td><code>Axentra.stonecutter</code></td></tr>
+                            <tr><td><code>/enderchest</code></td><td><code>/ec /echest</code></td><td>Open your ender chest</td><td><code>Axentra.enderchest</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-teleport">Teleportation</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/spawn [player]</code></td><td>Teleport to world spawn</td><td><code>Axentra.spawn</code></td></tr>
+                            <tr><td><code>/setspawn</code></td><td>Set the world spawn</td><td><code>Axentra.setspawn</code></td></tr>
+                            <tr><td><code>/back</code></td><td>Return to previous location</td><td><code>Axentra.back</code></td></tr>
+                            <tr><td><code>/tpa &lt;player&gt;</code></td><td>Send a teleport request</td><td><code>Axentra.tpa</code></td></tr>
+                            <tr><td><code>/tpaccept</code></td><td>Accept a teleport request</td><td><code>Axentra.tpa</code></td></tr>
+                            <tr><td><code>/tpdeny</code></td><td>Deny a teleport request</td><td><code>Axentra.tpa</code></td></tr>
+                            <tr><td><code>/tpacancel</code></td><td>Cancel your outgoing request</td><td><code>Axentra.tpa</code></td></tr>
+                            <tr><td><code>/tptoggle</code></td><td>Toggle receiving teleport requests</td><td><code>Axentra.tpa</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-world">World</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/weather &lt;clear|rain|storm&gt;</code></td><td>&mdash;</td><td>Set the weather</td><td><code>Axentra.weather</code></td></tr>
+                            <tr><td><code>/sun</code></td><td><code>/sky</code></td><td>Set weather to clear</td><td><code>Axentra.weather</code></td></tr>
+                            <tr><td><code>/rain</code></td><td>&mdash;</td><td>Set weather to rain</td><td><code>Axentra.weather</code></td></tr>
+                            <tr><td><code>/storm</code></td><td>&mdash;</td><td>Set weather to thunderstorm</td><td><code>Axentra.weather</code></td></tr>
+                            <tr><td><code>/time &lt;set|add&gt; &lt;value&gt;</code></td><td>&mdash;</td><td>Set or add world time</td><td><code>Axentra.time</code></td></tr>
+                            <tr><td><code>/day</code></td><td>&mdash;</td><td>Set time to day</td><td><code>Axentra.time</code></td></tr>
+                            <tr><td><code>/noon</code></td><td>&mdash;</td><td>Set time to noon</td><td><code>Axentra.time</code></td></tr>
+                            <tr><td><code>/night</code></td><td>&mdash;</td><td>Set time to night</td><td><code>Axentra.time</code></td></tr>
+                            <tr><td><code>/midnight</code></td><td>&mdash;</td><td>Set time to midnight</td><td><code>Axentra.time</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-plugin">Plugin</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/axentra reload</code></td><td><code>/ax reload</code></td><td>Reloads config and messages</td><td><code>Axentra.admin</code></td></tr>
+                            <tr><td><code>/axentra upgrade</code></td><td><code>/ax upgrade</code></td><td>Checks for updates</td><td><code>Axentra.admin</code></td></tr>
+                            <tr><td><code>/axentra settings</code></td><td><code>/ax settings</code></td><td>Opens the staff settings GUI</td><td><code>Axentra.admin</code></td></tr>
+                            <tr><td><code>/axentra help</code></td><td><code>/ax help</code></td><td>Shows all commands</td><td>&mdash;</td></tr>
+                            <tr><td><code>/axentra information</code></td><td><code>/ax information</code></td><td>Shows plugin information</td><td>&mdash;</td></tr>
+                            <tr><td><code>/discord</code></td><td>&mdash;</td><td>Show the server's Discord link</td><td>&mdash;</td></tr>
+                            <tr><td><code>/website</code></td><td>&mdash;</td><td>Show the server's website</td><td>&mdash;</td></tr>
+                            <tr><td><code>/store</code></td><td>&mdash;</td><td>Show the server's store link</td><td>&mdash;</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="wiki-info-box">
+                    <h4>Duration Format</h4>
+                    <p>For commands that use durations (tempban, tempmute, etc.), use these formats:</p>
+                    <ul>
+                        <li><code>30m</code> &mdash; 30 minutes</li>
+                        <li><code>12h</code> &mdash; 12 hours</li>
+                        <li><code>7d</code> &mdash; 7 days</li>
+                        <li><code>1d12h</code> &mdash; 1 day and 12 hours</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Permissions -->
+            <section id="permissions" class="wiki-section">
+                <h1>Permissions</h1>
+                <p>Permissions with <strong>Everyone</strong> as default are granted to all players automatically. All others default to <strong>OP</strong>.</p>
+
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Permission</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>Axentra.admin</code></td><td>OP</td><td>Access to all /axentra subcommands</td></tr>
+                            <tr><td><code>Axentra.punish</code></td><td>OP</td><td>Use the punishment GUI</td></tr>
+                            <tr><td><code>Axentra.case</code></td><td>OP</td><td>View moderation cases</td></tr>
+                            <tr><td><code>Axentra.history</code></td><td>OP</td><td>View player moderation history</td></tr>
+                            <tr><td><code>Axentra.note</code></td><td>OP</td><td>Manage staff notes + join notifications</td></tr>
+                            <tr><td><code>Axentra.auditlog</code></td><td>OP</td><td>View the audit log</td></tr>
+                            <tr><td><code>Axentra.broadcast</code></td><td>OP</td><td>Use /broadcast</td></tr>
+                            <tr><td><code>Axentra.clearchat</code></td><td>OP</td><td>Use /clearchat</td></tr>
+                            <tr><td><code>Axentra.clearchat.bypass</code></td><td>OP</td><td>Chat not cleared by /clearchat</td></tr>
+                            <tr><td><code>Axentra.mutechat</code></td><td>OP</td><td>Use /mutechat</td></tr>
+                            <tr><td><code>Axentra.mutechat.bypass</code></td><td>OP</td><td>Chat when chat is globally muted</td></tr>
+                            <tr><td><code>Axentra.slowchat</code></td><td>OP</td><td>Use /slowchat</td></tr>
+                            <tr><td><code>Axentra.slowchat.bypass</code></td><td>OP</td><td>Bypass slow chat cooldown</td></tr>
+                            <tr><td><code>Axentra.staffchat</code></td><td>OP</td><td>Use /staffchat</td></tr>
+                            <tr><td><code>Axentra.msg</code></td><td>Everyone</td><td>Use /msg, /reply, /msgtoggle</td></tr>
+                            <tr><td><code>Axentra.msg.bypass</code></td><td>OP</td><td>Message players with msgtoggle off</td></tr>
+                            <tr><td><code>Axentra.socialspy</code></td><td>OP</td><td>See private messages between others</td></tr>
+                            <tr><td><code>Axentra.nick</code></td><td>OP</td><td>Set your own nickname</td></tr>
+                            <tr><td><code>Axentra.nick.others</code></td><td>OP</td><td>Set other players' nicknames</td></tr>
+                            <tr><td><code>Axentra.nick.color</code></td><td>OP</td><td>Use color codes in nicknames</td></tr>
+                            <tr><td><code>Axentra.realname</code></td><td>Everyone</td><td>Use /realname</td></tr>
+                            <tr><td><code>Axentra.me</code></td><td>Everyone</td><td>Use /me</td></tr>
+                            <tr><td><code>Axentra.kick</code></td><td>OP</td><td>Use /kick</td></tr>
+                            <tr><td><code>Axentra.ban</code></td><td>OP</td><td>Use /ban</td></tr>
+                            <tr><td><code>Axentra.tempban</code></td><td>OP</td><td>Use /tempban</td></tr>
+                            <tr><td><code>Axentra.unban</code></td><td>OP</td><td>Use /unban</td></tr>
+                            <tr><td><code>Axentra.banip</code></td><td>OP</td><td>Use /banip</td></tr>
+                            <tr><td><code>Axentra.tempbanip</code></td><td>OP</td><td>Use /tempbanip</td></tr>
+                            <tr><td><code>Axentra.unbanip</code></td><td>OP</td><td>Use /unbanip</td></tr>
+                            <tr><td><code>Axentra.warn</code></td><td>OP</td><td>Use /warn</td></tr>
+                            <tr><td><code>Axentra.warns</code></td><td>OP</td><td>Use /warns</td></tr>
+                            <tr><td><code>Axentra.clearwarns</code></td><td>OP</td><td>Use /clearwarns</td></tr>
+                            <tr><td><code>Axentra.mute</code></td><td>OP</td><td>Use /mute</td></tr>
+                            <tr><td><code>Axentra.tempmute</code></td><td>OP</td><td>Use /tempmute</td></tr>
+                            <tr><td><code>Axentra.unmute</code></td><td>OP</td><td>Use /unmute</td></tr>
+                            <tr><td><code>Axentra.notify.warn</code></td><td>OP</td><td>See warn announcements</td></tr>
+                            <tr><td><code>Axentra.notify.mute</code></td><td>OP</td><td>See mute/unmute announcements</td></tr>
+                            <tr><td><code>Axentra.spawn</code></td><td>Everyone</td><td>Use /spawn on yourself</td></tr>
+                            <tr><td><code>Axentra.spawn.others</code></td><td>OP</td><td>Teleport others to spawn</td></tr>
+                            <tr><td><code>Axentra.spawn.bypass</code></td><td>OP</td><td>Skip the /spawn countdown</td></tr>
+                            <tr><td><code>Axentra.setspawn</code></td><td>OP</td><td>Use /setspawn</td></tr>
+                            <tr><td><code>Axentra.back</code></td><td>Everyone</td><td>Use /back</td></tr>
+                            <tr><td><code>Axentra.tpa</code></td><td>Everyone</td><td>Use all TPA commands</td></tr>
+                            <tr><td><code>Axentra.vanish</code></td><td>OP</td><td>Toggle vanish for yourself</td></tr>
+                            <tr><td><code>Axentra.vanish.others</code></td><td>OP</td><td>Toggle vanish for others</td></tr>
+                            <tr><td><code>Axentra.vanish.see</code></td><td>OP</td><td>See vanished players</td></tr>
+                            <tr><td><code>Axentra.god</code></td><td>OP</td><td>Toggle god mode for yourself</td></tr>
+                            <tr><td><code>Axentra.god.others</code></td><td>OP</td><td>Toggle god mode for others</td></tr>
+                            <tr><td><code>Axentra.invsee</code></td><td>OP</td><td>Use /invsee</td></tr>
+                            <tr><td><code>Axentra.enderchestsee</code></td><td>OP</td><td>Use /enderchestsee</td></tr>
+                            <tr><td><code>Axentra.gamemode</code></td><td>OP</td><td>Change your own gamemode</td></tr>
+                            <tr><td><code>Axentra.gamemode.others</code></td><td>OP</td><td>Change other players' gamemode</td></tr>
+                            <tr><td><code>Axentra.speed</code></td><td>OP</td><td>Set your own speed</td></tr>
+                            <tr><td><code>Axentra.speed.others</code></td><td>OP</td><td>Set other players' speed</td></tr>
+                            <tr><td><code>Axentra.fly</code></td><td>OP</td><td>Use /fly on yourself</td></tr>
+                            <tr><td><code>Axentra.fly.others</code></td><td>OP</td><td>Use /fly on others</td></tr>
+                            <tr><td><code>Axentra.heal</code></td><td>OP</td><td>Use /heal on yourself</td></tr>
+                            <tr><td><code>Axentra.heal.others</code></td><td>OP</td><td>Use /heal on others</td></tr>
+                            <tr><td><code>Axentra.feed</code></td><td>OP</td><td>Use /feed on yourself</td></tr>
+                            <tr><td><code>Axentra.feed.others</code></td><td>OP</td><td>Use /feed on others</td></tr>
+                            <tr><td><code>Axentra.clear</code></td><td>OP</td><td>Use /clear on yourself</td></tr>
+                            <tr><td><code>Axentra.clear.others</code></td><td>OP</td><td>Use /clear on others</td></tr>
+                            <tr><td><code>Axentra.repair</code></td><td>OP</td><td>Use /repair</td></tr>
+                            <tr><td><code>Axentra.weather</code></td><td>OP</td><td>Use weather commands</td></tr>
+                            <tr><td><code>Axentra.time</code></td><td>OP</td><td>Use time commands</td></tr>
+                            <tr><td><code>Axentra.ping</code></td><td>OP</td><td>Check your own ping</td></tr>
+                            <tr><td><code>Axentra.ping.others</code></td><td>OP</td><td>Check other players' ping</td></tr>
+                            <tr><td><code>Axentra.hat</code></td><td>OP</td><td>Use /hat</td></tr>
+                            <tr><td><code>Axentra.suicide</code></td><td>OP</td><td>Use /suicide</td></tr>
+                            <tr><td><code>Axentra.anvil</code></td><td>OP</td><td>Use /anvil</td></tr>
+                            <tr><td><code>Axentra.workbench</code></td><td>OP</td><td>Use /workbench</td></tr>
+                            <tr><td><code>Axentra.cartography</code></td><td>OP</td><td>Use /cartography</td></tr>
+                            <tr><td><code>Axentra.grindstone</code></td><td>OP</td><td>Use /grindstone</td></tr>
+                            <tr><td><code>Axentra.loom</code></td><td>OP</td><td>Use /loom</td></tr>
+                            <tr><td><code>Axentra.smithingtable</code></td><td>OP</td><td>Use /smithingtable</td></tr>
+                            <tr><td><code>Axentra.stonecutter</code></td><td>OP</td><td>Use /stonecutter</td></tr>
+                            <tr><td><code>Axentra.enderchest</code></td><td>OP</td><td>Use /enderchest</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Configuration -->
+            <section id="configuration" class="wiki-section">
+                <h1>Configuration</h1>
+                <p>Axentra uses three YAML files for all settings. After editing, run <code>/axentra reload</code> to apply changes live.</p>
+
+                <h2 id="cfg-config">config.yml</h2>
+                <p>The main configuration file with all plugin settings.</p>
+
+                <h3>Spawn Settings</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>spawn-world</code></td><td><code>""</code></td><td>World whose spawn is used. Leave empty for default world.</td></tr>
+                            <tr><td><code>join-location</code></td><td><code>last-location</code></td><td><code>last-location</code> or <code>spawn</code> &mdash; where players are sent on join</td></tr>
+                            <tr><td><code>spawn-countdown</code></td><td><code>true</code></td><td>Show countdown before /spawn teleport</td></tr>
+                            <tr><td><code>spawn-countdown-seconds</code></td><td><code>3</code></td><td>Countdown duration in seconds</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Announcement Toggles</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>announce-kick</code></td><td><code>true</code></td><td>Announce kicks in chat</td></tr>
+                            <tr><td><code>announce-ban</code></td><td><code>true</code></td><td>Announce bans in chat</td></tr>
+                            <tr><td><code>announce-unban</code></td><td><code>true</code></td><td>Announce unbans in chat</td></tr>
+                            <tr><td><code>announce-banip</code></td><td><code>true</code></td><td>Announce IP bans in chat</td></tr>
+                            <tr><td><code>announce-mute</code></td><td><code>true</code></td><td>Announce mutes in chat</td></tr>
+                            <tr><td><code>announce-unmute</code></td><td><code>true</code></td><td>Announce unmutes in chat</td></tr>
+                            <tr><td><code>announce-warn</code></td><td><code>true</code></td><td>Announce warnings in chat</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Ban & Mute Settings</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>ban-appeal-link</code></td><td><code>"https://discord.gg/yourlink"</code></td><td>Link shown on ban screen. Set to <code>""</code> to hide.</td></tr>
+                            <tr><td><code>mute-blocked-commands</code></td><td><code>[msg, tell, whisper, ...]</code></td><td>Commands blocked for muted players</td></tr>
+                            <tr><td><code>slowchat-default-seconds</code></td><td><code>5</code></td><td>Default slowchat cooldown</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Social Links</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>social-links.discord</code></td><td><code>"https://discord.gg/yourlink"</code></td><td>URL for /discord command</td></tr>
+                            <tr><td><code>social-links.website</code></td><td><code>"https://yourwebsite.com"</code></td><td>URL for /website command</td></tr>
+                            <tr><td><code>social-links.store</code></td><td><code>"https://yourstore.com"</code></td><td>URL for /store command</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Warn Auto-Punishments</h3>
+                <p>Configure automatic punishments when players reach warning thresholds:</p>
+                <div class="wiki-code-block">
+                    <pre><code>warn-punishments:
+  3:
+    action: kick
+    reason: "You have accumulated 3 warnings."
+  5:
+    action: mute
+    reason: "You have accumulated 5 warnings."
+  7:
+    action: tempban
+    duration: "1d"
+    reason: "You have accumulated 7 warnings."
+  10:
+    action: ban
+    reason: "You have accumulated 10 warnings."</code></pre>
+                </div>
+                <p>Supported actions: <code>kick</code>, <code>mute</code>, <code>tempban</code> (requires <code>duration</code>), <code>ban</code>. Set to <code>{}</code> to disable.</p>
+
+                <h3>TPA Settings</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>tpa-title-countdown</code></td><td><code>true</code></td><td>Show title countdown on TPA accept</td></tr>
+                            <tr><td><code>tpa-countdown-seconds</code></td><td><code>3</code></td><td>TPA countdown duration</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Vanish Settings</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>vanish-fake-join-quit</code></td><td><code>true</code></td><td>Fake join/quit messages when vanishing</td></tr>
+                            <tr><td><code>vanish-ghost-effect</code></td><td><code>true</code></td><td>Transparent appearance for staff</td></tr>
+                            <tr><td><code>vanish-night-vision</code></td><td><code>true</code></td><td>Night vision while vanished</td></tr>
+                            <tr><td><code>vanish-god-mode</code></td><td><code>true</code></td><td>No damage while vanished</td></tr>
+                            <tr><td><code>vanish-no-pickup</code></td><td><code>true</code></td><td>No item pickup while vanished</td></tr>
+                            <tr><td><code>vanish-action-bar</code></td><td><code>true</code></td><td>Action bar reminder</td></tr>
+                            <tr><td><code>vanish-action-bar-interval</code></td><td><code>40</code></td><td>Action bar refresh in ticks (20 = 1s)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Module Toggles</h3>
+                <p>Disable entire features (requires server restart):</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Module</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>enabled-modules.tpa</code></td><td><code>true</code></td><td>TPA request system</td></tr>
+                            <tr><td><code>enabled-modules.spawn</code></td><td><code>true</code></td><td>Spawn commands</td></tr>
+                            <tr><td><code>enabled-modules.back</code></td><td><code>true</code></td><td>Back command</td></tr>
+                            <tr><td><code>enabled-modules.messaging</code></td><td><code>true</code></td><td>Private messaging</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Other</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>invsee-read-only</code></td><td><code>true</code></td><td>Prevent modifying items in /invsee</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cfg-messages">messages.yml</h2>
+                <p>Every message the plugin sends is defined here. All messages support Minecraft color codes (<code>&amp;a</code>, <code>&amp;b</code>, <code>&amp;c</code>, etc.) and placeholders like <code>{player}</code>, <code>{reason}</code>, <code>{staff}</code>, <code>{duration}</code>.</p>
+
+                <div class="wiki-info-box">
+                    <h4>Tip</h4>
+                    <p>To find a specific message, search for the key name in the file. Keys are named intuitively, for example <code>ban-message</code>, <code>kick-reason</code>, <code>tpa-request-sent</code>.</p>
+                </div>
+
+                <h2 id="cfg-punishments">punishments.yml</h2>
+                <p>Defines the templates shown in the <code>/punish</code> GUI. Each template has:</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>display-name</code></td><td>Yes</td><td>Name shown in GUI (supports <code>&amp;</code> color codes)</td></tr>
+                            <tr><td><code>action</code></td><td>Yes</td><td><code>warn</code>, <code>kick</code>, <code>mute</code>, <code>tempmute</code>, <code>ban</code>, or <code>tempban</code></td></tr>
+                            <tr><td><code>reason</code></td><td>Yes</td><td>The reason shown to the player</td></tr>
+                            <tr><td><code>duration</code></td><td>For temp*</td><td>Duration (e.g. <code>1h</code>, <code>7d</code>, <code>30d</code>)</td></tr>
+                            <tr><td><code>icon</code></td><td>Yes</td><td>Minecraft material for the GUI icon</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Default Templates</h3>
+                <div class="wiki-code-block">
+                    <pre><code>templates:
+  spam:
+    display-name: "&eSpam"
+    action: warn
+    reason: "Spamming in chat"
+    icon: PAPER
+
+  hacking:
+    display-name: "&4Hacking"
+    action: ban
+    reason: "Using hacked client or exploits"
+    icon: BARRIER
+
+  xray:
+    display-name: "&cX-Ray"
+    action: tempban
+    duration: "30d"
+    reason: "Using X-Ray or similar mods"
+    icon: DIAMOND_ORE</code></pre>
+                </div>
+                <p>Add, remove, or modify templates as needed. Changes apply after <code>/axentra reload</code>.</p>
+            </section>
+
+            <!-- Punishment GUI -->
+            <section id="punishment-gui" class="wiki-section">
+                <h1>Punishment GUI</h1>
+                <p>The punishment GUI (<code>/punish &lt;player&gt;</code>) lets staff apply punishments with one click using pre-configured templates.</p>
+
+                <h2>How It Works</h2>
+                <ol>
+                    <li>Run <code>/punish &lt;player&gt;</code> to open the GUI</li>
+                    <li>Click a punishment template to apply it</li>
+                    <li>The player is punished and a case is created automatically</li>
+                    <li>Cases get a unique ID and are stored in the SQLite database</li>
+                    <li>View cases with <code>/case &lt;id&gt;</code> or <code>/history &lt;player&gt;</code></li>
+                </ol>
+
+                <h2>Case System</h2>
+                <p>Every punishment (from GUI or command) creates a case with:</p>
+                <ul>
+                    <li><strong>Unique ID</strong> &mdash; Auto-incremented case number</li>
+                    <li><strong>Player</strong> &mdash; The punished player</li>
+                    <li><strong>Staff</strong> &mdash; Who applied the punishment</li>
+                    <li><strong>Type</strong> &mdash; ban, tempban, mute, tempmute, kick, or warn</li>
+                    <li><strong>Reason</strong> &mdash; The punishment reason</li>
+                    <li><strong>Timestamp</strong> &mdash; When it was applied</li>
+                    <li><strong>Chat log</strong> &mdash; Last 20 messages from the player</li>
+                </ul>
+
+                <h2>History GUI</h2>
+                <p>The history GUI (<code>/history &lt;player&gt;</code>) shows all cases for a player in a paginated, color-coded inventory. Click a case to view details. Cases are color-coded by type (red = ban, orange = mute, yellow = warn, etc.).</p>
+
+                <h2>Staff Notes</h2>
+                <p>Staff notes (<code>/note add &lt;player&gt; &lt;text&gt;</code>) are separate from cases. When a player with notes joins, all staff with <code>Axentra.note</code> permission receive a notification showing the number of notes. View notes with <code>/notes &lt;player&gt;</code>.</p>
+
+                <h2>Audit Log</h2>
+                <p>Every staff action is logged and viewable with <code>/auditlog &lt;staff&gt; [page]</code>. This includes all moderation actions (ban, mute, warn, kick, etc.) with timestamps.</p>
+            </section>
+
+            <!-- Vanish System -->
+            <section id="vanish" class="wiki-section">
+                <h1>Vanish System</h1>
+                <p>Axentra's vanish system makes staff completely invisible to regular players with multiple configurable features.</p>
+
+                <h2>Features</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Feature</th><th>Config Key</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Ghost Effect</strong></td><td><code>vanish-ghost-effect</code></td><td>Vanished players appear transparent to staff with <code>Axentra.vanish.see</code></td></tr>
+                            <tr><td><strong>Fake Join/Quit</strong></td><td><code>vanish-fake-join-quit</code></td><td>Shows a fake quit message when vanishing and a fake join when unvanishing</td></tr>
+                            <tr><td><strong>Night Vision</strong></td><td><code>vanish-night-vision</code></td><td>Applies night vision effect so staff can see in dark areas</td></tr>
+                            <tr><td><strong>God Mode</strong></td><td><code>vanish-god-mode</code></td><td>Prevents all damage while vanished</td></tr>
+                            <tr><td><strong>No Pickup</strong></td><td><code>vanish-no-pickup</code></td><td>Prevents picking up items while vanished</td></tr>
+                            <tr><td><strong>Action Bar</strong></td><td><code>vanish-action-bar</code></td><td>Shows a persistent reminder that you are vanished</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Permissions</h2>
+                <ul>
+                    <li><code>Axentra.vanish</code> &mdash; Toggle vanish for yourself</li>
+                    <li><code>Axentra.vanish.others</code> &mdash; Toggle vanish for other players</li>
+                    <li><code>Axentra.vanish.see</code> &mdash; See vanished players (with ghost effect)</li>
+                </ul>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="wiki-section">
+                <h1>FAQ</h1>
+
+                <div class="wiki-faq">
+                    <div class="faq-item">
+                        <h3>Does Axentra support Paper?</h3>
+                        <p>Yes. Axentra works on both Spigot and Paper (and any Paper fork like Purpur).</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What Minecraft versions are supported?</h3>
+                        <p>Axentra supports Minecraft 1.21 and higher.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Are there any dependencies?</h3>
+                        <p>No. Axentra is fully standalone with zero external dependencies. SQLite is bundled inside the jar.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>How do I update?</h3>
+                        <p>Replace the old jar with the new one and restart your server. Your config files and database are preserved. Use <code>/axentra upgrade</code> to check for new versions in-game.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I disable features I don't need?</h3>
+                        <p>Yes. Use the <code>enabled-modules</code> section in <code>config.yml</code> to disable TPA, spawn, back, or messaging. This requires a server restart.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Where is data stored?</h3>
+                        <p>All data (bans, mutes, warns, cases, notes, nicknames, audit log) is stored in a local SQLite database at <code>plugins/Axentra/axentra.db</code>.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>How do I reset a config file?</h3>
+                        <p>Delete the file and restart the server. Axentra will regenerate the defaults automatically.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>I found a bug. Where do I report it?</h3>
+                        <p>Open an issue on <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">GitHub Issues</a> or reach out on <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Axentra</h3>
+                    <p>Made with love by <a href="https://github.com/OlliesGitHubWorld" target="_blank">OlliesWorld</a></p>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <a href="wiki.html">Wiki</a>
+                    <a href="wiki.html#commands">Commands</a>
+                    <a href="changelog.html">Changelog</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Community</h4>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Axentra. Licensed under MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="wiki.js"></script>
+</body>
+</html>

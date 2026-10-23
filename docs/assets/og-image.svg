@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0a0e17"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#glow)" opacity="0.5"/>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#00bcd4" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <text x="600" y="260" font-family="Arial,sans-serif" font-weight="800" font-size="96" fill="#e8eaf0" text-anchor="middle">Axentra</text>
+  <text x="600" y="330" font-family="Arial,sans-serif" font-weight="400" font-size="32" fill="#8892a4" text-anchor="middle">Minecraft Server Management Plugin</text>
+  <rect x="440" y="370" width="320" height="44" rx="22" fill="rgba(0,188,212,0.15)" stroke="#00bcd4" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="600" y="399" font-family="Arial,sans-serif" font-weight="500" font-size="20" fill="#00bcd4" text-anchor="middle">60+ Commands | No Dependencies</text>
+</svg>
