@@ -692,6 +692,35 @@ punish-usage: "%prefix%&cUsage: /punish <player>"
 auditlog-usage: "%prefix%&cUsage: /auditlog <staff> [page]"
 auditlog-empty: "%prefix%&e%staff% &ahas no audit log entries."
 
+# ┌─────────────────────────────────────────────────────────┐
+# │                Staff Management Messages                │
+# └─────────────────────────────────────────────────────────┘
+
+# Duty Command
+duty-on: "%prefix%&aYou are now &eon duty&a."
+duty-off: "%prefix%&cYou are now &eoff duty&c."
+duty-notify: "%prefix%&e%player% &7is now &e%status%&7."
+
+# Staffmode Command
+staffmode-enabled: "%prefix%&aStaffmode &eenabled&a. Your inventory has been saved."
+staffmode-disabled: "%prefix%&cStaffmode &edisabled&c. Your inventory has been restored."
+
+# Report Command
+report-usage: "%prefix%&cUsage: /report <player> <reason>"
+report-sent: "%prefix%&aYour report against &e%player% &ahas been submitted. Reason: &7%reason%"
+report-cooldown: "%prefix%&cPlease wait &e%seconds%s &cbefore reporting again."
+report-self: "%prefix%&cYou cannot report yourself."
+report-notify: "%prefix%&c&l[REPORT] &e%reporter% &7reported &e%player%&7: &f%reason%"
+
+# Staffstats Command
+staffstats-usage: "%prefix%&cUsage: /staffstats [player|top]"
+
+# Stafflist Command
+stafflist-header: "%prefix%&b&lOnline Staff:"
+stafflist-entry: "  &8- &f%player% %status%"
+stafflist-empty: "  &7No staff members online."
+stafflist-footer: "%prefix%&7Total: &f%count% &7staff online."
+
 # ══════════════════════════════════════════════════════════
 #                     End of Messages
 # ══════════════════════════════════════════════════════════

@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.5.0
+version: 1.6.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -406,6 +406,37 @@ commands:
     usage: /auditlog <staff> [page]
     permission: Axentra.auditlog
     permission-message: "&cYou don't have permission to use this command!"
+  duty:
+    description: Toggle staff duty status
+    usage: /duty
+    permission: Axentra.duty
+    permission-message: "&cYou don't have permission to use this command!"
+  staffmode:
+    description: Toggle staffmode with staff tools
+    usage: /staffmode
+    aliases: [sm]
+    permission: Axentra.staffmode
+    permission-message: "&cYou don't have permission to use this command!"
+  report:
+    description: Report a player to online staff
+    usage: /report <player> <reason>
+    permission: Axentra.report
+    permission-message: "&cYou don't have permission to use this command!"
+  reports:
+    description: View open reports
+    usage: /reports
+    permission: Axentra.reports
+    permission-message: "&cYou don't have permission to use this command!"
+  staffstats:
+    description: View staff statistics
+    usage: /staffstats [player|top]
+    permission: Axentra.staffstats
+    permission-message: "&cYou don't have permission to use this command!"
+  stafflist:
+    description: View online staff and duty status
+    usage: /stafflist
+    permission: Axentra.stafflist
+    permission-message: "&cYou don't have permission to use this command!"
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -642,4 +673,22 @@ permissions:
     default: op
   Axentra.auditlog:
     description: Allows the player to view the audit log
+    default: op
+  Axentra.duty:
+    description: Allows the player to toggle duty status
+    default: op
+  Axentra.staffmode:
+    description: Allows the player to toggle staffmode
+    default: op
+  Axentra.report:
+    description: Allows the player to report other players
+    default: true
+  Axentra.reports:
+    description: Allows the player to view and manage reports
+    default: op
+  Axentra.staffstats:
+    description: Allows the player to view staff statistics
+    default: op
+  Axentra.stafflist:
+    description: Allows the player to view online staff list
     default: op

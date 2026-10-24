@@ -5,11 +5,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
 import mc.ollie.listeners.BackListener;
 import mc.ollie.listeners.ChatListener;
+import mc.ollie.listeners.FreezeListener;
 import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.ModerationGUIListener;
+import mc.ollie.listeners.ReportsGUIListener;
+import mc.ollie.listeners.RespawnListener;
 import mc.ollie.listeners.StaffGUIListener;
+import mc.ollie.listeners.StaffmodeListener;
 import mc.ollie.listeners.UpdateListener;
 import mc.ollie.listeners.VanishListener;
 import org.bukkit.command.SimpleCommandMap;
@@ -27,6 +31,9 @@ public final class App extends JavaPlugin {
     private MessageManager messageManager;
     private DatabaseManager databaseManager;
     private ChatListener chatListener;
+    private DutyManager dutyManager;
+    private StaffmodeManager staffmodeManager;
+    private final Map<UUID, Long> reportCooldowns = new HashMap<>();
 
     // Chat control state
     private boolean chatMuted = false;
@@ -48,24 +55,25 @@ public final class App extends JavaPlugin {
         this.databaseManager = new DatabaseManager(this);
         databaseManager.setup();
 
+        this.dutyManager = new DutyManager(this);
+        this.staffmodeManager = new StaffmodeManager();
+
         int pluginId = 30019;
         Metrics metrics = new Metrics(this, pluginId);
 
         FileConfiguration settings = fileManager.getSettings();
 
-        ClearCommand clearCommand = new ClearCommand(this);
-        getCommand("clear").setExecutor(clearCommand);
-        getCommand("clear").setTabCompleter(clearCommand);
-
-        getCommand("repair").setExecutor(new RepairCommand(this));
-
-        KickCommand kickCommand = new KickCommand(this);
-        getCommand("kick").setExecutor(kickCommand);
-        getCommand("kick").setTabCompleter(kickCommand);
+        // ── Core (always enabled) ──
 
         AxentraCommand axentraCommand = new AxentraCommand(this);
         getCommand("axentra").setExecutor(axentraCommand);
         getCommand("axentra").setTabCompleter(axentraCommand);
+
+        // ── Moderation (always enabled — core feature) ──
+
+        KickCommand kickCommand = new KickCommand(this);
+        getCommand("kick").setExecutor(kickCommand);
+        getCommand("kick").setTabCompleter(kickCommand);
 
         BanCommand banCommand = new BanCommand(this);
         getCommand("ban").setExecutor(banCommand);
@@ -91,18 +99,6 @@ public final class App extends JavaPlugin {
         getCommand("tempbanip").setExecutor(tempBanIpCommand);
         getCommand("tempbanip").setTabCompleter(tempBanIpCommand);
 
-        FlyCommand flyCommand = new FlyCommand(this);
-        getCommand("fly").setExecutor(flyCommand);
-        getCommand("fly").setTabCompleter(flyCommand);
-
-        HealCommand healCommand = new HealCommand(this);
-        getCommand("heal").setExecutor(healCommand);
-        getCommand("heal").setTabCompleter(healCommand);
-
-        FeedCommand feedCommand = new FeedCommand(this);
-        getCommand("feed").setExecutor(feedCommand);
-        getCommand("feed").setTabCompleter(feedCommand);
-
         WarnCommand warnCommand = new WarnCommand(this);
         getCommand("warn").setExecutor(warnCommand);
         getCommand("warn").setTabCompleter(warnCommand);
@@ -127,191 +123,11 @@ public final class App extends JavaPlugin {
         getCommand("unmute").setExecutor(unmuteCommand);
         getCommand("unmute").setTabCompleter(unmuteCommand);
 
-        AnvilCommand anvilCommand = new AnvilCommand(this);
-        getCommand("anvil").setExecutor(anvilCommand);
-        getCommand("anvil").setTabCompleter(anvilCommand);
-
-        WorkbenchCommand workbenchCommand = new WorkbenchCommand(this);
-        getCommand("workbench").setExecutor(workbenchCommand);
-        getCommand("workbench").setTabCompleter(workbenchCommand);
-
-        CartographyCommand cartographyCommand = new CartographyCommand(this);
-        getCommand("cartography").setExecutor(cartographyCommand);
-        getCommand("cartography").setTabCompleter(cartographyCommand);
-
-        GrindstoneCommand grindstoneCommand = new GrindstoneCommand(this);
-        getCommand("grindstone").setExecutor(grindstoneCommand);
-        getCommand("grindstone").setTabCompleter(grindstoneCommand);
-
-        LoomCommand loomCommand = new LoomCommand(this);
-        getCommand("loom").setExecutor(loomCommand);
-        getCommand("loom").setTabCompleter(loomCommand);
-
-        SmithingTableCommand smithingTableCommand = new SmithingTableCommand(this);
-        getCommand("smithingtable").setExecutor(smithingTableCommand);
-        getCommand("smithingtable").setTabCompleter(smithingTableCommand);
-
-        StonecutterCommand stonecutterCommand = new StonecutterCommand(this);
-        getCommand("stonecutter").setExecutor(stonecutterCommand);
-        getCommand("stonecutter").setTabCompleter(stonecutterCommand);
-
-        EnderChestCommand enderChestCommand = new EnderChestCommand(this);
-        getCommand("enderchest").setExecutor(enderChestCommand);
-        getCommand("enderchest").setTabCompleter(enderChestCommand);
-
-        PingCommand pingCommand = new PingCommand(this);
-        getCommand("ping").setExecutor(pingCommand);
-        getCommand("ping").setTabCompleter(pingCommand);
-
-        SuicideCommand suicideCommand = new SuicideCommand(this);
-        getCommand("suicide").setExecutor(suicideCommand);
-        getCommand("suicide").setTabCompleter(suicideCommand);
-
-        WeatherCommand weatherCommand = new WeatherCommand(this);
-        getCommand("weather").setExecutor(weatherCommand);
-        getCommand("weather").setTabCompleter(weatherCommand);
-        getCommand("sun").setExecutor(weatherCommand);
-        getCommand("sun").setTabCompleter(weatherCommand);
-        getCommand("sky").setExecutor(weatherCommand);
-        getCommand("sky").setTabCompleter(weatherCommand);
-        getCommand("rain").setExecutor(weatherCommand);
-        getCommand("rain").setTabCompleter(weatherCommand);
-        getCommand("storm").setExecutor(weatherCommand);
-        getCommand("storm").setTabCompleter(weatherCommand);
-
-        HatCommand hatCommand = new HatCommand(this);
-        getCommand("hat").setExecutor(hatCommand);
-        getCommand("hat").setTabCompleter(hatCommand);
-
-        SpeedCommand speedCommand = new SpeedCommand(this);
-        getCommand("speed").setExecutor(speedCommand);
-        getCommand("speed").setTabCompleter(speedCommand);
-
-        GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
-        getCommand("gamemode").setExecutor(gamemodeCommand);
-        getCommand("gamemode").setTabCompleter(gamemodeCommand);
-        getCommand("gm").setExecutor(gamemodeCommand);
-        getCommand("gm").setTabCompleter(gamemodeCommand);
-        getCommand("gms").setExecutor(gamemodeCommand);
-        getCommand("gms").setTabCompleter(gamemodeCommand);
-        getCommand("gmc").setExecutor(gamemodeCommand);
-        getCommand("gmc").setTabCompleter(gamemodeCommand);
-        getCommand("gma").setExecutor(gamemodeCommand);
-        getCommand("gma").setTabCompleter(gamemodeCommand);
-        getCommand("gmsp").setExecutor(gamemodeCommand);
-        getCommand("gmsp").setTabCompleter(gamemodeCommand);
-
-        BackCommand backCommand = null;
-        if (settings.getBoolean("enabled-modules.back", true)) {
-            backCommand = new BackCommand(this);
-            getCommand("back").setExecutor(backCommand);
-        }
-
-        if (settings.getBoolean("enabled-modules.tpa", true)) {
-            TpaCommand tpaCommand = new TpaCommand(this);
-            getCommand("tpa").setExecutor(tpaCommand);
-            getCommand("tpa").setTabCompleter(tpaCommand);
-            getCommand("tpaccept").setExecutor(tpaCommand);
-            getCommand("tpdeny").setExecutor(tpaCommand);
-            getCommand("tpacancel").setExecutor(tpaCommand);
-            getCommand("tptoggle").setExecutor(tpaCommand);
-        }
-
-        GodCommand godCommand = new GodCommand(this);
-        getCommand("god").setExecutor(godCommand);
-        getCommand("god").setTabCompleter(godCommand);
-
-        VanishCommand vanishCommand = new VanishCommand(this);
-        getCommand("vanish").setExecutor(vanishCommand);
-        getCommand("vanish").setTabCompleter(vanishCommand);
-
-        EnderChestSeeCommand enderChestSeeCommand = new EnderChestSeeCommand(this);
-        getCommand("enderchestsee").setExecutor(enderChestSeeCommand);
-        getCommand("enderchestsee").setTabCompleter(enderChestSeeCommand);
-
-        InvSeeCommand invSeeCommand = new InvSeeCommand(this);
-        getCommand("invsee").setExecutor(invSeeCommand);
-        getCommand("invsee").setTabCompleter(invSeeCommand);
-        getServer().getPluginManager().registerEvents(invSeeCommand, this);
-
-        if (settings.getBoolean("enabled-modules.spawn", true)) {
-            SpawnCommand spawnCommand = new SpawnCommand(this);
-            getCommand("spawn").setExecutor(spawnCommand);
-            getCommand("spawn").setTabCompleter(spawnCommand);
-
-            getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
-        }
-
-        // Chat control
         BroadcastCommand broadcastCommand = new BroadcastCommand(this);
         getCommand("broadcast").setExecutor(broadcastCommand);
         getCommand("broadcast").setTabCompleter(broadcastCommand);
 
-        ClearchatCommand clearchatCommand = new ClearchatCommand(this);
-        getCommand("clearchat").setExecutor(clearchatCommand);
-        getCommand("clearchat").setTabCompleter(clearchatCommand);
-
-        MutechatCommand mutechatCommand = new MutechatCommand(this);
-        getCommand("mutechat").setExecutor(mutechatCommand);
-        getCommand("mutechat").setTabCompleter(mutechatCommand);
-
-        SlowchatCommand slowchatCommand = new SlowchatCommand(this);
-        getCommand("slowchat").setExecutor(slowchatCommand);
-        getCommand("slowchat").setTabCompleter(slowchatCommand);
-
-        StaffchatCommand staffchatCommand = new StaffchatCommand(this);
-        getCommand("staffchat").setExecutor(staffchatCommand);
-        getCommand("staffchat").setTabCompleter(staffchatCommand);
-
-        // Messaging
-        if (settings.getBoolean("enabled-modules.messaging", true)) {
-            MsgCommand msgCommand = new MsgCommand(this);
-            getCommand("msg").setExecutor(msgCommand);
-            getCommand("msg").setTabCompleter(msgCommand);
-
-            ReplyCommand replyCommand = new ReplyCommand(this);
-            getCommand("reply").setExecutor(replyCommand);
-            getCommand("reply").setTabCompleter(replyCommand);
-
-            MsgtoggleCommand msgtoggleCommand = new MsgtoggleCommand(this);
-            getCommand("msgtoggle").setExecutor(msgtoggleCommand);
-            getCommand("msgtoggle").setTabCompleter(msgtoggleCommand);
-        }
-
-        // Formatting
-        MeCommand meCommand = new MeCommand(this);
-        getCommand("me").setExecutor(meCommand);
-        getCommand("me").setTabCompleter(meCommand);
-
-        NickCommand nickCommand = new NickCommand(this);
-        getCommand("nick").setExecutor(nickCommand);
-        getCommand("nick").setTabCompleter(nickCommand);
-
-        RealnameCommand realnameCommand = new RealnameCommand(this);
-        getCommand("realname").setExecutor(realnameCommand);
-        getCommand("realname").setTabCompleter(realnameCommand);
-
-        SocialCommand socialCommand = new SocialCommand(this);
-        getCommand("discord").setExecutor(socialCommand);
-        getCommand("discord").setTabCompleter(socialCommand);
-        getCommand("website").setExecutor(socialCommand);
-        getCommand("website").setTabCompleter(socialCommand);
-        getCommand("store").setExecutor(socialCommand);
-        getCommand("store").setTabCompleter(socialCommand);
-
-        TimeCommand timeCommand = new TimeCommand(this);
-        getCommand("time").setExecutor(timeCommand);
-        getCommand("time").setTabCompleter(timeCommand);
-        getCommand("day").setExecutor(timeCommand);
-        getCommand("day").setTabCompleter(timeCommand);
-        getCommand("night").setExecutor(timeCommand);
-        getCommand("night").setTabCompleter(timeCommand);
-        getCommand("noon").setExecutor(timeCommand);
-        getCommand("noon").setTabCompleter(timeCommand);
-        getCommand("midnight").setExecutor(timeCommand);
-        getCommand("midnight").setTabCompleter(timeCommand);
-
-        // ── Smart Moderation commands (v1.5.0) ──
+        // ── Smart Moderation (v1.5.0) ──
 
         CaseCommand caseCommand = new CaseCommand(this);
         getCommand("case").setExecutor(caseCommand);
@@ -337,6 +153,275 @@ public final class App extends JavaPlugin {
         getCommand("auditlog").setExecutor(auditLogCommand);
         getCommand("auditlog").setTabCompleter(auditLogCommand);
 
+        // ── Module: staff-management ──
+
+        StaffmodeListener staffmodeListener = null;
+        if (settings.getBoolean("enabled-modules.staff-management", true)) {
+            DutyCommand dutyCommand = new DutyCommand(this);
+            getCommand("duty").setExecutor(dutyCommand);
+            getCommand("duty").setTabCompleter(dutyCommand);
+
+            StaffmodeCommand staffmodeCommand = new StaffmodeCommand(this);
+            getCommand("staffmode").setExecutor(staffmodeCommand);
+            getCommand("staffmode").setTabCompleter(staffmodeCommand);
+
+            ReportCommand reportCommand = new ReportCommand(this);
+            getCommand("report").setExecutor(reportCommand);
+            getCommand("report").setTabCompleter(reportCommand);
+
+            ReportsCommand reportsCommand = new ReportsCommand(this);
+            getCommand("reports").setExecutor(reportsCommand);
+            getCommand("reports").setTabCompleter(reportsCommand);
+
+            StaffstatsCommand staffstatsCommand = new StaffstatsCommand(this);
+            getCommand("staffstats").setExecutor(staffstatsCommand);
+            getCommand("staffstats").setTabCompleter(staffstatsCommand);
+
+            StafflistCommand stafflistCommand = new StafflistCommand(this);
+            getCommand("stafflist").setExecutor(stafflistCommand);
+            getCommand("stafflist").setTabCompleter(stafflistCommand);
+
+            staffmodeListener = new StaffmodeListener(this);
+        }
+
+        // ── Module: player-utilities ──
+
+        GodCommand godCommand = new GodCommand(this);
+        if (settings.getBoolean("enabled-modules.player-utilities", true)) {
+            ClearCommand clearCommand = new ClearCommand(this);
+            getCommand("clear").setExecutor(clearCommand);
+            getCommand("clear").setTabCompleter(clearCommand);
+
+            getCommand("repair").setExecutor(new RepairCommand(this));
+
+            FlyCommand flyCommand = new FlyCommand(this);
+            getCommand("fly").setExecutor(flyCommand);
+            getCommand("fly").setTabCompleter(flyCommand);
+
+            HealCommand healCommand = new HealCommand(this);
+            getCommand("heal").setExecutor(healCommand);
+            getCommand("heal").setTabCompleter(healCommand);
+
+            FeedCommand feedCommand = new FeedCommand(this);
+            getCommand("feed").setExecutor(feedCommand);
+            getCommand("feed").setTabCompleter(feedCommand);
+
+            getCommand("god").setExecutor(godCommand);
+            getCommand("god").setTabCompleter(godCommand);
+
+            HatCommand hatCommand = new HatCommand(this);
+            getCommand("hat").setExecutor(hatCommand);
+            getCommand("hat").setTabCompleter(hatCommand);
+
+            SpeedCommand speedCommand = new SpeedCommand(this);
+            getCommand("speed").setExecutor(speedCommand);
+            getCommand("speed").setTabCompleter(speedCommand);
+
+            GamemodeCommand gamemodeCommand = new GamemodeCommand(this);
+            getCommand("gamemode").setExecutor(gamemodeCommand);
+            getCommand("gamemode").setTabCompleter(gamemodeCommand);
+            getCommand("gm").setExecutor(gamemodeCommand);
+            getCommand("gm").setTabCompleter(gamemodeCommand);
+            getCommand("gms").setExecutor(gamemodeCommand);
+            getCommand("gms").setTabCompleter(gamemodeCommand);
+            getCommand("gmc").setExecutor(gamemodeCommand);
+            getCommand("gmc").setTabCompleter(gamemodeCommand);
+            getCommand("gma").setExecutor(gamemodeCommand);
+            getCommand("gma").setTabCompleter(gamemodeCommand);
+            getCommand("gmsp").setExecutor(gamemodeCommand);
+            getCommand("gmsp").setTabCompleter(gamemodeCommand);
+
+            PingCommand pingCommand = new PingCommand(this);
+            getCommand("ping").setExecutor(pingCommand);
+            getCommand("ping").setTabCompleter(pingCommand);
+
+            SuicideCommand suicideCommand = new SuicideCommand(this);
+            getCommand("suicide").setExecutor(suicideCommand);
+            getCommand("suicide").setTabCompleter(suicideCommand);
+        }
+
+        // ── Module: vanish ──
+
+        VanishCommand vanishCommand = new VanishCommand(this);
+        if (settings.getBoolean("enabled-modules.vanish", true)) {
+            getCommand("vanish").setExecutor(vanishCommand);
+            getCommand("vanish").setTabCompleter(vanishCommand);
+        }
+
+        // ── Module: invsee ──
+
+        InvSeeCommand invSeeCommand = null;
+        if (settings.getBoolean("enabled-modules.invsee", true)) {
+            EnderChestSeeCommand enderChestSeeCommand = new EnderChestSeeCommand(this);
+            getCommand("enderchestsee").setExecutor(enderChestSeeCommand);
+            getCommand("enderchestsee").setTabCompleter(enderChestSeeCommand);
+
+            invSeeCommand = new InvSeeCommand(this);
+            getCommand("invsee").setExecutor(invSeeCommand);
+            getCommand("invsee").setTabCompleter(invSeeCommand);
+            getServer().getPluginManager().registerEvents(invSeeCommand, this);
+        }
+
+        // ── Module: workbench-commands ──
+
+        if (settings.getBoolean("enabled-modules.workbench-commands", true)) {
+            AnvilCommand anvilCommand = new AnvilCommand(this);
+            getCommand("anvil").setExecutor(anvilCommand);
+            getCommand("anvil").setTabCompleter(anvilCommand);
+
+            WorkbenchCommand workbenchCommand = new WorkbenchCommand(this);
+            getCommand("workbench").setExecutor(workbenchCommand);
+            getCommand("workbench").setTabCompleter(workbenchCommand);
+
+            CartographyCommand cartographyCommand = new CartographyCommand(this);
+            getCommand("cartography").setExecutor(cartographyCommand);
+            getCommand("cartography").setTabCompleter(cartographyCommand);
+
+            GrindstoneCommand grindstoneCommand = new GrindstoneCommand(this);
+            getCommand("grindstone").setExecutor(grindstoneCommand);
+            getCommand("grindstone").setTabCompleter(grindstoneCommand);
+
+            LoomCommand loomCommand = new LoomCommand(this);
+            getCommand("loom").setExecutor(loomCommand);
+            getCommand("loom").setTabCompleter(loomCommand);
+
+            SmithingTableCommand smithingTableCommand = new SmithingTableCommand(this);
+            getCommand("smithingtable").setExecutor(smithingTableCommand);
+            getCommand("smithingtable").setTabCompleter(smithingTableCommand);
+
+            StonecutterCommand stonecutterCommand = new StonecutterCommand(this);
+            getCommand("stonecutter").setExecutor(stonecutterCommand);
+            getCommand("stonecutter").setTabCompleter(stonecutterCommand);
+
+            EnderChestCommand enderChestCommand = new EnderChestCommand(this);
+            getCommand("enderchest").setExecutor(enderChestCommand);
+            getCommand("enderchest").setTabCompleter(enderChestCommand);
+        }
+
+        // ── Module: weather-time ──
+
+        if (settings.getBoolean("enabled-modules.weather-time", true)) {
+            WeatherCommand weatherCommand = new WeatherCommand(this);
+            getCommand("weather").setExecutor(weatherCommand);
+            getCommand("weather").setTabCompleter(weatherCommand);
+            getCommand("sun").setExecutor(weatherCommand);
+            getCommand("sun").setTabCompleter(weatherCommand);
+            getCommand("sky").setExecutor(weatherCommand);
+            getCommand("sky").setTabCompleter(weatherCommand);
+            getCommand("rain").setExecutor(weatherCommand);
+            getCommand("rain").setTabCompleter(weatherCommand);
+            getCommand("storm").setExecutor(weatherCommand);
+            getCommand("storm").setTabCompleter(weatherCommand);
+
+            TimeCommand timeCommand = new TimeCommand(this);
+            getCommand("time").setExecutor(timeCommand);
+            getCommand("time").setTabCompleter(timeCommand);
+            getCommand("day").setExecutor(timeCommand);
+            getCommand("day").setTabCompleter(timeCommand);
+            getCommand("night").setExecutor(timeCommand);
+            getCommand("night").setTabCompleter(timeCommand);
+            getCommand("noon").setExecutor(timeCommand);
+            getCommand("noon").setTabCompleter(timeCommand);
+            getCommand("midnight").setExecutor(timeCommand);
+            getCommand("midnight").setTabCompleter(timeCommand);
+        }
+
+        // ── Module: spawn ──
+
+        if (settings.getBoolean("enabled-modules.spawn", true)) {
+            SpawnCommand spawnCommand = new SpawnCommand(this);
+            getCommand("spawn").setExecutor(spawnCommand);
+            getCommand("spawn").setTabCompleter(spawnCommand);
+
+            getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
+
+            getServer().getPluginManager().registerEvents(new RespawnListener(spawnCommand), this);
+        }
+
+        // ── Module: back ──
+
+        BackCommand backCommand = null;
+        if (settings.getBoolean("enabled-modules.back", true)) {
+            backCommand = new BackCommand(this);
+            getCommand("back").setExecutor(backCommand);
+        }
+
+        // ── Module: tpa ──
+
+        if (settings.getBoolean("enabled-modules.tpa", true)) {
+            TpaCommand tpaCommand = new TpaCommand(this);
+            getCommand("tpa").setExecutor(tpaCommand);
+            getCommand("tpa").setTabCompleter(tpaCommand);
+            getCommand("tpaccept").setExecutor(tpaCommand);
+            getCommand("tpdeny").setExecutor(tpaCommand);
+            getCommand("tpacancel").setExecutor(tpaCommand);
+            getCommand("tptoggle").setExecutor(tpaCommand);
+        }
+
+        // ── Module: chat-management ──
+
+        StaffchatCommand staffchatCommand = new StaffchatCommand(this);
+        if (settings.getBoolean("enabled-modules.chat-management", true)) {
+            ClearchatCommand clearchatCommand = new ClearchatCommand(this);
+            getCommand("clearchat").setExecutor(clearchatCommand);
+            getCommand("clearchat").setTabCompleter(clearchatCommand);
+
+            MutechatCommand mutechatCommand = new MutechatCommand(this);
+            getCommand("mutechat").setExecutor(mutechatCommand);
+            getCommand("mutechat").setTabCompleter(mutechatCommand);
+
+            SlowchatCommand slowchatCommand = new SlowchatCommand(this);
+            getCommand("slowchat").setExecutor(slowchatCommand);
+            getCommand("slowchat").setTabCompleter(slowchatCommand);
+
+            getCommand("staffchat").setExecutor(staffchatCommand);
+            getCommand("staffchat").setTabCompleter(staffchatCommand);
+        }
+
+        // ── Module: messaging ──
+
+        if (settings.getBoolean("enabled-modules.messaging", true)) {
+            MsgCommand msgCommand = new MsgCommand(this);
+            getCommand("msg").setExecutor(msgCommand);
+            getCommand("msg").setTabCompleter(msgCommand);
+
+            ReplyCommand replyCommand = new ReplyCommand(this);
+            getCommand("reply").setExecutor(replyCommand);
+            getCommand("reply").setTabCompleter(replyCommand);
+
+            MsgtoggleCommand msgtoggleCommand = new MsgtoggleCommand(this);
+            getCommand("msgtoggle").setExecutor(msgtoggleCommand);
+            getCommand("msgtoggle").setTabCompleter(msgtoggleCommand);
+        }
+
+        // ── Module: nickname ──
+
+        if (settings.getBoolean("enabled-modules.nickname", true)) {
+            MeCommand meCommand = new MeCommand(this);
+            getCommand("me").setExecutor(meCommand);
+            getCommand("me").setTabCompleter(meCommand);
+
+            NickCommand nickCommand = new NickCommand(this);
+            getCommand("nick").setExecutor(nickCommand);
+            getCommand("nick").setTabCompleter(nickCommand);
+
+            RealnameCommand realnameCommand = new RealnameCommand(this);
+            getCommand("realname").setExecutor(realnameCommand);
+            getCommand("realname").setTabCompleter(realnameCommand);
+        }
+
+        // ── Module: social-commands ──
+
+        if (settings.getBoolean("enabled-modules.social-commands", true)) {
+            SocialCommand socialCommand = new SocialCommand(this);
+            getCommand("discord").setExecutor(socialCommand);
+            getCommand("discord").setTabCompleter(socialCommand);
+            getCommand("website").setExecutor(socialCommand);
+            getCommand("website").setTabCompleter(socialCommand);
+            getCommand("store").setExecutor(socialCommand);
+            getCommand("store").setTabCompleter(socialCommand);
+        }
+
         // ── /help override ──
 
         try {
@@ -344,7 +429,6 @@ public final class App extends JavaPlugin {
             commandMapField.setAccessible(true);
             SimpleCommandMap commandMap = (SimpleCommandMap) commandMapField.get(getServer());
 
-            // Use reflection to get the knownCommands field from SimpleCommandMap
             java.lang.reflect.Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
             knownCommandsField.setAccessible(true);
             java.util.Map<String, org.bukkit.command.Command> knownCommands =
@@ -374,17 +458,29 @@ public final class App extends JavaPlugin {
         if (backCommand != null) {
             getServer().getPluginManager().registerEvents(new BackListener(backCommand), this);
         }
-        getServer().getPluginManager().registerEvents(new GodListener(godCommand), this);
+        if (settings.getBoolean("enabled-modules.player-utilities", true)) {
+            getServer().getPluginManager().registerEvents(new GodListener(godCommand), this);
+        }
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
 
-        this.chatListener = new ChatListener(this, staffchatCommand);
-        getServer().getPluginManager().registerEvents(chatListener, this);
+        if (settings.getBoolean("enabled-modules.chat-management", true)) {
+            this.chatListener = new ChatListener(this, staffchatCommand);
+            getServer().getPluginManager().registerEvents(chatListener, this);
+        }
 
         getServer().getPluginManager().registerEvents(new StaffGUIListener(this, axentraCommand.getStaffGUI()), this);
         getServer().getPluginManager().registerEvents(new UpdateListener(this, axentraCommand), this);
-        getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
+        if (settings.getBoolean("enabled-modules.vanish", true)) {
+            getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
+        }
         getServer().getPluginManager().registerEvents(new ModerationGUIListener(this), this);
+
+        if (staffmodeListener != null) {
+            getServer().getPluginManager().registerEvents(staffmodeListener, this);
+            getServer().getPluginManager().registerEvents(new FreezeListener(staffmodeListener), this);
+            getServer().getPluginManager().registerEvents(new ReportsGUIListener(this), this);
+        }
 
         String CYAN = "\u001B[36m";
         String GREEN = "\u001B[32m";
@@ -401,6 +497,7 @@ public final class App extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (dutyManager != null) dutyManager.removeAll();
         databaseManager.close();
 
         String CYAN = "\u001B[36m";
@@ -454,4 +551,9 @@ public final class App extends JavaPlugin {
         if (msgToggleOff.contains(uuid)) { msgToggleOff.remove(uuid); return false; }
         else { msgToggleOff.add(uuid); return true; }
     }
+
+    // Staff management
+    public DutyManager getDutyManager() { return dutyManager; }
+    public StaffmodeManager getStaffmodeManager() { return staffmodeManager; }
+    public Map<UUID, Long> getReportCooldowns() { return reportCooldowns; }
 }

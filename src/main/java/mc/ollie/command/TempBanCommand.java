@@ -167,10 +167,15 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
                 + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-ban")) {
-            plugin.getServer().broadcastMessage(getMessage("tempban-announce")
+            String announceMsg = getMessage("tempban-announce")
                     .replace("%player%", playerName)
                     .replace("%duration%", formattedDuration)
-                    .replace("%reason%", reason));
+                    .replace("%reason%", reason);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.ban")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

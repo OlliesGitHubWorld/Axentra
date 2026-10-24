@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Axentra - Minecraft Server Management Plugin</title>
-    <meta name="description" content="A powerful, lightweight Minecraft server management plugin with 60+ commands. Moderation, chat, teleportation, and more.">
+    <meta name="description" content="Axentra — A powerful, lightweight Minecraft server management plugin with 60+ commands. Moderation, chat, teleportation, punishments, vanish, TPA and more. Free & open source.">
+    <meta name="keywords" content="Axentra, AxentraMC, Minecraft plugin, server management, Spigot plugin, Paper plugin, Minecraft moderation, Minecraft commands, free Minecraft plugin, open source">
     <meta name="theme-color" content="#00bcd4">
-    <meta property="og:title" content="Axentra - Minecraft Server Management Plugin">
-    <meta property="og:description" content="All-in-one server management with 60+ commands. Smart moderation, punishment GUI, case system, and more.">
+    <link rel="canonical" href="https://axentramc.com/">
+    <meta property="og:title" content="Axentra — The Only Plugin Your Server Needs">
+    <meta property="og:description" content="60+ commands. Zero dependencies. Moderation, punishments, vanish, TPA, and more — all in one lightweight plugin. Free & open source.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="assets/og-image.svg">
+    <meta property="og:url" content="https://axentramc.com">
+    <meta property="og:image" content="https://axentramc.com/assets/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -23,7 +27,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">Axentra</a>
+            <a href="/" class="nav-logo">Axentra</a>
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#screenshots">Screenshots</a>
@@ -47,7 +51,7 @@
     <section class="hero">
         <div class="hero-bg"></div>
         <div class="container hero-content">
-            <div class="hero-badge">v1.5.0 - Smart Moderation Update</div>
+            <div class="hero-badge">v1.6.0 - Staff Management &amp; Modular System</div>
             <h1 class="hero-title">Axentra</h1>
             <p class="hero-subtitle">A powerful, lightweight Minecraft server management plugin</p>
             <p class="hero-desc">All-in-one server management with 60+ commands &mdash; moderation, chat, teleportation, and more. No bloat. No dependencies.</p>
@@ -87,6 +91,11 @@
             <p class="section-subtitle">Replace multiple plugins with a single, lightweight solution</p>
             <div class="features-grid">
                 <div class="feature-card feature-highlight">
+                    <div class="feature-icon">&#x1F6E1;</div>
+                    <h3>Staff Management</h3>
+                    <p>Staffmode with tool hotbar (freeze, random TP, InvSee, punish, vanish), duty tracking, player reports with GUI, staff statistics, and auto-duty on staffmode toggle.</p>
+                </div>
+                <div class="feature-card">
                     <div class="feature-icon">&#x1F528;</div>
                     <h3>Smart Moderation</h3>
                     <p>Punishment GUI with customizable templates, case system with unique IDs, history GUI with pagination, staff notes with join notifications, and full audit logging.</p>
@@ -109,7 +118,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">&#x1F310;</div>
                     <h3>Teleportation</h3>
-                    <p>TPA request system with countdown, spawn with configurable countdown, back command, and toggle for receiving requests.</p>
+                    <p>TPA request system with countdown, spawn with configurable countdown and death respawn, back command, and toggle for receiving requests.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">&#x1F441;</div>
@@ -123,8 +132,8 @@
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">&#x2699;</div>
-                    <h3>Administration</h3>
-                    <p>In-game settings GUI, paginated help menu, fully configurable messages and templates, live reload, and built-in update checker.</p>
+                    <h3>Modular & Configurable</h3>
+                    <p>13 toggleable modules in config.yml, in-game settings GUI, paginated help menu, fully configurable messages, live reload, and auto-updating config.</p>
                 </div>
             </div>
         </div>
@@ -269,7 +278,7 @@
                     <h3>GitHub</h3>
                     <p>Source code & releases</p>
                 </a>
-                <a href="https://www.spigotmc.org/resources/axentra.122267/" target="_blank" class="download-card">
+                <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" class="download-card">
                     <div class="download-icon">
                         <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h7v2H7v-2z"/></svg>
                     </div>

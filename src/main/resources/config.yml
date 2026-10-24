@@ -195,6 +195,13 @@ vanish-action-bar: true
 vanish-action-bar-interval: 40
 
 # ┌─────────────────────────────────────────────────────────┐
+# │               Staff Management Settings                 │
+# └─────────────────────────────────────────────────────────┘
+
+# Cooldown in seconds between /report commands per player.
+report-cooldown-seconds: 60
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                  Module Toggles                         │
 # └─────────────────────────────────────────────────────────┘
 #
@@ -203,10 +210,40 @@ vanish-action-bar-interval: 40
 # Requires a server restart (not just /axentra reload) to take effect.
 
 enabled-modules:
+  # Teleportation
   tpa: true
   spawn: true
   back: true
+
+  # Chat & messaging
   messaging: true
+  # Disable this if you use another chat plugin (e.g. EssentialsChat, ChatControl).
+  # When false, Axentra will NOT listen to chat events at all — mutechat, slowchat,
+  # staffchat toggle, and chat history for cases will be disabled.
+  # Mute enforcement and mute-blocked-commands will still work independently.
+  chat-management: true
+  # /nick, /realname, /me
+  nickname: true
+  # /discord, /website, /store
+  social-commands: true
+
+  # Player utilities
+  # /fly, /heal, /feed, /god, /speed, /gamemode, /clear, /repair, /hat, /suicide, /ping
+  player-utilities: true
+  # /vanish
+  vanish: true
+  # /invsee, /enderchestsee
+  invsee: true
+
+  # World utilities
+  # /anvil, /workbench, /cartography, /grindstone, /loom, /smithingtable, /stonecutter, /enderchest
+  workbench-commands: true
+  # /weather, /sun, /rain, /storm, /time, /day, /night, /noon, /midnight
+  weather-time: true
+
+  # Staff management
+  # /duty, /staffmode, /report, /reports, /staffstats, /stafflist
+  staff-management: true
 
 # ══════════════════════════════════════════════════════════
 #                     End of Config

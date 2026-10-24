@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://axentramc.com/sitemap.xml

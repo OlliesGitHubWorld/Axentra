@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wiki - Axentra</title>
-    <meta name="description" content="Axentra documentation - Installation, commands, permissions, and configuration guide.">
+    <meta name="description" content="Axentra Wiki — Full documentation for the Axentra Minecraft plugin. Installation guide, 60+ commands, permissions, and configuration reference.">
+    <meta name="keywords" content="Axentra, AxentraMC, Axentra wiki, Minecraft plugin documentation, Axentra commands, Axentra permissions, Axentra configuration, Spigot plugin">
     <meta name="theme-color" content="#00bcd4">
+    <link rel="canonical" href="https://axentramc.com/wiki.html">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,7 +22,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">Axentra</a>
+            <a href="/" class="nav-logo">Axentra</a>
             <div class="nav-links">
                 <a href="index.html#features">Features</a>
                 <a href="index.html#screenshots">Screenshots</a>
@@ -67,6 +70,7 @@
                 <a href="#installation" class="sidebar-link">Installation</a>
                 <a href="#commands" class="sidebar-link">Commands</a>
                 <div class="sidebar-sub">
+                    <a href="#cmd-staff-management">Staff Management</a>
                     <a href="#cmd-smart-moderation">Smart Moderation</a>
                     <a href="#cmd-chat">Chat Control</a>
                     <a href="#cmd-messaging">Messaging</a>
@@ -136,7 +140,7 @@
                 <p>Download the latest <code>axentra-x.x.x.jar</code> from one of these sources:</p>
                 <ul>
                     <li><a href="https://github.com/OlliesGitHubWorld/Axentra/releases/latest" target="_blank">GitHub Releases</a> (recommended)</li>
-                    <li><a href="https://www.spigotmc.org/resources/axentra.122267/" target="_blank">SpigotMC</a></li>
+                    <li><a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank">SpigotMC</a></li>
                     <li><a href="https://modrinth.com/plugin/axentra" target="_blank">Modrinth</a></li>
                 </ul>
 
@@ -168,7 +172,36 @@ cd Axentra
             <!-- Commands -->
             <section id="commands" class="wiki-section">
                 <h1>Commands</h1>
-                <p>Axentra provides 60+ commands organized into categories. All commands, messages, and permissions are fully configurable.</p>
+                <p>Axentra provides 70+ commands organized into categories. All commands, messages, and permissions are fully configurable.</p>
+
+                <h2 id="cmd-staff-management">Staff Management</h2>
+                <p>The staff management system introduced in v1.6.0. Toggle duty, enter staffmode with tools, handle player reports, and track staff performance.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/duty</code></td><td>&mdash;</td><td>Toggle on/off duty status (tracked with sessions)</td><td><code>Axentra.duty</code></td></tr>
+                            <tr><td><code>/staffmode</code></td><td><code>/sm</code></td><td>Enter staffmode: saves inventory, gives staff tools, auto-vanishes</td><td><code>Axentra.staffmode</code></td></tr>
+                            <tr><td><code>/report &lt;player&gt; &lt;reason&gt;</code></td><td>&mdash;</td><td>Report a player (with cooldown and chat log snapshot)</td><td><code>Axentra.report</code></td></tr>
+                            <tr><td><code>/reports</code></td><td>&mdash;</td><td>Open the reports GUI to view and claim open reports</td><td><code>Axentra.reports</code></td></tr>
+                            <tr><td><code>/staffstats [player|top]</code></td><td>&mdash;</td><td>View staff statistics (cases, duty time, reports closed)</td><td><code>Axentra.staffstats</code></td></tr>
+                            <tr><td><code>/stafflist</code></td><td>&mdash;</td><td>View online staff with duty status</td><td><code>Axentra.stafflist</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="wiki-info-box">
+                    <h4>Staffmode Tools</h4>
+                    <p>When in staffmode, your hotbar contains these tools:</p>
+                    <ul>
+                        <li><strong>Compass</strong> &mdash; Random teleport to a non-staff player</li>
+                        <li><strong>Ice</strong> &mdash; Right-click a player to freeze/unfreeze them</li>
+                        <li><strong>Book</strong> &mdash; Right-click a player to open their inventory (/invsee)</li>
+                        <li><strong>Paper</strong> &mdash; Right-click a player to view their history</li>
+                        <li><strong>Ender Eye</strong> &mdash; Toggle vanish on/off</li>
+                        <li><strong>Redstone</strong> &mdash; Exit staffmode (restores your inventory)</li>
+                    </ul>
+                </div>
 
                 <h2 id="cmd-smart-moderation">Smart Moderation</h2>
                 <p>The case-based moderation system introduced in v1.5.0. Every punishment creates a tracked case with a unique ID.</p>
@@ -278,8 +311,8 @@ cd Axentra
                     <table>
                         <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
                         <tbody>
-                            <tr><td><code>/spawn [player]</code></td><td>Teleport to world spawn</td><td><code>Axentra.spawn</code></td></tr>
-                            <tr><td><code>/setspawn</code></td><td>Set the world spawn</td><td><code>Axentra.setspawn</code></td></tr>
+                            <tr><td><code>/spawn [player]</code></td><td>Teleport to server spawn</td><td><code>Axentra.spawn</code></td></tr>
+                            <tr><td><code>/setspawn</code></td><td>Set the server spawn (exact location, centered on block)</td><td><code>Axentra.setspawn</code></td></tr>
                             <tr><td><code>/back</code></td><td>Return to previous location</td><td><code>Axentra.back</code></td></tr>
                             <tr><td><code>/tpa &lt;player&gt;</code></td><td>Send a teleport request</td><td><code>Axentra.tpa</code></td></tr>
                             <tr><td><code>/tpaccept</code></td><td>Accept a teleport request</td><td><code>Axentra.tpa</code></td></tr>
@@ -352,6 +385,12 @@ cd Axentra
                             <tr><td><code>Axentra.history</code></td><td>OP</td><td>View player moderation history</td></tr>
                             <tr><td><code>Axentra.note</code></td><td>OP</td><td>Manage staff notes + join notifications</td></tr>
                             <tr><td><code>Axentra.auditlog</code></td><td>OP</td><td>View the audit log</td></tr>
+                            <tr><td><code>Axentra.duty</code></td><td>OP</td><td>Toggle duty status</td></tr>
+                            <tr><td><code>Axentra.staffmode</code></td><td>OP</td><td>Toggle staffmode</td></tr>
+                            <tr><td><code>Axentra.report</code></td><td>Everyone</td><td>Report a player</td></tr>
+                            <tr><td><code>Axentra.reports</code></td><td>OP</td><td>View and manage reports</td></tr>
+                            <tr><td><code>Axentra.staffstats</code></td><td>OP</td><td>View staff statistics</td></tr>
+                            <tr><td><code>Axentra.stafflist</code></td><td>OP</td><td>View online staff list</td></tr>
                             <tr><td><code>Axentra.broadcast</code></td><td>OP</td><td>Use /broadcast</td></tr>
                             <tr><td><code>Axentra.clearchat</code></td><td>OP</td><td>Use /clearchat</td></tr>
                             <tr><td><code>Axentra.clearchat.bypass</code></td><td>OP</td><td>Chat not cleared by /clearchat</td></tr>
@@ -381,6 +420,8 @@ cd Axentra
                             <tr><td><code>Axentra.mute</code></td><td>OP</td><td>Use /mute</td></tr>
                             <tr><td><code>Axentra.tempmute</code></td><td>OP</td><td>Use /tempmute</td></tr>
                             <tr><td><code>Axentra.unmute</code></td><td>OP</td><td>Use /unmute</td></tr>
+                            <tr><td><code>Axentra.notify.kick</code></td><td>OP</td><td>See kick announcements</td></tr>
+                            <tr><td><code>Axentra.notify.ban</code></td><td>OP</td><td>See ban/unban announcements</td></tr>
                             <tr><td><code>Axentra.notify.warn</code></td><td>OP</td><td>See warn announcements</td></tr>
                             <tr><td><code>Axentra.notify.mute</code></td><td>OP</td><td>See mute/unmute announcements</td></tr>
                             <tr><td><code>Axentra.spawn</code></td><td>Everyone</td><td>Use /spawn on yourself</td></tr>
@@ -437,11 +478,16 @@ cd Axentra
                 <p>The main configuration file with all plugin settings.</p>
 
                 <h3>Spawn Settings</h3>
+                <div class="wiki-info-box">
+                    <strong>Spawn behavior:</strong> Use <code>/setspawn</code> to save an exact spawn point (centered on the block, with direction). Players will be teleported to this exact location when using <code>/spawn</code> or respawning after death (unless they have a bed or respawn anchor set).
+                </div>
                 <div class="wiki-table-wrapper">
                     <table>
                         <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
                         <tbody>
-                            <tr><td><code>spawn-world</code></td><td><code>""</code></td><td>World whose spawn is used. Leave empty for default world.</td></tr>
+                            <tr><td><code>spawn.world</code></td><td><em>auto</em></td><td>Set automatically by <code>/setspawn</code>. World name for spawn.</td></tr>
+                            <tr><td><code>spawn.x / y / z</code></td><td><em>auto</em></td><td>Exact spawn coordinates (centered on block).</td></tr>
+                            <tr><td><code>spawn.yaw / pitch</code></td><td><em>auto</em></td><td>Player look direction at spawn.</td></tr>
                             <tr><td><code>join-location</code></td><td><code>last-location</code></td><td><code>last-location</code> or <code>spawn</code> &mdash; where players are sent on join</td></tr>
                             <tr><td><code>spawn-countdown</code></td><td><code>true</code></td><td>Show countdown before /spawn teleport</td></tr>
                             <tr><td><code>spawn-countdown-seconds</code></td><td><code>3</code></td><td>Countdown duration in seconds</td></tr>

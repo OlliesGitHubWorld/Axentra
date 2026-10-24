@@ -1,0 +1,75 @@
+name: Deploy to Hangar
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: chmod +x mvnw && ./mvnw package -DskipTests
+
+      - name: Authenticate with Hangar
+        id: auth
+        run: |
+          AUTH_RESPONSE=$(curl -s -X POST "https://hangar.papermc.io/api/v1/authenticate?apiKey=${{ secrets.HANGAR_API_KEY }}")
+          JWT=$(echo "$AUTH_RESPONSE" | jq -r '.token')
+          if [ "$JWT" = "null" ] || [ -z "$JWT" ]; then
+            echo "Authentication failed: $AUTH_RESPONSE"
+            exit 1
+          fi
+          echo "JWT=$JWT" >> $GITHUB_OUTPUT
+
+      - name: Prepare version metadata
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          # Use the GitHub release body as description
+          cat > version.json <<EOF
+          {
+            "version": "$VERSION",
+            "pluginDependencies": {},
+            "platformDependencies": {
+              "PAPER": ["1.21","1.21.1","1.21.2","1.21.3","1.21.4","1.21.5","1.21.6","1.21.7","1.21.8","1.21.9","1.21.10","1.21.11"]
+            },
+            "description": $(echo "$RELEASE_BODY" | jq -Rs .),
+            "channel": "Release",
+            "files": [
+              {
+                "platforms": ["PAPER"]
+              }
+            ]
+          }
+          EOF
+        env:
+          RELEASE_BODY: ${{ github.event.release.body }}
+
+      - name: Upload to Hangar
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          RESPONSE=$(curl -s -X POST "https://hangar.papermc.io/api/v1/projects/Axentra/upload" \
+            -H "Authorization: ${{ steps.auth.outputs.JWT }}" \
+            -F "versionUpload=@version.json;type=application/json" \
+            -F "files=@target/axentra-${VERSION}.jar")
+
+          if echo "$RESPONSE" | jq -e '.url' > /dev/null 2>&1; then
+            echo "Deployed successfully!"
+            echo "$RESPONSE" | jq -r '.url'
+          else
+            echo "Upload failed: $RESPONSE"
+            exit 1
+          fi

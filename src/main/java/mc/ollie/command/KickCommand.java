@@ -97,9 +97,14 @@ public class KickCommand implements CommandExecutor, TabCompleter {
                 + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-kick")) {
-            plugin.getServer().broadcastMessage(getMessage("kick-announce")
+            String announceMsg = getMessage("kick-announce")
                     .replace("%player%", target.getName())
-                    .replace("%reason%", reason));
+                    .replace("%reason%", reason);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.kick")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>mc.ollie</groupId>
   <artifactId>axentra</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
@@ -56,6 +56,28 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <filters>
+                <filter>
+                  <artifact>org.xerial:sqlite-jdbc</artifact>
+                  <excludes>
+                    <!-- Exclude native libs for platforms not used by Minecraft servers -->
+                    <exclude>org/sqlite/native/FreeBSD/**</exclude>
+                    <exclude>org/sqlite/native/Linux/aarch64/**</exclude>
+                    <exclude>org/sqlite/native/Linux/arm/**</exclude>
+                    <exclude>org/sqlite/native/Linux/armv6/**</exclude>
+                    <exclude>org/sqlite/native/Linux/armv7/**</exclude>
+                    <exclude>org/sqlite/native/Linux/x86/**</exclude>
+                    <exclude>org/sqlite/native/Linux/ppc64/**</exclude>
+                    <exclude>org/sqlite/native/Linux/riscv64/**</exclude>
+                    <exclude>org/sqlite/native/Linux-Android/**</exclude>
+                    <exclude>org/sqlite/native/Linux-Musl/**</exclude>
+                    <exclude>org/sqlite/native/Mac/aarch64/**</exclude>
+                    <exclude>org/sqlite/native/Mac/x86_64/**</exclude>
+                    <exclude>org/sqlite/native/Windows/armv7/**</exclude>
+                    <exclude>org/sqlite/native/Windows/x86/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <relocations>
                 <relocation>
                   <pattern>org.sqlite</pattern>

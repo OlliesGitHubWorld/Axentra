@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Changelog - Axentra</title>
-    <meta name="description" content="Axentra changelog - see what's new in every update.">
+    <meta name="description" content="Axentra Changelog — See what's new in every update of the Axentra Minecraft server management plugin. New features, bug fixes, and improvements.">
+    <meta name="keywords" content="Axentra, AxentraMC, Axentra changelog, Axentra updates, Minecraft plugin updates">
     <meta name="theme-color" content="#00bcd4">
+    <link rel="canonical" href="https://axentramc.com/changelog.html">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -125,7 +128,7 @@
 
     <nav class="nav">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">Axentra</a>
+            <a href="/" class="nav-logo">Axentra</a>
             <div class="nav-links">
                 <a href="index.html#features">Features</a>
                 <a href="index.html#screenshots">Screenshots</a>
@@ -149,11 +152,84 @@
         <h1>Changelog</h1>
         <p class="changelog-lead">Everything that's changed in Axentra.</p>
 
+        <!-- v1.6.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.6.0</h2>
+                <span class="tag">Latest</span>
+            </div>
+            <p class="changelog-date">October 2026 &mdash; Staff Management &amp; Website Overhaul</p>
+
+            <div class="changelog-section">
+                <h3>Staff Management System</h3>
+                <ul>
+                    <li><strong>Staff Duty</strong> &mdash; <code>/duty</code> to toggle on/off duty with tracked sessions and duty time stats</li>
+                    <li><strong>Staffmode</strong> &mdash; <code>/staffmode</code> saves inventory, gives staff tools (random TP, freeze, invsee, history), and auto-vanishes</li>
+                    <li><strong>Player Reports</strong> &mdash; <code>/report &lt;player&gt; &lt;reason&gt;</code> with cooldown, chat log snapshots, and staff notifications</li>
+                    <li><strong>Reports GUI</strong> &mdash; <code>/reports</code> opens a GUI with all open reports; click to claim and teleport</li>
+                    <li><strong>Staff Stats</strong> &mdash; <code>/staffstats [player|top]</code> shows cases, bans, kicks, mutes, warns, reports closed, and duty time</li>
+                    <li><strong>Staff List</strong> &mdash; <code>/stafflist</code> shows all online staff with duty status indicators</li>
+                    <li><strong>Freeze System</strong> &mdash; Right-click players with the ice tool in staffmode to freeze/unfreeze them</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Permission-based Announcements</h3>
+                <ul>
+                    <li>Kick announcements now require <code>Axentra.notify.kick</code> instead of broadcasting to all players</li>
+                    <li>Ban/tempban/unban/banip/tempbanip announcements now require <code>Axentra.notify.ban</code> instead of broadcasting to all players</li>
+                    <li>Mute/unmute/tempmute already used <code>Axentra.notify.mute</code> (unchanged)</li>
+                    <li>Warn already used <code>Axentra.notify.warn</code> (unchanged)</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Config Auto-update</h3>
+                <ul>
+                    <li>New config keys are automatically added to existing <code>config.yml</code> when updating the plugin &mdash; no more deleting your config to get new options</li>
+                    <li>Works on server start, <code>/axentra reload</code>, and <code>/plugman reload Axentra</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Modular System &mdash; 13 Toggleable Modules</h3>
+                <ul>
+                    <li>Every feature group can now be enabled/disabled in <code>config.yml</code> under <code>enabled-modules</code></li>
+                    <li><strong>player-utilities</strong> &mdash; fly, heal, feed, god, speed, gamemode, clear, repair, hat, suicide, ping</li>
+                    <li><strong>vanish</strong> &mdash; vanish</li>
+                    <li><strong>invsee</strong> &mdash; invsee, enderchestsee</li>
+                    <li><strong>workbench-commands</strong> &mdash; anvil, workbench, cartography, grindstone, loom, smithingtable, stonecutter, enderchest</li>
+                    <li><strong>weather-time</strong> &mdash; weather, sun, rain, storm, time, day, night, noon, midnight</li>
+                    <li><strong>spawn</strong> &mdash; spawn, setspawn</li>
+                    <li><strong>back</strong> &mdash; back</li>
+                    <li><strong>tpa</strong> &mdash; tpa, tpaccept, tpdeny, tpacancel, tptoggle</li>
+                    <li><strong>chat-management</strong> &mdash; clearchat, mutechat, slowchat, staffchat + chat listener</li>
+                    <li><strong>messaging</strong> &mdash; msg, reply, msgtoggle</li>
+                    <li><strong>nickname</strong> &mdash; nick, realname, me</li>
+                    <li><strong>social-commands</strong> &mdash; discord, website, store</li>
+                    <li><strong>staff-management</strong> &mdash; duty, staffmode, report, reports, staffstats, stafflist</li>
+                    <li>Moderation commands (kick, ban, mute, warn, case, history, etc.) are always enabled as core features</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>New Website</h3>
+                <ul>
+                    <li>Completely redesigned website at <a href="https://axentramc.com">axentramc.com</a></li>
+                    <li>Homepage with features overview, screenshots, and download links</li>
+                    <li>Full wiki with installation guide, commands, permissions, and configuration reference</li>
+                    <li>Changelog page</li>
+                    <li>Dark/light theme toggle</li>
+                    <li>SEO optimized with sitemap, robots.txt, and meta tags</li>
+                    <li>Mobile responsive design</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.5.0 -->
         <div class="changelog-entry">
             <div class="changelog-version">
                 <h2>v1.5.0</h2>
-                <span class="tag">Latest</span>
             </div>
             <p class="changelog-date">October 2026 &mdash; Smart Moderation Update</p>
 

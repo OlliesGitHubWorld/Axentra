@@ -2,6 +2,7 @@ package mc.ollie.command;
 
 import mc.ollie.App;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,7 +38,24 @@ public class SetSpawnCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        player.getWorld().setSpawnLocation(player.getLocation());
+        Location loc = player.getLocation();
+
+        // Center on block if standing on a block corner
+        double x = Math.floor(loc.getX()) + 0.5;
+        double z = Math.floor(loc.getZ()) + 0.5;
+
+        // Save exact location to config
+        plugin.getConfig().set("spawn.world", loc.getWorld().getName());
+        plugin.getConfig().set("spawn.x", x);
+        plugin.getConfig().set("spawn.y", loc.getY());
+        plugin.getConfig().set("spawn.z", z);
+        plugin.getConfig().set("spawn.yaw", (double) loc.getYaw());
+        plugin.getConfig().set("spawn.pitch", (double) loc.getPitch());
+        plugin.saveConfig();
+
+        // Also set the world spawn location
+        player.getWorld().setSpawnLocation(loc);
+
         player.sendMessage(getMessage("setspawn-success"));
         return true;
     }

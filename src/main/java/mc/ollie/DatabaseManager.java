@@ -125,6 +125,62 @@ public class DatabaseManager {
         }
     }
 
+    public static class ReportInfo {
+        public final int id;
+        public final String targetName;
+        public final String targetUuid;
+        public final String reason;
+        public final String reporterName;
+        public final String reporterUuid;
+        public final String reportedAt;
+        public final String status; // OPEN, CLAIMED, CLOSED
+        public final String claimedBy;
+        public final String closedBy;
+        public final Integer linkedCaseId;
+        public final String chatLog;
+
+        public ReportInfo(int id, String targetName, String targetUuid, String reason,
+                         String reporterName, String reporterUuid, String reportedAt,
+                         String status, String claimedBy, String closedBy, Integer linkedCaseId, String chatLog) {
+            this.id = id;
+            this.targetName = targetName;
+            this.targetUuid = targetUuid;
+            this.reason = reason;
+            this.reporterName = reporterName;
+            this.reporterUuid = reporterUuid;
+            this.reportedAt = reportedAt;
+            this.status = status;
+            this.claimedBy = claimedBy;
+            this.closedBy = closedBy;
+            this.linkedCaseId = linkedCaseId;
+            this.chatLog = chatLog;
+        }
+    }
+
+    public static class StaffStat {
+        public final String staffName;
+        public final int totalCases;
+        public final int reportsClosed;
+        public final long dutyMinutes;
+
+        public StaffStat(String staffName, int totalCases, int reportsClosed, long dutyMinutes) {
+            this.staffName = staffName;
+            this.totalCases = totalCases;
+            this.reportsClosed = reportsClosed;
+            this.dutyMinutes = dutyMinutes;
+        }
+    }
+
+    public static class LeaderboardEntry {
+        public final String staffName;
+        public final int caseCount;
+
+        public LeaderboardEntry(String staffName, int caseCount) {
+            this.staffName = staffName;
+            this.caseCount = caseCount;
+        }
+    }
+
     // ── Setup ───────────────────────────────────────────────
 
     public void setup() {
@@ -236,6 +292,34 @@ public class DatabaseManager {
                                 "target TEXT," +
                                 "details TEXT," +
                                 "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                                ")"
+                );
+
+                // ── Staff Management tables (v1.6.0) ──
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS reports (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "target_name TEXT NOT NULL," +
+                                "target_uuid TEXT NOT NULL," +
+                                "reason TEXT," +
+                                "reporter_name TEXT NOT NULL," +
+                                "reporter_uuid TEXT NOT NULL," +
+                                "reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                                "status TEXT DEFAULT 'OPEN'," +
+                                "claimed_by TEXT," +
+                                "closed_by TEXT," +
+                                "linked_case_id INTEGER," +
+                                "chat_log TEXT" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS staff_sessions (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "staff_uuid TEXT NOT NULL," +
+                                "started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                                "ended_at TIMESTAMP" +
                                 ")"
                 );
             }
@@ -886,6 +970,209 @@ public class DatabaseManager {
             }
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to get filtered audit log: " + e.getMessage());
+        }
+        return entries;
+    }
+
+    // ── Reports (v1.6.0) ────────────────────────────────────
+
+    public int createReport(String targetName, String targetUuid, String reason,
+                            String reporterName, String reporterUuid, String chatLog) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO reports (target_name, target_uuid, reason, reporter_name, reporter_uuid, chat_log) VALUES (?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, targetName);
+            stmt.setString(2, targetUuid);
+            stmt.setString(3, reason);
+            stmt.setString(4, reporterName);
+            stmt.setString(5, reporterUuid);
+            stmt.setString(6, chatLog);
+            stmt.executeUpdate();
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to create report: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    public ReportInfo getReport(int reportId) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT * FROM reports WHERE id = ?")) {
+            stmt.setInt(1, reportId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new ReportInfo(
+                            rs.getInt("id"), rs.getString("target_name"), rs.getString("target_uuid"),
+                            rs.getString("reason"), rs.getString("reporter_name"), rs.getString("reporter_uuid"),
+                            rs.getString("reported_at"), rs.getString("status"), rs.getString("claimed_by"),
+                            rs.getString("closed_by"),
+                            rs.getObject("linked_case_id") != null ? rs.getInt("linked_case_id") : null,
+                            rs.getString("chat_log"));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get report: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<ReportInfo> getOpenReports() {
+        List<ReportInfo> reports = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM reports WHERE status = 'OPEN' ORDER BY reported_at DESC")) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reports.add(new ReportInfo(
+                            rs.getInt("id"), rs.getString("target_name"), rs.getString("target_uuid"),
+                            rs.getString("reason"), rs.getString("reporter_name"), rs.getString("reporter_uuid"),
+                            rs.getString("reported_at"), rs.getString("status"), rs.getString("claimed_by"),
+                            rs.getString("closed_by"),
+                            rs.getObject("linked_case_id") != null ? rs.getInt("linked_case_id") : null,
+                            rs.getString("chat_log")));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get open reports: " + e.getMessage());
+        }
+        return reports;
+    }
+
+    public void claimReport(int reportId, String staffName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE reports SET status = 'CLAIMED', claimed_by = ? WHERE id = ?")) {
+            stmt.setString(1, staffName);
+            stmt.setInt(2, reportId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to claim report: " + e.getMessage());
+        }
+    }
+
+    public void closeReport(int reportId, String staffName, Integer linkedCaseId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE reports SET status = 'CLOSED', closed_by = ?, linked_case_id = ? WHERE id = ?")) {
+            stmt.setString(1, staffName);
+            if (linkedCaseId != null) stmt.setInt(2, linkedCaseId);
+            else stmt.setNull(2, java.sql.Types.INTEGER);
+            stmt.setInt(3, reportId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to close report: " + e.getMessage());
+        }
+    }
+
+    // ── Staff Sessions (v1.6.0) ─────────────────────────────
+
+    public void startDutySession(String staffUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO staff_sessions (staff_uuid) VALUES (?)")) {
+            stmt.setString(1, staffUuid);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to start duty session: " + e.getMessage());
+        }
+    }
+
+    public void endDutySession(String staffUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE staff_sessions SET ended_at = CURRENT_TIMESTAMP WHERE staff_uuid = ? AND ended_at IS NULL")) {
+            stmt.setString(1, staffUuid);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to end duty session: " + e.getMessage());
+        }
+    }
+
+    public long getStaffDutyMinutes(String staffUuid, String period) {
+        String condition;
+        switch (period) {
+            case "day": condition = "AND started_at >= datetime('now', '-1 day')"; break;
+            case "week": condition = "AND started_at >= datetime('now', '-7 days')"; break;
+            default: condition = ""; break;
+        }
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT SUM((julianday(COALESCE(ended_at, CURRENT_TIMESTAMP)) - julianday(started_at)) * 1440) as minutes " +
+                "FROM staff_sessions WHERE staff_uuid = ? " + condition)) {
+            stmt.setString(1, staffUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return (long) rs.getDouble("minutes");
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get duty time: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // ── Staff Stats (v1.6.0) ────────────────────────────────
+
+    public int getStaffCaseCount(String staffName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT COUNT(*) FROM cases WHERE LOWER(issued_by) = LOWER(?)")) {
+            stmt.setString(1, staffName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get staff case count: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int getStaffCaseCountByType(String staffName, String type) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT COUNT(*) FROM cases WHERE LOWER(issued_by) = LOWER(?) AND type = ?")) {
+            stmt.setString(1, staffName);
+            stmt.setString(2, type);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get staff case count by type: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int getStaffReportsClosed(String staffName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT COUNT(*) FROM reports WHERE LOWER(closed_by) = LOWER(?)")) {
+            stmt.setString(1, staffName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get staff reports closed: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public String getUuidByName(String playerName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT player_uuid FROM cases WHERE LOWER(player_name) = LOWER(?) AND player_uuid IS NOT NULL LIMIT 1")) {
+            stmt.setString(1, playerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getString("player_uuid");
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get UUID by name: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<LeaderboardEntry> getStaffLeaderboard(int limit) {
+        List<LeaderboardEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT issued_by, COUNT(*) as total FROM cases GROUP BY LOWER(issued_by) ORDER BY total DESC LIMIT ?")) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String name = rs.getString("issued_by");
+                    int total = rs.getInt("total");
+                    entries.add(new LeaderboardEntry(name, total));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get staff leaderboard: " + e.getMessage());
         }
         return entries;
     }
