@@ -1,6 +1,6 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.6.0-blue?style=flat-square)
 ![Minecraft](https://img.shields.io/badge/minecraft-1.21-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
@@ -10,57 +10,53 @@
 
 **A powerful, lightweight Minecraft server management plugin.**
 
-**[Download](https://github.com/OlliesGitHubWorld/Axentra/releases/latest)** | **[Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki)** | **[Report Bug](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=bug_report.md)** | **[Request Feature](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=feature_request.md)**
+**[Website](https://axentramc.com)** | **[Download](https://github.com/OlliesGitHubWorld/Axentra/releases/latest)** | **[Wiki](https://axentramc.com/wiki.html)** | **[Report Bug](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=bug_report.md)** | **[Request Feature](https://github.com/OlliesGitHubWorld/Axentra/issues/new?template=feature_request.md)**
 
 </div>
 
 ---
 
-## What's New in v1.5.0
+## What's New in v1.6.0
 
-- **Punishment GUI** — `/punish <player>` with customizable templates organized by category
-- **Case System** — Every punishment creates a tracked case with unique ID, viewable via `/case <id>`
-- **History GUI** — `/history <player>` with color-coded cases and pagination
-- **Staff Notes** — `/note` and `/notes` with automatic join notifications
-- **Audit Log** — `/auditlog <staff>` tracks all staff actions with timestamps
-- **Chat Log Snapshots** — Last 20 messages per player attached to cases automatically
-- **Bug Fixes** — Fixed ban appeal in punish GUI, expiry date formatting, offline tab completion
+- **Staff Management** — `/duty`, `/staffmode`, `/report`, `/reports`, `/staffstats`, `/stafflist`
+- **Staffmode** — Tool hotbar with freeze, random TP, InvSee, history, punish, vanish toggle. Auto-fly, auto-vanish, inventory lock, and auto-duty
+- **Player Reports** — `/report <player> <reason>` with cooldown and chat snapshots, staff GUI to view and claim reports
+- **Staff Statistics** — Duty time tracking, case counts, and leaderboard
+- **Spawn Fix** — `/setspawn` now saves exact location (centered on block with direction), players respawn at spawn after death
+- **Permission-based Announcements** — `notify.kick` and `notify.ban` permissions
+- **Config Auto-update** — New config keys are added automatically on plugin update
+- **Modular System** — 13 toggleable modules in `config.yml`
 
 ---
 
 ## About
 
-Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, moderation, chat control, private messaging, teleportation, vanish, and utility commands — all fully configurable through YAML files with a built-in SQLite database.
+Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, moderation, staff tools, chat control, private messaging, teleportation, vanish, and utility commands — all fully configurable through YAML files with a built-in SQLite database.
 
 ---
 
 ## Features
 
+- **Staff Management** — Staffmode with tool hotbar, duty tracking, player reports with GUI, staff statistics and leaderboard
 - **Smart Moderation** — Punishment GUI, case system, history GUI, staff notes, audit log, chat log snapshots
-- **Custom Join & Leave Messages** — Fully customizable with color codes and placeholders
-- **First Join Detection** — Special message for first time players
-- **Staff Commands** — Kick, ban, tempban, mute, tempmute, warn and more with full reason support
-- **Warning System** — Warn players with configurable auto-punishments at thresholds
-- **Mute System** — Permanent and temporary mutes with command blocking
-- **IP Banning** — Ban and temp-ban IP addresses to block alt accounts
-- **Chat Control** — Broadcast, clear chat, mute chat, slow chat, and staff-only chat
+- **Moderation Suite** — Kick, ban, tempban, IP ban, mute, tempmute, warn with auto-punishments at thresholds
+- **Chat Control** — Broadcast, clear chat, mute chat, slow chat, staff-only chat
 - **Private Messaging** — `/msg`, `/reply`, `/msgtoggle` with social spy for staff
-- **Nicknames** — Set display names with optional color codes, persistent in database
+- **Nicknames** — Display names with color codes, persistent in database
 - **Social Links** — Configurable `/discord`, `/website`, `/store` commands
 - **Staff Settings GUI** — In-game clickable menu to toggle server settings in real-time
-- **Utility Commands** — Clear inventory, repair items, fly, heal, feed, hat and more
-- **GUI Commands** — Open anvil, workbench, cartography, grindstone, loom, smithing table, stonecutter and ender chest anywhere
-- **World Control** — Set weather and time with dedicated shortcut commands
-- **Teleportation** — `/spawn` with countdown, `/tpa` request system, and `/back` on death or teleport
-- **Vanish** — Full vanish system with ghost effect, night vision, god mode, no pickup, fake join/quit messages
-- **God Mode** — Toggle invincibility for yourself or others
+- **Utility Commands** — Clear inventory, repair items, fly, heal, feed, hat, ping, god mode, speed control
+- **Virtual Workstations** — Anvil, workbench, cartography, grindstone, loom, smithing table, stonecutter, ender chest
+- **World Control** — Weather and time commands with shortcut aliases
+- **Teleportation** — Spawn with countdown and death respawn, TPA request system, back on death/teleport
+- **Vanish** — Ghost effect, night vision, god mode, no pickup, fake join/quit messages
 - **Gamemode & Speed** — Quick gamemode switching (gms/gmc/gma/gmsp) and walk/fly speed control
-- **Inventory Inspection** — View other players' inventories and ender chests (read-only mode configurable)
-- **Announcements** — Configurable announce toggles for kicks, bans, mutes, warns
-- **Ban Appeal Link** — Show a Discord or website link on the ban screen
-- **SQLite Database** — Persistent ban, mute, warn, nickname, case, note and audit log storage
+- **Inventory Inspection** — View other players' inventories and ender chests
+- **Announcements** — Permission-based announce toggles for kicks, bans, mutes, warns
+- **Modular System** — 13 toggleable modules in config.yml
+- **SQLite Database** — Persistent storage for all data
 - **Fully Configurable** — Every message and setting is editable in YAML
-- **Live Reload** — Reload config and messages without restarting the server
+- **Config Auto-update** — New config keys added automatically on plugin update
 - **Update Notifications** — Automatically notifies admins of new updates on join
 
 ---
@@ -73,11 +69,22 @@ Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, mod
 4. Edit `plugins/Axentra/config.yml` and `plugins/Axentra/messages.yml`
 5. Run `/axentra reload` to apply your changes!
 
-For a more detailed guide, check out the [Installation Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki/Installation).
+For a more detailed guide, check out the [Wiki](https://axentramc.com/wiki.html).
 
 ---
 
 ## Commands
+
+### Staff Management
+
+| Command | Description | Permission |
+|---|---|---|
+| `/duty` | Toggle on/off duty | `Axentra.duty` |
+| `/staffmode` | Toggle staffmode with tool hotbar | `Axentra.staffmode` |
+| `/report <player> <reason>` | Report a player | `Axentra.report` |
+| `/reports` | Open the reports GUI | `Axentra.reports` |
+| `/staffstats [player]` | View staff statistics | `Axentra.staffstats` |
+| `/stafflist` | View online staff with duty status | `Axentra.stafflist` |
 
 ### Smart Moderation
 
@@ -177,8 +184,8 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 
 | Command | Aliases | Description | Permission |
 |---|---|---|---|
-| `/spawn [player]` | — | Teleports to world spawn | `Axentra.spawn` |
-| `/setspawn` | — | Sets the world spawn | `Axentra.setspawn` |
+| `/spawn [player]` | — | Teleports to server spawn | `Axentra.spawn` |
+| `/setspawn` | — | Sets the server spawn (exact, centered) | `Axentra.setspawn` |
 | `/back` | — | Teleports to your previous location | `Axentra.back` |
 | `/tpa <player>` | — | Sends a teleport request | `Axentra.tpa` |
 | `/tpaccept` | — | Accepts a teleport request | `Axentra.tpa` |
@@ -211,7 +218,7 @@ For a more detailed guide, check out the [Installation Wiki](https://github.com/
 | `/axentra help` | `/ax help` | Shows all commands | — |
 | `/axentra information` | `/ax information` | Shows plugin information | — |
 
-For a full list of commands and usage, check out the [Commands Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki/Commands).
+For the full documentation, check out the [Wiki](https://axentramc.com/wiki.html).
 
 ---
 
@@ -222,6 +229,12 @@ Permissions with **Everyone** as default are granted to all players automaticall
 | Permission | Default | Description |
 |---|---|---|
 | `Axentra.admin` | OP | Access to all `/axentra` subcommands |
+| `Axentra.duty` | OP | Toggle duty status |
+| `Axentra.staffmode` | OP | Toggle staffmode |
+| `Axentra.report` | Everyone | Report a player |
+| `Axentra.reports` | OP | View and manage reports |
+| `Axentra.staffstats` | OP | View staff statistics |
+| `Axentra.stafflist` | Everyone | View online staff list |
 | `Axentra.punish` | OP | Use the punishment GUI |
 | `Axentra.case` | OP | View moderation cases |
 | `Axentra.history` | OP | View player moderation history |
@@ -282,6 +295,8 @@ Permissions with **Everyone** as default are granted to all players automaticall
 | `Axentra.mute` | OP | Use `/mute` |
 | `Axentra.tempmute` | OP | Use `/tempmute` |
 | `Axentra.unmute` | OP | Use `/unmute` |
+| `Axentra.notify.kick` | OP | See kick announcements |
+| `Axentra.notify.ban` | OP | See ban announcements |
 | `Axentra.notify.warn` | OP | See warn announcements |
 | `Axentra.notify.mute` | OP | See mute/unmute announcements |
 | `Axentra.weather` | OP | Use weather commands |
@@ -299,7 +314,7 @@ Permissions with **Everyone** as default are granted to all players automaticall
 | `Axentra.stonecutter` | OP | Use `/stonecutter` |
 | `Axentra.enderchest` | OP | Use `/enderchest` |
 
-For the full permissions reference, check out the [Permissions Wiki](https://github.com/OlliesGitHubWorld/Axentra/wiki/Permissions).
+For the full permissions reference, check out the [Wiki](https://axentramc.com/wiki.html).
 
 ---
 
@@ -307,11 +322,11 @@ For the full permissions reference, check out the [Permissions Wiki](https://git
 
 Axentra is fully configurable through three files:
 
-- **`config.yml`** — General plugin settings: announcements, ban appeal link, warn punishments, spawn/TPA countdowns, invsee read-only mode, slow chat defaults, social media links, vanish options, and module toggles
+- **`config.yml`** — General plugin settings: module toggles, announcements, ban appeal link, warn punishments, spawn/TPA countdowns, invsee read-only mode, slow chat defaults, social media links, vanish options, report cooldown
 - **`messages.yml`** — Every message the plugin sends, supports color codes and placeholders
 - **`punishments.yml`** — Punishment GUI templates with display name, action, reason, duration and icon
 
-After making changes run `/axentra reload` to apply them without restarting the server.
+After making changes run `/axentra reload` to apply them without restarting the server. New config keys are added automatically when the plugin updates.
 
 ---
 
