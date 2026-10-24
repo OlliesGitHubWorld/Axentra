@@ -164,10 +164,15 @@ public class TempBanIpCommand implements CommandExecutor, TabCompleter {
                 .replace("%reason%", reason));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-banip")) {
-            plugin.getServer().broadcastMessage(getMessage("tempbanip-announce")
+            String announceMsg = getMessage("tempbanip-announce")
                     .replace("%player%", displayName)
                     .replace("%duration%", formattedDuration)
-                    .replace("%reason%", reason));
+                    .replace("%reason%", reason);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.ban")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

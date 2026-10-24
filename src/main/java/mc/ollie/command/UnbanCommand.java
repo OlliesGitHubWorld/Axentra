@@ -1,11 +1,13 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,8 +60,13 @@ public class UnbanCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(getMessage("unban-success").replace("%player%", playerName));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-unban")) {
-            plugin.getServer().broadcastMessage(getMessage("unban-announce")
-                    .replace("%player%", playerName));
+            String announceMsg = getMessage("unban-announce")
+                    .replace("%player%", playerName);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.ban")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

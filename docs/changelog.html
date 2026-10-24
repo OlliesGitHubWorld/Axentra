@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - Axentra</title>
+    <meta name="description" content="Axentra Changelog — See what's new in every update of the Axentra Minecraft server management plugin. New features, bug fixes, and improvements.">
+    <meta name="keywords" content="Axentra, AxentraMC, Axentra changelog, Axentra updates, Minecraft plugin updates">
+    <meta name="theme-color" content="#00bcd4">
+    <link rel="canonical" href="https://axentramc.com/changelog.html">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>const t=localStorage.getItem('axentra-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');</script>
+    <style>
+        .changelog-page {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        .changelog-page h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .changelog-lead {
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            font-size: 1.05rem;
+        }
+        .changelog-entry {
+            position: relative;
+            padding-left: 32px;
+            padding-bottom: 48px;
+            border-left: 2px solid var(--border);
+        }
+        .changelog-entry:last-child {
+            border-left-color: transparent;
+            padding-bottom: 0;
+        }
+        .changelog-entry::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 188, 212, 0.4);
+        }
+        .changelog-entry:not(:first-child)::before {
+            background: var(--border);
+            box-shadow: none;
+        }
+        .changelog-version {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .changelog-version h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+        .changelog-version .tag {
+            padding: 3px 10px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .changelog-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .changelog-section h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            margin-top: 16px;
+        }
+        .changelog-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .changelog-section li {
+            position: relative;
+            padding-left: 18px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 4px;
+        }
+        .changelog-section li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        .changelog-section li strong {
+            color: var(--text-primary);
+        }
+        @media (max-width: 480px) {
+            .changelog-page { padding: 100px 16px 60px; }
+            .changelog-page h1 { font-size: 1.75rem; }
+            .changelog-version h2 { font-size: 1.15rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Axentra</a>
+            <div class="nav-links">
+                <a href="index.html#features">Features</a>
+                <a href="index.html#screenshots">Screenshots</a>
+                <a href="index.html#commands">Commands</a>
+                <a href="wiki.html">Wiki</a>
+                <a href="index.html#download" class="nav-cta">Download</a>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="changelog-page">
+        <h1>Changelog</h1>
+        <p class="changelog-lead">Everything that's changed in Axentra.</p>
+
+        <!-- v1.6.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.6.0</h2>
+                <span class="tag">Latest</span>
+            </div>
+            <p class="changelog-date">October 2026 &mdash; Staff Management &amp; Website Overhaul</p>
+
+            <div class="changelog-section">
+                <h3>Staff Management System</h3>
+                <ul>
+                    <li><strong>Staff Duty</strong> &mdash; <code>/duty</code> to toggle on/off duty with tracked sessions and duty time stats</li>
+                    <li><strong>Staffmode</strong> &mdash; <code>/staffmode</code> saves inventory, gives staff tools (random TP, freeze, invsee, history), and auto-vanishes</li>
+                    <li><strong>Player Reports</strong> &mdash; <code>/report &lt;player&gt; &lt;reason&gt;</code> with cooldown, chat log snapshots, and staff notifications</li>
+                    <li><strong>Reports GUI</strong> &mdash; <code>/reports</code> opens a GUI with all open reports; click to claim and teleport</li>
+                    <li><strong>Staff Stats</strong> &mdash; <code>/staffstats [player|top]</code> shows cases, bans, kicks, mutes, warns, reports closed, and duty time</li>
+                    <li><strong>Staff List</strong> &mdash; <code>/stafflist</code> shows all online staff with duty status indicators</li>
+                    <li><strong>Freeze System</strong> &mdash; Right-click players with the ice tool in staffmode to freeze/unfreeze them</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Permission-based Announcements</h3>
+                <ul>
+                    <li>Kick announcements now require <code>Axentra.notify.kick</code> instead of broadcasting to all players</li>
+                    <li>Ban/tempban/unban/banip/tempbanip announcements now require <code>Axentra.notify.ban</code> instead of broadcasting to all players</li>
+                    <li>Mute/unmute/tempmute already used <code>Axentra.notify.mute</code> (unchanged)</li>
+                    <li>Warn already used <code>Axentra.notify.warn</code> (unchanged)</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Config Auto-update</h3>
+                <ul>
+                    <li>New config keys are automatically added to existing <code>config.yml</code> when updating the plugin &mdash; no more deleting your config to get new options</li>
+                    <li>Works on server start, <code>/axentra reload</code>, and <code>/plugman reload Axentra</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Modular System &mdash; 13 Toggleable Modules</h3>
+                <ul>
+                    <li>Every feature group can now be enabled/disabled in <code>config.yml</code> under <code>enabled-modules</code></li>
+                    <li><strong>player-utilities</strong> &mdash; fly, heal, feed, god, speed, gamemode, clear, repair, hat, suicide, ping</li>
+                    <li><strong>vanish</strong> &mdash; vanish</li>
+                    <li><strong>invsee</strong> &mdash; invsee, enderchestsee</li>
+                    <li><strong>workbench-commands</strong> &mdash; anvil, workbench, cartography, grindstone, loom, smithingtable, stonecutter, enderchest</li>
+                    <li><strong>weather-time</strong> &mdash; weather, sun, rain, storm, time, day, night, noon, midnight</li>
+                    <li><strong>spawn</strong> &mdash; spawn, setspawn</li>
+                    <li><strong>back</strong> &mdash; back</li>
+                    <li><strong>tpa</strong> &mdash; tpa, tpaccept, tpdeny, tpacancel, tptoggle</li>
+                    <li><strong>chat-management</strong> &mdash; clearchat, mutechat, slowchat, staffchat + chat listener</li>
+                    <li><strong>messaging</strong> &mdash; msg, reply, msgtoggle</li>
+                    <li><strong>nickname</strong> &mdash; nick, realname, me</li>
+                    <li><strong>social-commands</strong> &mdash; discord, website, store</li>
+                    <li><strong>staff-management</strong> &mdash; duty, staffmode, report, reports, staffstats, stafflist</li>
+                    <li>Moderation commands (kick, ban, mute, warn, case, history, etc.) are always enabled as core features</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>New Website</h3>
+                <ul>
+                    <li>Completely redesigned website at <a href="https://axentramc.com">axentramc.com</a></li>
+                    <li>Homepage with features overview, screenshots, and download links</li>
+                    <li>Full wiki with installation guide, commands, permissions, and configuration reference</li>
+                    <li>Changelog page</li>
+                    <li>Dark/light theme toggle</li>
+                    <li>SEO optimized with sitemap, robots.txt, and meta tags</li>
+                    <li>Mobile responsive design</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.5.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.5.0</h2>
+            </div>
+            <p class="changelog-date">October 2026 &mdash; Smart Moderation Update</p>
+
+            <div class="changelog-section">
+                <h3>New Features</h3>
+                <ul>
+                    <li><strong>Punishment GUI</strong> &mdash; <code>/punish &lt;player&gt;</code> opens a click-to-punish GUI with customizable templates</li>
+                    <li><strong>Case System</strong> &mdash; Every punishment creates a tracked case with unique ID, viewable via <code>/case &lt;id&gt;</code></li>
+                    <li><strong>History GUI</strong> &mdash; <code>/history &lt;player&gt;</code> shows color-coded cases with pagination</li>
+                    <li><strong>Staff Notes</strong> &mdash; <code>/note add</code> and <code>/notes</code> with automatic join notifications for staff</li>
+                    <li><strong>Audit Log</strong> &mdash; <code>/auditlog &lt;staff&gt;</code> tracks all staff actions with timestamps</li>
+                    <li><strong>Chat Log Snapshots</strong> &mdash; Last 20 messages per player attached to cases automatically</li>
+                    <li><strong>punishments.yml</strong> &mdash; New config file for punishment GUI templates</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Bug Fixes</h3>
+                <ul>
+                    <li>Fixed ban appeal link not showing when using the Punishment GUI</li>
+                    <li>Fixed expiry dates displaying raw timestamps instead of formatted dates</li>
+                    <li>Fixed tab completion only showing online players for moderation commands</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Improvements</h3>
+                <ul>
+                    <li>Offline players from the database now appear in tab completion</li>
+                    <li>Added missing messages to messages.yml for workstations and help</li>
+                    <li>Permission messages now show a proper error instead of being blank</li>
+                    <li>Removed conflicting <code>/r</code> alias from repair command</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.4.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.4.0</h2>
+            </div>
+            <p class="changelog-date">September 2026</p>
+
+            <div class="changelog-section">
+                <h3>New Features</h3>
+                <ul>
+                    <li><strong>Vanish System</strong> &mdash; Full vanish with ghost effect, fake join/quit, night vision, god mode, no pickup</li>
+                    <li><strong>God Mode</strong> &mdash; Toggle invincibility for yourself or others</li>
+                    <li><strong>Gamemode Shortcuts</strong> &mdash; <code>/gms</code>, <code>/gmc</code>, <code>/gma</code>, <code>/gmsp</code></li>
+                    <li><strong>Speed Control</strong> &mdash; <code>/speed &lt;1-10&gt; [walk|fly]</code></li>
+                    <li><strong>InvSee &amp; EnderChestSee</strong> &mdash; View other players' inventories</li>
+                    <li><strong>Staff Settings GUI</strong> &mdash; In-game clickable menu for server settings</li>
+                    <li><strong>IP Banning</strong> &mdash; <code>/banip</code> and <code>/tempbanip</code> commands</li>
+                    <li><strong>Social Spy</strong> &mdash; Staff can see private messages between players</li>
+                    <li><strong>Nicknames</strong> &mdash; Persistent nicknames with color code support</li>
+                    <li><strong>TPA System</strong> &mdash; Full teleport request system with countdown</li>
+                    <li><strong>Virtual Workstations</strong> &mdash; Anvil, workbench, grindstone, loom, and more</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Improvements</h3>
+                <ul>
+                    <li>SQLite database for persistent storage</li>
+                    <li>Configurable warn auto-punishments at thresholds</li>
+                    <li>Muted command blocking is now configurable</li>
+                    <li>Module toggles in config.yml</li>
+                    <li>Built-in update checker</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Axentra</h3>
+                    <p>Made with love by <a href="https://github.com/OlliesGitHubWorld" target="_blank">OlliesWorld</a></p>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <a href="wiki.html">Wiki</a>
+                    <a href="wiki.html#commands">Commands</a>
+                    <a href="wiki.html#permissions">Permissions</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Community</h4>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Axentra. Licensed under MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

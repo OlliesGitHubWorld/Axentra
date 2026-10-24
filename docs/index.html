@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axentra - Minecraft Server Management Plugin</title>
+    <meta name="description" content="Axentra — A powerful, lightweight Minecraft server management plugin with 60+ commands. Moderation, chat, teleportation, punishments, vanish, TPA and more. Free & open source.">
+    <meta name="keywords" content="Axentra, AxentraMC, Minecraft plugin, server management, Spigot plugin, Paper plugin, Minecraft moderation, Minecraft commands, free Minecraft plugin, open source">
+    <meta name="theme-color" content="#00bcd4">
+    <link rel="canonical" href="https://axentramc.com/">
+    <meta property="og:title" content="Axentra — The Only Plugin Your Server Needs">
+    <meta property="og:description" content="60+ commands. Zero dependencies. Moderation, punishments, vanish, TPA, and more — all in one lightweight plugin. Free & open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://axentramc.com">
+    <meta property="og:image" content="https://axentramc.com/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>const t=localStorage.getItem('axentra-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');</script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Axentra</a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#screenshots">Screenshots</a>
+                <a href="#commands">Commands</a>
+                <a href="wiki.html">Wiki</a>
+                <a href="#download" class="nav-cta">Download</a>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="container hero-content">
+            <div class="hero-badge">v1.6.0 - Staff Management &amp; Modular System</div>
+            <h1 class="hero-title">Axentra</h1>
+            <p class="hero-subtitle">A powerful, lightweight Minecraft server management plugin</p>
+            <p class="hero-desc">All-in-one server management with 60+ commands &mdash; moderation, chat, teleportation, and more. No bloat. No dependencies.</p>
+            <div class="hero-badges">
+                <img src="https://img.shields.io/github/v/release/OlliesGitHubWorld/Axentra?style=flat-square&label=Latest%20Release&color=00bcd4" alt="Latest Release">
+                <img src="https://img.shields.io/github/downloads/OlliesGitHubWorld/Axentra/total?style=flat-square&label=Downloads&color=00bcd4" alt="Downloads">
+                <img src="https://img.shields.io/github/stars/OlliesGitHubWorld/Axentra?style=flat-square&label=Stars&color=00bcd4" alt="GitHub Stars">
+                <a href="https://discord.gg/kNjvQPNTw" target="_blank"><img src="https://img.shields.io/badge/Discord-Join-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"></a>
+            </div>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-primary">Download</a>
+                <a href="wiki.html" class="btn btn-secondary">Documentation</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">60+</span>
+                    <span class="stat-label">Commands</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Config Files</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Dependencies</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Everything you need in one plugin</h2>
+            <p class="section-subtitle">Replace multiple plugins with a single, lightweight solution</p>
+            <div class="features-grid">
+                <div class="feature-card feature-highlight">
+                    <div class="feature-icon">&#x1F6E1;</div>
+                    <h3>Staff Management</h3>
+                    <p>Staffmode with tool hotbar (freeze, random TP, InvSee, punish, vanish), duty tracking, player reports with GUI, staff statistics, and auto-duty on staffmode toggle.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F528;</div>
+                    <h3>Smart Moderation</h3>
+                    <p>Punishment GUI with customizable templates, case system with unique IDs, history GUI with pagination, staff notes with join notifications, and full audit logging.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x2694;</div>
+                    <h3>Full Moderation Suite</h3>
+                    <p>Ban, tempban, IP ban, kick, mute, tempmute, warn with SQLite storage. Automatic punishments at warn thresholds. Ban appeal link on ban screen.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4AC;</div>
+                    <h3>Chat & Communication</h3>
+                    <p>Private messaging with social spy, broadcast, clear/mute/slow chat, staff chat, nicknames with color codes, and social link commands.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F3AE;</div>
+                    <h3>Player Commands</h3>
+                    <p>Fly, heal, feed, repair, clear, hat, ping, god mode, gamemode shortcuts, speed control, and custom join & leave messages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F310;</div>
+                    <h3>Teleportation</h3>
+                    <p>TPA request system with countdown, spawn with configurable countdown and death respawn, back command, and toggle for receiving requests.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F441;</div>
+                    <h3>Vanish System</h3>
+                    <p>Ghost effect for staff, fake join/quit messages, action bar indicator, configurable god mode, night vision, and no item pickup.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F9F0;</div>
+                    <h3>Utility</h3>
+                    <p>Virtual workstations (anvil, workbench, grindstone, loom, and more), InvSee, EnderChestSee, weather and time control with aliases.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x2699;</div>
+                    <h3>Modular & Configurable</h3>
+                    <p>13 toggleable modules in config.yml, in-game settings GUI, paginated help menu, fully configurable messages, live reload, and auto-updating config.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section id="screenshots" class="screenshots">
+        <div class="container">
+            <h2 class="section-title">See it in action</h2>
+            <p class="section-subtitle">Built for staff, designed to be intuitive</p>
+            <div class="screenshots-grid">
+                <div class="screenshot-card">
+                    <div class="screenshot-img-wrapper">
+                        <img src="assets/punishment-gui.png" alt="Punishment GUI" loading="lazy">
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>Punishment GUI</h3>
+                        <p>Apply punishments with one click using customizable templates organized by category.</p>
+                    </div>
+                </div>
+                <div class="screenshot-card">
+                    <div class="screenshot-img-wrapper">
+                        <img src="assets/settings-gui.png" alt="Settings GUI" loading="lazy">
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>In-Game Settings</h3>
+                        <p>Toggle announcements, gameplay and vanish settings directly from the GUI.</p>
+                    </div>
+                </div>
+                <div class="screenshot-card">
+                    <div class="screenshot-img-wrapper">
+                        <img src="assets/ban-screen.png" alt="Ban Screen" loading="lazy">
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>Ban Screen</h3>
+                        <p>Clean ban screen with reason, duration, staff name and configurable appeal link.</p>
+                    </div>
+                </div>
+                <div class="screenshot-card">
+                    <div class="screenshot-img-wrapper">
+                        <img src="assets/staff-tools.png" alt="Staff Tools" loading="lazy">
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>Staff Tools</h3>
+                        <p>Case system, staff chat, vanish and clickable history &mdash; everything staff needs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Preview -->
+    <section id="commands" class="commands">
+        <div class="container">
+            <h2 class="section-title">60+ commands, one plugin</h2>
+            <p class="section-subtitle">Every command fully configurable with permissions</p>
+            <div class="commands-tabs">
+                <button class="tab-btn active" data-tab="moderation">Moderation</button>
+                <button class="tab-btn" data-tab="chat">Chat</button>
+                <button class="tab-btn" data-tab="player">Player</button>
+                <button class="tab-btn" data-tab="teleport">Teleport</button>
+                <button class="tab-btn" data-tab="utility">Utility</button>
+            </div>
+            <div class="commands-content">
+                <div class="tab-content active" id="tab-moderation">
+                    <div class="command-list">
+                        <div class="command"><code>/punish &lt;player&gt;</code><span>Open punishment GUI</span></div>
+                        <div class="command"><code>/ban &lt;player&gt; [reason]</code><span>Permanently ban a player</span></div>
+                        <div class="command"><code>/tempban &lt;player&gt; &lt;duration&gt; [reason]</code><span>Temporarily ban a player</span></div>
+                        <div class="command"><code>/mute &lt;player&gt; [reason]</code><span>Mute a player</span></div>
+                        <div class="command"><code>/warn &lt;player&gt; [reason]</code><span>Warn a player</span></div>
+                        <div class="command"><code>/kick &lt;player&gt; [reason]</code><span>Kick a player</span></div>
+                        <div class="command"><code>/case &lt;id&gt;</code><span>View case details</span></div>
+                        <div class="command"><code>/history &lt;player&gt;</code><span>View moderation history</span></div>
+                        <div class="command"><code>/auditlog &lt;staff&gt;</code><span>View staff action log</span></div>
+                        <div class="command"><code>/notes &lt;player&gt;</code><span>View staff notes</span></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-chat">
+                    <div class="command-list">
+                        <div class="command"><code>/msg &lt;player&gt; &lt;message&gt;</code><span>Send a private message</span></div>
+                        <div class="command"><code>/reply &lt;message&gt;</code><span>Reply to last message</span></div>
+                        <div class="command"><code>/staffchat [message]</code><span>Staff-only chat</span></div>
+                        <div class="command"><code>/broadcast &lt;message&gt;</code><span>Broadcast to all players</span></div>
+                        <div class="command"><code>/mutechat</code><span>Toggle global chat mute</span></div>
+                        <div class="command"><code>/slowchat [seconds]</code><span>Toggle slow chat</span></div>
+                        <div class="command"><code>/clearchat</code><span>Clear chat</span></div>
+                        <div class="command"><code>/nick &lt;name|off&gt;</code><span>Set nickname</span></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-player">
+                    <div class="command-list">
+                        <div class="command"><code>/fly [player]</code><span>Toggle flight</span></div>
+                        <div class="command"><code>/heal [player]</code><span>Heal a player</span></div>
+                        <div class="command"><code>/feed [player]</code><span>Feed a player</span></div>
+                        <div class="command"><code>/god [player]</code><span>Toggle god mode</span></div>
+                        <div class="command"><code>/vanish [player]</code><span>Toggle vanish</span></div>
+                        <div class="command"><code>/gamemode &lt;mode&gt;</code><span>Change gamemode</span></div>
+                        <div class="command"><code>/speed &lt;1-10&gt;</code><span>Set walk/fly speed</span></div>
+                        <div class="command"><code>/invsee &lt;player&gt;</code><span>View inventory</span></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-teleport">
+                    <div class="command-list">
+                        <div class="command"><code>/tpa &lt;player&gt;</code><span>Send teleport request</span></div>
+                        <div class="command"><code>/tpaccept</code><span>Accept request</span></div>
+                        <div class="command"><code>/tpdeny</code><span>Deny request</span></div>
+                        <div class="command"><code>/spawn [player]</code><span>Teleport to spawn</span></div>
+                        <div class="command"><code>/setspawn</code><span>Set world spawn</span></div>
+                        <div class="command"><code>/back</code><span>Return to previous location</span></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-utility">
+                    <div class="command-list">
+                        <div class="command"><code>/repair</code><span>Repair held item</span></div>
+                        <div class="command"><code>/clear [player]</code><span>Clear inventory</span></div>
+                        <div class="command"><code>/hat</code><span>Wear item as hat</span></div>
+                        <div class="command"><code>/workbench</code><span>Open crafting table</span></div>
+                        <div class="command"><code>/anvil</code><span>Open anvil</span></div>
+                        <div class="command"><code>/enderchest</code><span>Open ender chest</span></div>
+                        <div class="command"><code>/day</code><span>Set time to day</span></div>
+                        <div class="command"><code>/sun</code><span>Set weather to clear</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="commands-footer">
+                <a href="wiki.html#commands" class="btn btn-secondary">View all commands</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download -->
+    <section id="download" class="download">
+        <div class="container">
+            <h2 class="section-title">Get Axentra</h2>
+            <p class="section-subtitle">Free and open source &mdash; MIT licensed</p>
+            <div class="download-cards">
+                <a href="https://github.com/OlliesGitHubWorld/Axentra/releases/latest" target="_blank" class="download-card">
+                    <div class="download-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    </div>
+                    <h3>GitHub</h3>
+                    <p>Source code & releases</p>
+                </a>
+                <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" class="download-card">
+                    <div class="download-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h7v2H7v-2z"/></svg>
+                    </div>
+                    <h3>SpigotMC</h3>
+                    <p>Reviews & discussion</p>
+                </a>
+                <a href="https://modrinth.com/plugin/axentra" target="_blank" class="download-card">
+                    <div class="download-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.89 5.89l-1.41 1.41L13.41 7.24l1.41-1.41 2.07 2.06zM8.47 9.59l5.94 5.94-1.41 1.41-5.94-5.94 1.41-1.41z"/></svg>
+                    </div>
+                    <h3>Modrinth</h3>
+                    <p>Alternative download</p>
+                </a>
+            </div>
+            <div class="requirements">
+                <h3>Requirements</h3>
+                <div class="req-items">
+                    <span class="req-badge">Spigot / Paper 1.21+</span>
+                    <span class="req-badge">Java 21+</span>
+                    <span class="req-badge">No dependencies</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Axentra</h3>
+                    <p>Made with love by <a href="https://github.com/OlliesGitHubWorld" target="_blank">OlliesWorld</a></p>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <a href="wiki.html">Wiki</a>
+                    <a href="wiki.html#commands">Commands</a>
+                    <a href="changelog.html">Changelog</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Community</h4>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Axentra. Licensed under MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

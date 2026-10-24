@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,13 +38,27 @@ public class SpawnCommand implements CommandExecutor, TabCompleter {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    private World resolveSpawnWorld() {
-        String name = plugin.getFileManager().getSettings().getString("spawn-world", "");
-        if (name != null && !name.isEmpty()) {
-            World world = Bukkit.getWorld(name);
-            if (world != null) return world;
+    public Location getSpawnLocation() {
+        FileConfiguration config = plugin.getConfig();
+        if (config.contains("spawn.world")) {
+            World world = Bukkit.getWorld(config.getString("spawn.world", ""));
+            if (world != null) {
+                return new Location(
+                        world,
+                        config.getDouble("spawn.x"),
+                        config.getDouble("spawn.y"),
+                        config.getDouble("spawn.z"),
+                        (float) config.getDouble("spawn.yaw"),
+                        (float) config.getDouble("spawn.pitch")
+                );
+            }
         }
-        return Bukkit.getWorlds().get(0);
+        // Fallback: use world spawn, centered on block
+        World world = Bukkit.getWorlds().get(0);
+        Location loc = world.getSpawnLocation();
+        loc.setX(Math.floor(loc.getX()) + 0.5);
+        loc.setZ(Math.floor(loc.getZ()) + 0.5);
+        return loc;
     }
 
     private boolean isCountdownEnabled() {
@@ -137,7 +152,7 @@ public class SpawnCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             Player player = (Player) sender;
-            Location spawn = resolveSpawnWorld().getSpawnLocation();
+            Location spawn = getSpawnLocation();
 
             if (isCountdownEnabled() && !player.hasPermission("Axentra.spawn.bypass")) {
                 startCountdown(player, spawn);
@@ -159,7 +174,7 @@ public class SpawnCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Location spawn = resolveSpawnWorld().getSpawnLocation();
+        Location spawn = getSpawnLocation();
         target.teleport(spawn);
         target.sendMessage(getMessage("spawn-received").replace("%player%", sender.getName()));
         sender.sendMessage(getMessage("spawn-other").replace("%player%", target.getName()));

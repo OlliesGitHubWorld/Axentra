@@ -121,9 +121,14 @@ public class BanCommand implements CommandExecutor, TabCompleter {
 
         // Announce if enabled
         if (plugin.getFileManager().getSettings().getBoolean("announce-ban")) {
-            plugin.getServer().broadcastMessage(getMessage("ban-announce")
+            String announceMsg = getMessage("ban-announce")
                     .replace("%player%", playerName)
-                    .replace("%reason%", reason));
+                    .replace("%reason%", reason);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.ban")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

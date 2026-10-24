@@ -116,9 +116,14 @@ public class BanIpCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(getMessage("banip-success").replace("%ip%", ip).replace("%reason%", reason));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-banip")) {
-            plugin.getServer().broadcastMessage(getMessage("banip-announce")
+            String announceMsg = getMessage("banip-announce")
                     .replace("%player%", displayName)
-                    .replace("%reason%", reason));
+                    .replace("%reason%", reason);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.hasPermission("Axentra.notify.ban")) {
+                    online.sendMessage(announceMsg);
+                }
+            }
         }
 
         return true;

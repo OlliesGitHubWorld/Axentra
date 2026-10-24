@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OG Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .og-image {
+            width: 1200px;
+            height: 630px;
+            background: #0a0e17;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Background glow */
+        .og-image::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(0, 188, 212, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Grid pattern */
+        .og-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 188, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 188, 212, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 0 80px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(0, 188, 212, 0.12);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #00bcd4;
+            margin-bottom: 28px;
+            letter-spacing: 0.02em;
+        }
+
+        .title {
+            font-size: 82px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #e8eaf0 0%, #00bcd4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 26px;
+            color: #8892a4;
+            font-weight: 400;
+            line-height: 1.5;
+            max-width: 700px;
+            margin: 0 auto 36px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 48px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #00bcd4;
+            text-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #5a6478;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-top: 2px;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 40px;
+            background: #1e2a3a;
+        }
+
+        /* Corner accents */
+        .corner {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            z-index: 1;
+        }
+
+        .corner-tl {
+            top: 24px;
+            left: 24px;
+            border-top: 2px solid rgba(0, 188, 212, 0.2);
+            border-left: 2px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .corner-tr {
+            top: 24px;
+            right: 24px;
+            border-top: 2px solid rgba(0, 188, 212, 0.2);
+            border-right: 2px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .corner-bl {
+            bottom: 24px;
+            left: 24px;
+            border-bottom: 2px solid rgba(0, 188, 212, 0.2);
+            border-left: 2px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .corner-br {
+            bottom: 24px;
+            right: 24px;
+            border-bottom: 2px solid rgba(0, 188, 212, 0.2);
+            border-right: 2px solid rgba(0, 188, 212, 0.2);
+        }
+
+        .url {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 15px;
+            color: #5a6478;
+            font-weight: 500;
+            z-index: 1;
+            letter-spacing: 0.02em;
+        }
+    </style>
+</head>
+<body>
+    <div class="og-image">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="content">
+            <div class="badge">Minecraft Server Management</div>
+            <div class="title">Axentra</div>
+            <div class="subtitle">The only plugin your server needs.
+                Moderation, chat, teleportation & more.</div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">60+</span>
+                    <span class="stat-label">Commands</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Dependencies</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">Free</span>
+                    <span class="stat-label">Open Source</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="url">axentramc.com</div>
+    </div>
+</body>
+</html>
