@@ -1,6 +1,6 @@
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.6.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.7.0-blue?style=flat-square)
 ![Minecraft](https://img.shields.io/badge/minecraft-1.21-green?style=flat-square)
 ![Java](https://img.shields.io/badge/java-21-orange?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
@@ -16,29 +16,34 @@
 
 ---
 
-## What's New in v1.6.0
+## What's New in v1.7.0 — Player Protection Update
 
-- **Staff Management** — `/duty`, `/staffmode`, `/report`, `/reports`, `/staffstats`, `/stafflist`
-- **Staffmode** — Tool hotbar with freeze, random TP, InvSee, history, punish, vanish toggle. Auto-fly, auto-vanish, inventory lock, and auto-duty
-- **Player Reports** — `/report <player> <reason>` with cooldown and chat snapshots, staff GUI to view and claim reports
-- **Staff Statistics** — Duty time tracking, case counts, and leaderboard
-- **Spawn Fix** — `/setspawn` now saves exact location (centered on block with direction), players respawn at spawn after death
-- **Permission-based Announcements** — `notify.kick` and `notify.ban` permissions
-- **Config Auto-update** — New config keys are added automatically on plugin update
-- **Modular System** — 13 toggleable modules in `config.yml`
+- **Inventory Snapshots** — Automatic snapshots on death, join, quit, world change & clear. Browse and restore via `/restoreinv` GUI
+- **Trust System** — Three-tier player trust (NEW → MEMBER → TRUSTED) with automatic progression and manual override
+- **Alt Detection** — Detect alt accounts via shared IP addresses with risk scoring and clickable alerts
+- **VPN Detection** — Automatic VPN/proxy detection via proxycheck.io with configurable actions
+- **Freeze System** — Database-persisted `/freeze` that survives restarts, blocks all actions, configurable logout punishments
+- **Player Timeline** — `/timeline` shows a player's full activity history (joins, quits, punishments, snapshots)
+- **Home System** — `/sethome`, `/home`, `/delhome`, `/homes` with paginated GUI, permission-based limits, teleport delay
+- **Staff Teleport** — `/tp`, `/tphere`, `/tpall`, `/tpahere`, `/top` commands
+- **Smart Join Alerts** — Staff see alt accounts, VPN status, trust level, and active cases on player join
+- **Case Management** — `/case resolve <id>` and `/case delete <id>` with clickable actions
+- **Auto-resolve** — Kicks and warns are now automatically resolved instead of staying active
+- **Config Auto-updater** — Template-based YML merge adds new keys with comments in the correct position
 
 ---
 
 ## About
 
-Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, moderation, staff tools, chat control, private messaging, teleportation, vanish, and utility commands — all fully configurable through YAML files with a built-in SQLite database.
+Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, moderation, player protection, staff tools, chat control, private messaging, teleportation, homes, vanish, and utility commands — all fully configurable through YAML files with a built-in SQLite database.
 
 ---
 
 ## Features
 
+- **Player Protection** — Inventory snapshots, trust system, alt detection, VPN detection, freeze system, player timeline
 - **Staff Management** — Staffmode with tool hotbar, duty tracking, player reports with GUI, staff statistics and leaderboard
-- **Smart Moderation** — Punishment GUI, case system, history GUI, staff notes, audit log, chat log snapshots
+- **Smart Moderation** — Punishment GUI, case system with resolve/delete, history GUI, staff notes, audit log, chat log snapshots
 - **Moderation Suite** — Kick, ban, tempban, IP ban, mute, tempmute, warn with auto-punishments at thresholds
 - **Chat Control** — Broadcast, clear chat, mute chat, slow chat, staff-only chat
 - **Private Messaging** — `/msg`, `/reply`, `/msgtoggle` with social spy for staff
@@ -48,15 +53,16 @@ Axentra is a Minecraft Bukkit/Spigot plugin that provides server management, mod
 - **Utility Commands** — Clear inventory, repair items, fly, heal, feed, hat, ping, god mode, speed control
 - **Virtual Workstations** — Anvil, workbench, cartography, grindstone, loom, smithing table, stonecutter, ender chest
 - **World Control** — Weather and time commands with shortcut aliases
-- **Teleportation** — Spawn with countdown and death respawn, TPA request system, back on death/teleport
+- **Home System** — Set, teleport, delete homes with paginated GUI, permission-based limits, world blacklists
+- **Teleportation** — Spawn with countdown, TPA request system, back on death/teleport, staff tp commands
 - **Vanish** — Ghost effect, night vision, god mode, no pickup, fake join/quit messages
 - **Gamemode & Speed** — Quick gamemode switching (gms/gmc/gma/gmsp) and walk/fly speed control
 - **Inventory Inspection** — View other players' inventories and ender chests
 - **Announcements** — Permission-based announce toggles for kicks, bans, mutes, warns
-- **Modular System** — 13 toggleable modules in config.yml
+- **Modular System** — 21 toggleable modules in config.yml
 - **SQLite Database** — Persistent storage for all data
 - **Fully Configurable** — Every message and setting is editable in YAML
-- **Config Auto-update** — New config keys added automatically on plugin update
+- **Config Auto-update** — New config keys added automatically with comments on plugin update
 - **Update Notifications** — Automatically notifies admins of new updates on join
 
 ---
@@ -75,6 +81,32 @@ For a more detailed guide, check out the [Wiki](https://axentramc.com/wiki.html)
 
 ## Commands
 
+### Protection & Tracking
+
+| Command | Description | Permission |
+|---|---|---|
+| `/restoreinv <player>` | View and restore inventory snapshots | `Axentra.restoreinv` |
+| `/trust <player>` | View a player's trust level | `Axentra.trust` |
+| `/trust set <player> <level>` | Set a player's trust level | `Axentra.trust.set` |
+| `/alts <player>` | View a player's alt accounts | `Axentra.alts` |
+| `/freeze <player>` | Freeze a player | `Axentra.freeze` |
+| `/unfreeze <player>` | Unfreeze a player | `Axentra.freeze` |
+| `/timeline <player> [filter]` | View a player's activity timeline | `Axentra.timeline` |
+
+### Homes & Teleport
+
+| Command | Description | Permission |
+|---|---|---|
+| `/sethome [name]` | Set a home location | `Axentra.sethome` |
+| `/home [name]` | Teleport to a home | `Axentra.home` |
+| `/delhome <name>` | Delete a home | `Axentra.delhome` |
+| `/homes [player]` | View all homes in a GUI | `Axentra.homes` |
+| `/tp <player> [player]` | Teleport to a player | `Axentra.tp` |
+| `/tphere <player>` | Teleport a player to you | `Axentra.tphere` |
+| `/tpall` | Teleport all players to you | `Axentra.tpall` |
+| `/tpahere <player>` | Request a player to teleport to you | `Axentra.tpahere` |
+| `/top` | Teleport to the highest block | `Axentra.top` |
+
 ### Staff Management
 
 | Command | Description | Permission |
@@ -92,6 +124,8 @@ For a more detailed guide, check out the [Wiki](https://axentramc.com/wiki.html)
 |---|---|---|
 | `/punish <player>` | Opens the punishment GUI with templates | `Axentra.punish` |
 | `/case <id>` | View details of a moderation case | `Axentra.case` |
+| `/case resolve <id>` | Mark a case as resolved | `Axentra.case` |
+| `/case delete <id>` | Permanently delete a case | `Axentra.case.delete` |
 | `/history <player>` | View a player's full moderation history | `Axentra.history` |
 | `/note add <player> <text>` | Add a staff note on a player | `Axentra.note` |
 | `/note remove <id>` | Remove a staff note | `Axentra.note` |
@@ -234,12 +268,34 @@ Permissions with **Everyone** as default are granted to all players automaticall
 | `Axentra.report` | Everyone | Report a player |
 | `Axentra.reports` | OP | View and manage reports |
 | `Axentra.staffstats` | OP | View staff statistics |
-| `Axentra.stafflist` | Everyone | View online staff list |
+| `Axentra.stafflist` | OP | View online staff list |
 | `Axentra.punish` | OP | Use the punishment GUI |
 | `Axentra.case` | OP | View moderation cases |
+| `Axentra.case.delete` | OP | Permanently delete cases |
 | `Axentra.history` | OP | View player moderation history |
 | `Axentra.note` | OP | Manage staff notes + join notifications |
 | `Axentra.auditlog` | OP | View the audit log |
+| `Axentra.restoreinv` | OP | View and restore inventory snapshots |
+| `Axentra.trust` | OP | View player trust levels |
+| `Axentra.trust.set` | OP | Set player trust levels manually |
+| `Axentra.alts` | OP | View player alt accounts |
+| `Axentra.alts.ip` | OP | View player IP addresses in alt lookup |
+| `Axentra.freeze` | OP | Freeze and unfreeze players |
+| `Axentra.freeze.exempt` | OP | Cannot be frozen |
+| `Axentra.timeline` | OP | View player activity timelines |
+| `Axentra.sethome` | Everyone | Set home locations |
+| `Axentra.home` | Everyone | Teleport to homes |
+| `Axentra.home.others` | OP | Teleport to other players' homes |
+| `Axentra.home.bypass` | OP | Skip home teleport delay |
+| `Axentra.delhome` | Everyone | Delete homes |
+| `Axentra.homes` | Everyone | View homes GUI |
+| `Axentra.homes.others` | OP | View other players' homes |
+| `Axentra.homes.unlimited` | OP | Unlimited homes |
+| `Axentra.tp` | OP | Teleport to players |
+| `Axentra.tphere` | OP | Teleport players to you |
+| `Axentra.tpall` | OP | Teleport all players to you |
+| `Axentra.tpahere` | OP | Request players to teleport to you |
+| `Axentra.top` | Everyone | Teleport to highest block |
 | `Axentra.broadcast` | OP | Use `/broadcast` |
 | `Axentra.clearchat` | OP | Use `/clearchat` |
 | `Axentra.clearchat.bypass` | OP | Chat not cleared by `/clearchat` |
@@ -320,13 +376,14 @@ For the full permissions reference, check out the [Wiki](https://axentramc.com/w
 
 ## Configuration
 
-Axentra is fully configurable through three files:
+Axentra is fully configurable through four files:
 
-- **`config.yml`** — General plugin settings: module toggles, announcements, ban appeal link, warn punishments, spawn/TPA countdowns, invsee read-only mode, slow chat defaults, social media links, vanish options, report cooldown
+- **`config.yml`** — General plugin settings: 21 module toggles, announcements, ban appeal link, warn punishments, spawn/TPA countdowns, homes settings, invsee read-only mode, slow chat defaults, social media links, vanish options, report cooldown
 - **`messages.yml`** — Every message the plugin sends, supports color codes and placeholders
 - **`punishments.yml`** — Punishment GUI templates with display name, action, reason, duration and icon
+- **`protection.yml`** — Player protection settings: VPN detection API key, freeze options, snapshot triggers, trust thresholds, alt detection
 
-After making changes run `/axentra reload` to apply them without restarting the server. New config keys are added automatically when the plugin updates.
+After making changes run `/axentra reload` to apply them without restarting the server. New config keys are added automatically with their comments when the plugin updates.
 
 ---
 

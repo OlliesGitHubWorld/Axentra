@@ -150,9 +150,9 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             String input = args[0].toLowerCase();
-            List<String> suggestions = new ArrayList<>(grouped.keySet());
-            return suggestions.stream()
-                    .map(String::toLowerCase)
+            return grouped.keySet().stream()
+                    .map(s -> s.toLowerCase().split("[^a-z]")[0])
+                    .distinct()
                     .filter(s -> s.startsWith(input))
                     .collect(Collectors.toList());
         }
@@ -170,36 +170,39 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /help <page_number> - also show category overview (legacy compat)
+        // /help <category> [page]
+        // Rebuild input: join all args, then check if the last part is a page number
+        String fullInput = String.join(" ", args).toLowerCase();
+        int page = 1;
+
+        // Check if the last arg is a page number
+        String lastArg = args[args.length - 1];
         try {
-            int page = Integer.parseInt(args[0]);
-            showCategoryOverview(sender, grouped);
-            return true;
+            page = Integer.parseInt(lastArg);
+            // Remove the page number from the category input
+            if (args.length > 1) {
+                fullInput = String.join(" ", Arrays.copyOf(args, args.length - 1)).toLowerCase();
+            } else {
+                // Just a number with no category — show overview
+                showCategoryOverview(sender, grouped);
+                return true;
+            }
         } catch (NumberFormatException ignored) {}
 
-        // /help <category> [page]
-        String categoryInput = args[0].toLowerCase();
         String matchedCategory = null;
         for (String cat : grouped.keySet()) {
-            if (cat.toLowerCase().equals(categoryInput)) {
+            String catLower = cat.toLowerCase();
+            // Match exact full name, first word, or starts-with
+            if (catLower.equals(fullInput) || catLower.startsWith(fullInput)
+                    || catLower.split("[^a-z]")[0].equals(fullInput)) {
                 matchedCategory = cat;
                 break;
             }
         }
 
         if (matchedCategory == null) {
-            sender.sendMessage(ChatColor.RED + "Unknown category '" + args[0] + "'. Use /help to see all categories.");
+            sender.sendMessage(ChatColor.RED + "Unknown category '" + fullInput + "'. Use /help to see all categories.");
             return true;
-        }
-
-        int page = 1;
-        if (args.length > 1) {
-            try {
-                page = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Invalid page number.");
-                return true;
-            }
         }
 
         showCategoryPage(sender, matchedCategory, grouped.get(matchedCategory), page);
