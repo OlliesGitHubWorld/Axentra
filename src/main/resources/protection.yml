@@ -1,0 +1,135 @@
+#       _____                        __            _____
+#      /  _  \ ___  ___ ____   _____/  |________  /  _  \
+#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \
+#    /    |    \>    <\  ___/|   |  \  |  |  | \/    |    \
+#    \____|__  /__/\_ \\___  >___|  /__|  |__|  \____|__  /
+#            \/      \/    \/     \/                    \/
+#
+# ┌─────────────────────────────────────────────────────────┐
+# │              Axentra Protection Config                  │
+# │                  Made by OlliesWorld                    │
+# └─────────────────────────────────────────────────────────┘
+#
+#  This file configures the Player Protection features (v1.7.0).
+#  After making changes, use /axentra reload to apply them.
+#
+# ══════════════════════════════════════════════════════════
+
+# ┌─────────────────────────────────────────────────────────┐
+# │               Inventory Snapshots                       │
+# └─────────────────────────────────────────────────────────┘
+
+snapshots:
+  # Which events trigger an automatic snapshot?
+  triggers:
+    death: true
+    join: true
+    quit: true
+    world-change: true
+    clear: true
+
+  # Maximum number of snapshots stored per player.
+  # Oldest snapshots are deleted first when the limit is reached.
+  max-per-player: 30
+
+  # Snapshots older than this many days are automatically deleted.
+  max-age-days: 14
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                   Trust System                          │
+# └─────────────────────────────────────────────────────────┘
+
+trust:
+  # Minutes of playtime needed to automatically upgrade from NEW to MEMBER.
+  member-playtime-minutes: 60
+
+  # Minutes of playtime needed to upgrade from MEMBER to TRUSTED.
+  trusted-playtime-minutes: 600
+
+  # A player must have no cases in the last X days to reach TRUSTED.
+  trusted-clean-days: 14
+
+  # Downgrade rules when a punishment is issued.
+  downgrade:
+    # On WARN or MUTE: drop one trust level.
+    on-warn-or-mute: true
+    # On BAN or TEMPBAN: reset to NEW.
+    on-ban: true
+    # If reports exist (v1.6.0): downgrade after X reports within Y minutes.
+    on-reports-enabled: false
+    on-reports-count: 3
+    on-reports-minutes: 30
+
+  # Restrictions for players with trust level NEW.
+  new-restrictions:
+    # Block messages containing links (regex).
+    block-links: true
+    link-regex: "https?://\\S+"
+    # Slowmode in seconds (0 = disabled).
+    slowmode-seconds: 5
+    # Maximum percentage of uppercase characters (0 = disabled).
+    max-caps-percent: 70
+    # Block /msg to non-trusted, non-staff players.
+    block-msg-to-untrusted: true
+    # Commands that NEW players cannot use (without the /).
+    blocked-commands: []
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Alts & Risk Score                       │
+# └─────────────────────────────────────────────────────────┘
+
+alts:
+  # Send a staff notification when a joining player has alts/vpn/notes.
+  notify: true
+
+  # Weights for the risk score calculation (0-100 scale).
+  risk-weights:
+    banned-alt: 30
+    vpn-detected: 20
+    trust-new: 15
+    case-count: 5
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    VPN Check                            │
+# └─────────────────────────────────────────────────────────┘
+
+vpn:
+  # Enable VPN/proxy detection. Requires an API key from proxycheck.io.
+  enabled: false
+  provider: "proxycheck.io"
+  api-key: ""
+  # Timeout in milliseconds for the API request.
+  timeout-ms: 3000
+  # Cache VPN results for this many hours.
+  cache-hours: 24
+  # Action when a VPN is detected: ALERT (notify staff) or KICK.
+  action: ALERT
+  # Kick message shown when action is KICK.
+  kick-message: "&cVPN/proxy connections are not allowed on this server."
+  # UUIDs that are never checked for VPN.
+  whitelist: []
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Freeze                             │
+# └─────────────────────────────────────────────────────────┘
+
+freeze:
+  # Interval in seconds between repeated freeze reminder messages.
+  message-interval-seconds: 5
+  # Whether a frozen player can only chat with staff.
+  chat-only-with-staff: true
+  # Commands that frozen players are still allowed to use (without the /).
+  allowed-commands:
+    - msg
+    - r
+    - reply
+    - helpop
+  # Action when a frozen player logs out: NONE, ALERT, or BAN.
+  logout-action: ALERT
+  # If logout-action is BAN, these settings are used for the auto-ban.
+  logout-ban-reason: "Logged out while frozen"
+  logout-ban-duration: "7d"
+
+# ══════════════════════════════════════════════════════════
+#                 End of Protection Config
+# ══════════════════════════════════════════════════════════

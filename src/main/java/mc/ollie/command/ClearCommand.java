@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.SnapshotManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -54,6 +55,9 @@ public class ClearCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             Player player = (Player) sender;
+            if (plugin.getSnapshotManager() != null) {
+                plugin.getSnapshotManager().createSnapshot(player, "CLEAR", null);
+            }
             player.getInventory().clear();
             player.sendMessage(getMessage("clear-inventory"));
             return true;
@@ -71,6 +75,9 @@ public class ClearCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (plugin.getSnapshotManager() != null) {
+            plugin.getSnapshotManager().createSnapshot(target, "CLEAR", null);
+        }
         target.getInventory().clear();
         target.sendMessage(getMessage("clear-inventory"));
         sender.sendMessage(getMessage("clear-other").replace("%player%", target.getName()));

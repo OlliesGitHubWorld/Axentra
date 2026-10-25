@@ -245,6 +245,36 @@ enabled-modules:
   # /duty, /staffmode, /report, /reports, /staffstats, /stafflist
   staff-management: true
 
+  # Protection & tracking (v1.7.0)
+  # Inventory snapshots on death/join/quit/world-change/clear
+  snapshots: true
+  # Trust system (NEW -> MEMBER -> TRUSTED)
+  trust: true
+  # Alt detection via shared IPs
+  alts: true
+  # VPN detection via proxycheck.io (requires API key in protection.yml)
+  vpn: true
+  # Freeze system (/freeze, /unfreeze)
+  freeze: true
+  # Player timeline (/timeline)
+  timeline: true
+  # Home system (/sethome, /home, /delhome, /homes)
+  homes: true
+  # Staff teleport (/tp, /tphere, /tpall, /tpahere, /top)
+  teleport: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Homes Settings                       │
+# └─────────────────────────────────────────────────────────┘
+
+homes:
+  # Default max homes per player (override with Axentra.homes.<n> permission)
+  default-limit: 3
+  # Delay in seconds before teleporting to a home (0 = instant)
+  teleport-delay: 3
+  # Worlds where /sethome is not allowed
+  blacklisted-worlds: []
+
 # ══════════════════════════════════════════════════════════
 #                     End of Config
 # ══════════════════════════════════════════════════════════

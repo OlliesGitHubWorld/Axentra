@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.6.0
+version: 1.7.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -437,6 +437,81 @@ commands:
     usage: /stafflist
     permission: Axentra.stafflist
     permission-message: "&cYou don't have permission to use this command!"
+  restoreinv:
+    description: View and restore inventory snapshots
+    usage: /restoreinv <player> [snapshot <id>]
+    permission: Axentra.restoreinv
+    permission-message: "&cYou don't have permission to use this command!"
+  trust:
+    description: View or set a player's trust level
+    usage: /trust <player> | /trust set <player> <level>
+    permission: Axentra.trust
+    permission-message: "&cYou don't have permission to use this command!"
+  alts:
+    description: View a player's alt accounts
+    usage: /alts <player>
+    permission: Axentra.alts
+    permission-message: "&cYou don't have permission to use this command!"
+  freeze:
+    description: Freeze a player
+    usage: /freeze <player>
+    permission: Axentra.freeze
+    permission-message: "&cYou don't have permission to use this command!"
+  unfreeze:
+    description: Unfreeze a player
+    usage: /unfreeze <player>
+    permission: Axentra.freeze
+    permission-message: "&cYou don't have permission to use this command!"
+  timeline:
+    description: View a player's activity timeline
+    usage: /timeline <player> [filter]
+    permission: Axentra.timeline
+    permission-message: "&cYou don't have permission to use this command!"
+  sethome:
+    description: Set a home location
+    usage: /sethome [name]
+    permission: Axentra.sethome
+    permission-message: "&cYou don't have permission to use this command!"
+  home:
+    description: Teleport to a home
+    usage: /home [name]
+    permission: Axentra.home
+    permission-message: "&cYou don't have permission to use this command!"
+  delhome:
+    description: Delete a home
+    usage: /delhome <name>
+    permission: Axentra.delhome
+    permission-message: "&cYou don't have permission to use this command!"
+  homes:
+    description: View all homes in a GUI
+    usage: /homes [player]
+    permission: Axentra.homes
+    permission-message: "&cYou don't have permission to use this command!"
+  tp:
+    description: Teleport to a player or teleport a player to another
+    usage: /tp <player> [player]
+    permission: Axentra.tp
+    permission-message: "&cYou don't have permission to use this command!"
+  tphere:
+    description: Teleport a player to your location
+    usage: /tphere <player>
+    permission: Axentra.tphere
+    permission-message: "&cYou don't have permission to use this command!"
+  tpall:
+    description: Teleport all players to your location
+    usage: /tpall
+    permission: Axentra.tpall
+    permission-message: "&cYou don't have permission to use this command!"
+  tpahere:
+    description: Request a player teleport to you
+    usage: /tpahere <player>
+    permission: Axentra.tpahere
+    permission-message: "&cYou don't have permission to use this command!"
+  top:
+    description: Teleport to the highest block at your location
+    usage: /top
+    permission: Axentra.top
+    permission-message: "&cYou don't have permission to use this command!"
   axentra:
     description: Main Axentra command
     usage: /axentra <reload | upgrade | help | information>
@@ -692,3 +767,69 @@ permissions:
   Axentra.stafflist:
     description: Allows the player to view online staff list
     default: op
+  Axentra.case.delete:
+    description: Allows permanently deleting cases
+    default: op
+  Axentra.restoreinv:
+    description: Allows viewing and restoring inventory snapshots
+    default: op
+  Axentra.trust:
+    description: Allows viewing player trust levels
+    default: op
+  Axentra.trust.set:
+    description: Allows setting player trust levels manually
+    default: op
+  Axentra.alts:
+    description: Allows viewing player alt accounts
+    default: op
+  Axentra.alts.ip:
+    description: Allows viewing player IP addresses in alt lookup
+    default: op
+  Axentra.freeze:
+    description: Allows freezing and unfreezing players
+    default: op
+  Axentra.freeze.exempt:
+    description: Prevents the player from being frozen
+    default: op
+  Axentra.timeline:
+    description: Allows viewing player activity timelines
+    default: op
+  Axentra.sethome:
+    description: Allows setting home locations
+    default: true
+  Axentra.home:
+    description: Allows teleporting to homes
+    default: true
+  Axentra.home.others:
+    description: Allows teleporting to other players' homes
+    default: op
+  Axentra.home.bypass:
+    description: Bypasses home teleport delay
+    default: op
+  Axentra.delhome:
+    description: Allows deleting homes
+    default: true
+  Axentra.homes:
+    description: Allows viewing homes GUI
+    default: true
+  Axentra.homes.others:
+    description: Allows viewing other players' homes
+    default: op
+  Axentra.homes.unlimited:
+    description: Allows unlimited homes
+    default: op
+  Axentra.tp:
+    description: Allows teleporting to players
+    default: op
+  Axentra.tphere:
+    description: Allows teleporting players to you
+    default: op
+  Axentra.tpall:
+    description: Allows teleporting all players to you
+    default: op
+  Axentra.tpahere:
+    description: Allows requesting players to teleport to you
+    default: op
+  Axentra.top:
+    description: Allows teleporting to the highest block
+    default: true

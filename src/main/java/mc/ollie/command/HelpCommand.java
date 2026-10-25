@@ -109,6 +109,24 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
         add(entries, sender, "Axentra.stonecutter",   "Utility", "/stonecutter",   "Open a stonecutter");
         add(entries, sender, "Axentra.enderchest",    "Utility", "/enderchest",    "Open your ender chest");
 
+        // Protection
+        add(entries, sender, "Axentra.restoreinv",  "Protection", "/restoreinv <player>",             "View/restore inventory snapshots");
+        add(entries, sender, "Axentra.trust",        "Protection", "/trust <player>",                  "View player trust level");
+        add(entries, sender, "Axentra.trust.set",    "Protection", "/trust set <player> <level>",      "Set player trust level");
+        add(entries, sender, "Axentra.alts",         "Protection", "/alts <player>",                   "View alt accounts");
+        add(entries, sender, "Axentra.freeze",       "Protection", "/freeze <player>",                 "Freeze/unfreeze a player");
+        add(entries, sender, "Axentra.timeline",     "Protection", "/timeline <player> [filter]",      "View player timeline");
+
+        // Homes & Teleport
+        add(entries, sender, "Axentra.sethome",  "Homes & Teleport", "/sethome [name]",     "Set a home");
+        add(entries, sender, "Axentra.home",     "Homes & Teleport", "/home [name]",        "Teleport to a home");
+        add(entries, sender, "Axentra.delhome",  "Homes & Teleport", "/delhome <name>",     "Delete a home");
+        add(entries, sender, "Axentra.homes",    "Homes & Teleport", "/homes [player]",     "View homes GUI");
+        add(entries, sender, "Axentra.tp",       "Homes & Teleport", "/tp <player>",        "Teleport to a player");
+        add(entries, sender, "Axentra.tphere",   "Homes & Teleport", "/tphere <player>",    "Teleport player to you");
+        add(entries, sender, "Axentra.tpall",    "Homes & Teleport", "/tpall",              "Teleport all players to you");
+        add(entries, sender, "Axentra.top",      "Homes & Teleport", "/top",                "Teleport to highest block");
+
         // World
         add(entries, sender, "Axentra.time",     "World", "/time <set|add> <value>",    "Set or add world time");
         add(entries, sender, "Axentra.weather",  "World", "/weather <clear|rain|storm>", "Set the weather");
@@ -325,6 +343,8 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
             case "Player":     return "\u2764";  // heart
             case "Teleport":   return "\u2716";  // compass-like
             case "Utility":    return "\u2692";  // hammer/pick
+            case "Protection": return "\u2726";  // sparkle
+            case "Homes & Teleport": return "\u2302"; // house
             case "World":      return "\u2600";  // sun
             default:           return "\u25CF";  // bullet
         }

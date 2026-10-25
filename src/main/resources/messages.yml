@@ -721,6 +721,86 @@ stafflist-entry: "  &8- &f%player% %status%"
 stafflist-empty: "  &7No staff members online."
 stafflist-footer: "%prefix%&7Total: &f%count% &7staff online."
 
+# ┌─────────────────────────────────────────────────────────┐
+# │              Player Protection (v1.7.0)                │
+# └─────────────────────────────────────────────────────────┘
+
+# Case Command (resolve/delete)
+case-resolved: "%prefix%&aCase &e#%id% &ahas been resolved."
+case-already-resolved: "%prefix%&cCase &e#%id% &cis already resolved."
+case-deleted: "%prefix%&aCase &e#%id% &ahas been deleted."
+
+# RestoreInv Command
+restoreinv-usage: "%prefix%&cUsage: /restoreinv <player> [snapshot <id>]"
+restoreinv-restored: "%prefix%&aRestored inventory snapshot for &e%player%&a."
+restoreinv-restored-offline: "%prefix%&aSnapshot queued for &e%player%&a. It will be restored when they next join."
+restoreinv-no-snapshots: "%prefix%&cNo inventory snapshots found for &e%player%&c."
+
+# Trust Command
+trust-usage: "%prefix%&cUsage: /trust <player> | /trust set <player> <level> | /trust reset <player>"
+trust-info: "%prefix%&e%player%&7's trust level: %trust_color%%trust%"
+trust-set: "%prefix%&aSet &e%player%&a's trust level to %trust_color%%trust%&a (manual)."
+trust-reset: "%prefix%&aReset &e%player%&a's trust to auto-upgrade."
+trust-invalid-level: "%prefix%&cInvalid trust level. Use: NEW, MEMBER, or TRUSTED."
+
+# Alts Command
+alts-usage: "%prefix%&cUsage: /alts <player>"
+
+# Freeze Command
+freeze-usage: "%prefix%&cUsage: /freeze <player>"
+freeze-frozen: "%prefix%&cYou have been &e&lfrozen&c! Do not log out."
+freeze-frozen-staff: "%prefix%&cFroze &e%player%&c."
+freeze-unfrozen: "%prefix%&aYou have been &e&lunfrozen&a."
+freeze-unfrozen-staff: "%prefix%&aUnfroze &e%player%&a."
+freeze-exempt: "%prefix%&c%player% &cis exempt from being frozen."
+freeze-reminder: "%prefix%&c&lYou are frozen. &7Do not log out!"
+freeze-command-blocked: "%prefix%&cYou cannot use commands while frozen."
+freeze-still-frozen: "%prefix%&c&lYou are still frozen from your previous session. Do not log out!"
+freeze-logout-alert: "%prefix%&c&l[!] &e%player% &clogged out while frozen!"
+freeze-logout-banned: "%prefix%&c&l[!] &e%player% &cwas banned for logging out while frozen."
+freeze-logout-ban-reason: "Logged out while frozen"
+
+# Timeline Command
+timeline-usage: "%prefix%&cUsage: /timeline <player> [filter]"
+timeline-empty: "%prefix%&cNo timeline events found for &e%player%&c."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │              Homes & Teleport (v1.7.0)                 │
+# └─────────────────────────────────────────────────────────┘
+
+# SetHome Command
+sethome-success: "%prefix%&aHome &e%home% &ahas been set."
+sethome-limit: "%prefix%&cYou have reached your home limit of &e%limit%&c."
+sethome-blacklisted: "%prefix%&cYou cannot set a home in this world."
+
+# Home Command
+home-teleported: "%prefix%&aTeleported to home &e%home%&a."
+home-not-found: "%prefix%&cHome &e%home% &cnot found."
+home-world-not-found: "%prefix%&cThe world for home &e%home% &cno longer exists."
+home-cancelled: "%prefix%&cTeleport cancelled. You moved!"
+
+# DelHome Command
+delhome-usage: "%prefix%&cUsage: /delhome <name>"
+delhome-success: "%prefix%&aHome &e%home% &ahas been deleted."
+
+# Homes Command
+homes-empty: "%prefix%&c%player% has no homes."
+
+# TP Commands
+tp-usage: "%prefix%&cUsage: /tp <player> [player]"
+tp-to-player: "%prefix%&aTeleported to &e%player%&a."
+tp-other: "%prefix%&aTeleported &e%player1% &ato &e%player2%&a."
+tphere-usage: "%prefix%&cUsage: /tphere <player>"
+tphere-success: "%prefix%&aTeleported &e%player% &ato you."
+tphere-received: "%prefix%&aYou have been teleported to &e%player%&a."
+tpall-success: "%prefix%&aTeleported &e%count% &aplayers to you."
+tpall-received: "%prefix%&aYou have been teleported to &e%player%&a."
+tpahere-usage: "%prefix%&cUsage: /tpahere <player>"
+tpahere-sent: "%prefix%&aTeleport request sent to &e%player%&a."
+tpahere-received: "%prefix%&e%player% &7has requested you teleport to them."
+top-success: "%prefix%&aTeleported to the highest block."
+top-no-block: "%prefix%&cNo block found above you."
+
 # ══════════════════════════════════════════════════════════
 #                     End of Messages
 # ══════════════════════════════════════════════════════════

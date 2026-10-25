@@ -17,22 +17,18 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class StaffmodeListener implements Listener {
 
     private final App plugin;
-    private final Set<UUID> frozenPlayers = new HashSet<>();
-
     public StaffmodeListener(App plugin) {
         this.plugin = plugin;
     }
 
     public boolean isFrozen(UUID uuid) {
-        return frozenPlayers.contains(uuid);
+        return plugin.getDatabaseManager().isPlayerFrozen(uuid.toString());
     }
 
     @EventHandler
@@ -92,16 +88,7 @@ public class StaffmodeListener implements Listener {
 
         switch (name) {
             case "Freeze": {
-                UUID targetUuid = target.getUniqueId();
-                if (frozenPlayers.contains(targetUuid)) {
-                    frozenPlayers.remove(targetUuid);
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b&lAxentra &8» &aUnfroze &e" + target.getName()));
-                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b&lAxentra &8» &aYou have been unfrozen!"));
-                } else {
-                    frozenPlayers.add(targetUuid);
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b&lAxentra &8» &cFroze &e" + target.getName()));
-                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b&lAxentra &8» &cYou have been frozen! Do not log out."));
-                }
+                player.performCommand("freeze " + target.getName());
                 break;
             }
             case "InvSee": {
@@ -150,7 +137,5 @@ public class StaffmodeListener implements Listener {
             plugin.getDutyManager().setOnDuty(uuid, false);
         }
 
-        // Unfreeze
-        frozenPlayers.remove(uuid);
     }
 }
