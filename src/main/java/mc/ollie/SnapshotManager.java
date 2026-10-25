@@ -100,8 +100,8 @@ public class SnapshotManager {
         if (offhand != null) player.getInventory().setItemInOffHand(offhand);
         player.setLevel(snapshot.xpLevel);
         player.setExp(snapshot.xpProgress);
-        player.setHealth(Math.min(snapshot.health, player.getMaxHealth()));
-        player.setFoodLevel(snapshot.food);
+        player.setHealth(Math.max(1.0, Math.min(snapshot.health, player.getMaxHealth())));
+        player.setFoodLevel(Math.max(1, snapshot.food));
         try {
             player.setGameMode(GameMode.valueOf(snapshot.gamemode));
         } catch (Exception ignored) {}

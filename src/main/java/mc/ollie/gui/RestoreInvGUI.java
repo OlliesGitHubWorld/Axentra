@@ -31,6 +31,7 @@ public class RestoreInvGUI {
 
     private static final Map<String, RestoreInvGUI> activeGUIs = new HashMap<>();
     private static final Map<String, RestoreInvGUI> previewGUIs = new HashMap<>();
+    private static final Map<String, RestoreInvGUI> enderchestGUIs = new HashMap<>();
 
     private DatabaseManager.SnapshotInfo previewSnapshot;
 
@@ -45,8 +46,10 @@ public class RestoreInvGUI {
 
     public static RestoreInvGUI getActiveGUI(String title) { return activeGUIs.get(title); }
     public static RestoreInvGUI getPreviewGUI(String title) { return previewGUIs.get(title); }
+    public static RestoreInvGUI getEnderchestGUI(String title) { return enderchestGUIs.get(title); }
     public static void removeActiveGUI(String title) { activeGUIs.remove(title); }
     public static void removePreviewGUI(String title) { previewGUIs.remove(title); }
+    public static void removeEnderchestGUI(String title) { enderchestGUIs.remove(title); }
 
     public void open(Player staff, List<DatabaseManager.SnapshotInfo> snapshots, int page) {
         this.snapshots = snapshots;
@@ -231,20 +234,10 @@ public class RestoreInvGUI {
             return;
         }
 
-        // Restore enderchest
+        // Preview enderchest
         if (slot == 47) {
-            staff.closeInventory();
-            Player target = Bukkit.getPlayer(playerName);
-            if (target != null && target.isOnline()) {
-                plugin.getSnapshotManager().restoreEnderchest(target, previewSnapshot);
-                staff.sendMessage(ChatColor.GREEN + "Restored enderchest of " + playerName + " from snapshot #" + previewSnapshot.id);
-                plugin.getDatabaseManager().logAction(staff.getName(), staff.getUniqueId().toString(),
-                        "INVENTORY_RESTORE", playerName, "Enderchest from Snapshot #" + previewSnapshot.id);
-            } else {
-                plugin.getDatabaseManager().addPendingRestore(
-                        previewSnapshot.playerUuid, previewSnapshot.id, "ENDERCHEST", staff.getName());
-                staff.sendMessage(ChatColor.YELLOW + playerName + " is offline. Enderchest restore queued for next login.");
-            }
+            removePreviewGUI(title);
+            openEnderchestPreview(staff, previewSnapshot);
             return;
         }
 
@@ -274,6 +267,91 @@ public class RestoreInvGUI {
             } else {
                 staff.closeInventory();
             }
+        }
+    }
+
+    public void openEnderchestPreview(Player staff, DatabaseManager.SnapshotInfo snapshot) {
+        this.previewSnapshot = snapshot;
+        String title = ChatColor.DARK_GRAY + "\u2726 " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Enderchest"
+                + ChatColor.DARK_GRAY + " \u2726 " + ChatColor.RESET + "#" + snapshot.id;
+        Inventory inv = Bukkit.createInventory(null, 54, title);
+
+        // Fill with background
+        ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
+        for (int i = 0; i < 54; i++) inv.setItem(i, bg);
+
+        // Top bar
+        ItemStack topBar = createItem(Material.PURPLE_STAINED_GLASS_PANE, " ");
+        for (int i = 0; i < 9; i++) inv.setItem(i, topBar);
+
+        // Title item
+        inv.setItem(4, createItem(Material.ENDER_CHEST, ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD
+                + "\uD83D\uDDC3 " + playerName + "'s Enderchest",
+                ChatColor.GRAY + "Snapshot #" + snapshot.id));
+
+        // Enderchest contents in rows 2-4 (slots 9-35)
+        ItemStack[] ec = SnapshotManager.deserializeItems(snapshot.enderchestData);
+        for (int i = 0; i < Math.min(ec.length, 27); i++) {
+            if (ec[i] != null) inv.setItem(9 + i, ec[i]);
+        }
+
+        // Bottom bar
+        ItemStack botBar = createItem(Material.PURPLE_STAINED_GLASS_PANE, " ");
+        for (int i = 45; i < 54; i++) inv.setItem(i, botBar);
+
+        inv.setItem(46, createItem(Material.ENDER_CHEST, ChatColor.GREEN + "" + ChatColor.BOLD + "Restore to Player",
+                ChatColor.GRAY + "Replace " + playerName + "'s enderchest.", "", ChatColor.YELLOW + "\u25B6 Click to restore"));
+        inv.setItem(48, createItem(Material.HOPPER, ChatColor.AQUA + "" + ChatColor.BOLD + "Copy to Self",
+                ChatColor.GRAY + "Give these items to yourself.", "", ChatColor.YELLOW + "\u25B6 Click to copy"));
+        inv.setItem(53, createItem(Material.ARROW, ChatColor.YELLOW + "" + ChatColor.BOLD + "\u25C0 Back",
+                ChatColor.GRAY + "Go back to inventory preview."));
+
+        enderchestGUIs.put(title, this);
+        staff.openInventory(inv);
+    }
+
+    public void handleEnderchestClick(Player staff, int slot, String title) {
+        if (previewSnapshot == null) return;
+
+        // Restore enderchest to player
+        if (slot == 46) {
+            staff.closeInventory();
+            Player target = Bukkit.getPlayer(playerName);
+            if (target != null && target.isOnline()) {
+                plugin.getSnapshotManager().restoreEnderchest(target, previewSnapshot);
+                staff.sendMessage(ChatColor.GREEN + "Restored enderchest of " + playerName + " from snapshot #" + previewSnapshot.id);
+                plugin.getDatabaseManager().logAction(staff.getName(), staff.getUniqueId().toString(),
+                        "INVENTORY_RESTORE", playerName, "Enderchest from Snapshot #" + previewSnapshot.id);
+            } else {
+                plugin.getDatabaseManager().addPendingRestore(
+                        previewSnapshot.playerUuid, previewSnapshot.id, "ENDERCHEST", staff.getName());
+                staff.sendMessage(ChatColor.YELLOW + playerName + " is offline. Enderchest restore queued for next login.");
+            }
+            return;
+        }
+
+        // Copy enderchest to self
+        if (slot == 48) {
+            staff.closeInventory();
+            ItemStack[] ec = SnapshotManager.deserializeItems(previewSnapshot.enderchestData);
+            for (ItemStack item : ec) {
+                if (item != null && !item.getType().isAir()) {
+                    HashMap<Integer, ItemStack> overflow = staff.getInventory().addItem(item);
+                    for (ItemStack drop : overflow.values()) {
+                        staff.getWorld().dropItemNaturally(staff.getLocation(), drop);
+                    }
+                }
+            }
+            staff.sendMessage(ChatColor.GREEN + "Copied enderchest items from snapshot #" + previewSnapshot.id + " to your inventory.");
+            plugin.getDatabaseManager().logAction(staff.getName(), staff.getUniqueId().toString(),
+                    "INVENTORY_COPY", playerName, "Enderchest from Snapshot #" + previewSnapshot.id);
+            return;
+        }
+
+        // Back to inventory preview
+        if (slot == 53) {
+            removeEnderchestGUI(title);
+            openPreview(staff, previewSnapshot);
         }
     }
 

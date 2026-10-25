@@ -63,6 +63,15 @@ public class ModerationGUIListener implements Listener {
             return;
         }
 
+        // RestoreInv GUI (enderchest view)
+        RestoreInvGUI restoreInvEcGUI = RestoreInvGUI.getEnderchestGUI(title);
+        if (restoreInvEcGUI != null) {
+            event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
+            restoreInvEcGUI.handleEnderchestClick(player, event.getRawSlot(), title);
+            return;
+        }
+
         // Timeline GUI
         TimelineGUI timelineGUI = TimelineGUI.getActiveGUI(title);
         if (timelineGUI != null) {
@@ -89,6 +98,7 @@ public class ModerationGUIListener implements Listener {
         HistoryGUI.removeActiveGUI(title);
         RestoreInvGUI.removeActiveGUI(title);
         RestoreInvGUI.removePreviewGUI(title);
+        RestoreInvGUI.removeEnderchestGUI(title);
         TimelineGUI.removeActiveGUI(title);
         HomesGUI.removeActiveGUI(title);
     }
