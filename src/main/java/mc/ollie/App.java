@@ -10,6 +10,7 @@ import mc.ollie.listeners.GodListener;
 import mc.ollie.listeners.JoinLeaveListener;
 import mc.ollie.listeners.LoginListener;
 import mc.ollie.listeners.ModerationGUIListener;
+import mc.ollie.listeners.ProtectionListener;
 import mc.ollie.listeners.ReportsGUIListener;
 import mc.ollie.listeners.RespawnListener;
 import mc.ollie.listeners.StaffGUIListener;
@@ -33,6 +34,9 @@ public final class App extends JavaPlugin {
     private ChatListener chatListener;
     private DutyManager dutyManager;
     private StaffmodeManager staffmodeManager;
+    private SnapshotManager snapshotManager;
+    private TrustManager trustManager;
+    private VpnCheckManager vpnCheckManager;
     private final Map<UUID, Long> reportCooldowns = new HashMap<>();
 
     // Chat control state
@@ -422,6 +426,95 @@ public final class App extends JavaPlugin {
             getCommand("store").setTabCompleter(socialCommand);
         }
 
+        // ── Module: snapshots ──
+
+        if (settings.getBoolean("enabled-modules.snapshots", true)) {
+            this.snapshotManager = new SnapshotManager(this);
+
+            RestoreInvCommand restoreInvCommand = new RestoreInvCommand(this);
+            getCommand("restoreinv").setExecutor(restoreInvCommand);
+            getCommand("restoreinv").setTabCompleter(restoreInvCommand);
+        }
+
+        // ── Module: trust ──
+
+        if (settings.getBoolean("enabled-modules.trust", true)) {
+            this.trustManager = new TrustManager(this);
+            trustManager.start();
+
+            TrustCommand trustCommand = new TrustCommand(this);
+            getCommand("trust").setExecutor(trustCommand);
+            getCommand("trust").setTabCompleter(trustCommand);
+        }
+
+        // ── Module: alts ──
+
+        if (settings.getBoolean("enabled-modules.alts", true)) {
+            AltsCommand altsCommand = new AltsCommand(this);
+            getCommand("alts").setExecutor(altsCommand);
+            getCommand("alts").setTabCompleter(altsCommand);
+        }
+
+        // ── Module: vpn ──
+
+        if (settings.getBoolean("enabled-modules.vpn", true)) {
+            this.vpnCheckManager = new VpnCheckManager(this);
+        }
+
+        // ── Module: freeze ──
+
+        if (settings.getBoolean("enabled-modules.freeze", true)) {
+            FreezeCommand freezeCommand = new FreezeCommand(this);
+            getCommand("freeze").setExecutor(freezeCommand);
+            getCommand("freeze").setTabCompleter(freezeCommand);
+            getCommand("unfreeze").setExecutor(freezeCommand);
+            getCommand("unfreeze").setTabCompleter(freezeCommand);
+        }
+
+        // ── Module: timeline ──
+
+        if (settings.getBoolean("enabled-modules.timeline", true)) {
+            TimelineCommand timelineCommand = new TimelineCommand(this);
+            getCommand("timeline").setExecutor(timelineCommand);
+            getCommand("timeline").setTabCompleter(timelineCommand);
+        }
+
+        // ── Module: homes ──
+
+        if (settings.getBoolean("enabled-modules.homes", true)) {
+            SetHomeCommand setHomeCommand = new SetHomeCommand(this);
+            getCommand("sethome").setExecutor(setHomeCommand);
+            getCommand("sethome").setTabCompleter(setHomeCommand);
+
+            HomeCommand homeCommand = new HomeCommand(this);
+            getCommand("home").setExecutor(homeCommand);
+            getCommand("home").setTabCompleter(homeCommand);
+
+            DelHomeCommand delHomeCommand = new DelHomeCommand(this);
+            getCommand("delhome").setExecutor(delHomeCommand);
+            getCommand("delhome").setTabCompleter(delHomeCommand);
+
+            HomesCommand homesCommand = new HomesCommand(this);
+            getCommand("homes").setExecutor(homesCommand);
+            getCommand("homes").setTabCompleter(homesCommand);
+        }
+
+        // ── Module: teleport ──
+
+        if (settings.getBoolean("enabled-modules.teleport", true)) {
+            TpCommand tpCommand = new TpCommand(this);
+            getCommand("tp").setExecutor(tpCommand);
+            getCommand("tp").setTabCompleter(tpCommand);
+            getCommand("tphere").setExecutor(tpCommand);
+            getCommand("tphere").setTabCompleter(tpCommand);
+            getCommand("tpall").setExecutor(tpCommand);
+            getCommand("tpall").setTabCompleter(tpCommand);
+            getCommand("tpahere").setExecutor(tpCommand);
+            getCommand("tpahere").setTabCompleter(tpCommand);
+            getCommand("top").setExecutor(tpCommand);
+            getCommand("top").setTabCompleter(tpCommand);
+        }
+
         // ── /help override ──
 
         try {
@@ -478,9 +571,19 @@ public final class App extends JavaPlugin {
 
         if (staffmodeListener != null) {
             getServer().getPluginManager().registerEvents(staffmodeListener, this);
-            getServer().getPluginManager().registerEvents(new FreezeListener(staffmodeListener), this);
             getServer().getPluginManager().registerEvents(new ReportsGUIListener(this), this);
         }
+
+        // Protection listener (session tracking, IP/name tracking, snapshots)
+        getServer().getPluginManager().registerEvents(new ProtectionListener(this), this);
+
+        // Freeze listener (DB-backed, replaces old in-memory freeze)
+        if (settings.getBoolean("enabled-modules.freeze", true)) {
+            getServer().getPluginManager().registerEvents(new FreezeListener(this), this);
+        }
+
+        // Close any open sessions from a previous unclean shutdown
+        databaseManager.closeOpenSessions();
 
         String CYAN = "\u001B[36m";
         String GREEN = "\u001B[32m";
@@ -556,4 +659,9 @@ public final class App extends JavaPlugin {
     public DutyManager getDutyManager() { return dutyManager; }
     public StaffmodeManager getStaffmodeManager() { return staffmodeManager; }
     public Map<UUID, Long> getReportCooldowns() { return reportCooldowns; }
+
+    // Protection managers
+    public SnapshotManager getSnapshotManager() { return snapshotManager; }
+    public TrustManager getTrustManager() { return trustManager; }
+    public VpnCheckManager getVpnCheckManager() { return vpnCheckManager; }
 }

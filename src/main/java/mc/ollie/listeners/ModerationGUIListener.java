@@ -2,7 +2,10 @@ package mc.ollie.listeners;
 
 import mc.ollie.App;
 import mc.ollie.gui.HistoryGUI;
+import mc.ollie.gui.HomesGUI;
 import mc.ollie.gui.PunishGUI;
+import mc.ollie.gui.RestoreInvGUI;
+import mc.ollie.gui.TimelineGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,6 +42,43 @@ public class ModerationGUIListener implements Listener {
             event.setCancelled(true);
             if (event.getCurrentItem() == null) return;
             historyGUI.handleClick(player, event.getRawSlot(), title);
+            return;
+        }
+
+        // RestoreInv GUI (list view)
+        RestoreInvGUI restoreInvListGUI = RestoreInvGUI.getActiveGUI(title);
+        if (restoreInvListGUI != null) {
+            event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
+            restoreInvListGUI.handleListClick(player, event.getRawSlot(), title);
+            return;
+        }
+
+        // RestoreInv GUI (preview view)
+        RestoreInvGUI restoreInvPreviewGUI = RestoreInvGUI.getPreviewGUI(title);
+        if (restoreInvPreviewGUI != null) {
+            event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
+            restoreInvPreviewGUI.handlePreviewClick(player, event.getRawSlot(), title);
+            return;
+        }
+
+        // Timeline GUI
+        TimelineGUI timelineGUI = TimelineGUI.getActiveGUI(title);
+        if (timelineGUI != null) {
+            event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
+            timelineGUI.handleClick(player, event.getRawSlot(), title);
+            return;
+        }
+
+        // Homes GUI
+        HomesGUI homesGUI = HomesGUI.getActiveGUI(title);
+        if (homesGUI != null) {
+            event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
+            homesGUI.handleClick(player, event.getRawSlot(), title, event.isShiftClick());
+            return;
         }
     }
 
@@ -47,5 +87,9 @@ public class ModerationGUIListener implements Listener {
         String title = event.getView().getTitle();
         PunishGUI.removeActiveGUI(title);
         HistoryGUI.removeActiveGUI(title);
+        RestoreInvGUI.removeActiveGUI(title);
+        RestoreInvGUI.removePreviewGUI(title);
+        TimelineGUI.removeActiveGUI(title);
+        HomesGUI.removeActiveGUI(title);
     }
 }

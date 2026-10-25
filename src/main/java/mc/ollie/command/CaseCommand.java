@@ -36,6 +36,14 @@ public class CaseCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length == 1) {
+            List<String> suggestions = new ArrayList<>();
+            String input = args[0].toLowerCase();
+            for (String sub : new String[]{"resolve", "delete"}) {
+                if (sub.startsWith(input)) suggestions.add(sub);
+            }
+            return suggestions;
+        }
         return Collections.emptyList();
     }
 
@@ -49,6 +57,16 @@ public class CaseCommand implements CommandExecutor, TabCompleter {
         if (args.length == 0) {
             sender.sendMessage(getMessage("case-usage"));
             return true;
+        }
+
+        // /case resolve <id>
+        if (args[0].equalsIgnoreCase("resolve") && args.length >= 2) {
+            return handleResolve(sender, args[1]);
+        }
+
+        // /case delete <id>
+        if (args[0].equalsIgnoreCase("delete") && args.length >= 2) {
+            return handleDelete(sender, args[1]);
         }
 
         int caseId;
@@ -89,18 +107,100 @@ public class CaseCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        // Clickable history link
+        // Clickable actions
         if (sender instanceof Player) {
             sender.sendMessage("");
-            TextComponent historyLink = new TextComponent("  [View full history]");
+            TextComponent actions = new TextComponent("  ");
+
+            TextComponent historyLink = new TextComponent("[History]");
             historyLink.setColor(net.md_5.bungee.api.ChatColor.AQUA);
             historyLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/history " + caseInfo.playerName));
             historyLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     new Text(ChatColor.YELLOW + "View all cases for " + caseInfo.playerName)));
-            ((Player) sender).spigot().sendMessage(historyLink);
+            actions.addExtra(historyLink);
+
+            if (caseInfo.active) {
+                actions.addExtra(new TextComponent(" "));
+                TextComponent resolveLink = new TextComponent("[Resolve]");
+                resolveLink.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+                resolveLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/case resolve " + caseInfo.id));
+                resolveLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new Text(ChatColor.YELLOW + "Mark this case as resolved")));
+                actions.addExtra(resolveLink);
+            }
+
+            if (sender.hasPermission("Axentra.case.delete")) {
+                actions.addExtra(new TextComponent(" "));
+                TextComponent deleteLink = new TextComponent("[Delete]");
+                deleteLink.setColor(net.md_5.bungee.api.ChatColor.RED);
+                deleteLink.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/case delete " + caseInfo.id));
+                deleteLink.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new Text(ChatColor.RED + "Permanently delete this case")));
+                actions.addExtra(deleteLink);
+            }
+
+            ((Player) sender).spigot().sendMessage(actions);
         }
 
         sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
+        return true;
+    }
+
+    private boolean handleResolve(CommandSender sender, String idStr) {
+        int caseId;
+        try {
+            caseId = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(getMessage("case-invalid-id"));
+            return true;
+        }
+
+        DatabaseManager.CaseInfo caseInfo = plugin.getDatabaseManager().getCase(caseId);
+        if (caseInfo == null) {
+            sender.sendMessage(getMessage("case-not-found").replace("%id%", idStr));
+            return true;
+        }
+
+        if (!caseInfo.active) {
+            sender.sendMessage(getMessage("case-already-resolved").replace("%id%", idStr));
+            return true;
+        }
+
+        plugin.getDatabaseManager().resolveCase(caseId);
+        plugin.getDatabaseManager().logAction(
+                sender.getName(),
+                sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE",
+                "CASE_RESOLVE", caseInfo.playerName, "Resolved case #" + caseId);
+        sender.sendMessage(getMessage("case-resolved").replace("%id%", String.valueOf(caseId)));
+        return true;
+    }
+
+    private boolean handleDelete(CommandSender sender, String idStr) {
+        if (!sender.hasPermission("Axentra.case.delete")) {
+            sender.sendMessage(getMessage("no-permission"));
+            return true;
+        }
+
+        int caseId;
+        try {
+            caseId = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(getMessage("case-invalid-id"));
+            return true;
+        }
+
+        DatabaseManager.CaseInfo caseInfo = plugin.getDatabaseManager().getCase(caseId);
+        if (caseInfo == null) {
+            sender.sendMessage(getMessage("case-not-found").replace("%id%", idStr));
+            return true;
+        }
+
+        plugin.getDatabaseManager().deleteCase(caseId);
+        plugin.getDatabaseManager().logAction(
+                sender.getName(),
+                sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE",
+                "CASE_DELETE", caseInfo.playerName, "Deleted case #" + caseId);
+        sender.sendMessage(getMessage("case-deleted").replace("%id%", String.valueOf(caseId)));
         return true;
     }
 

@@ -2,6 +2,11 @@ package mc.ollie.listeners;
 
 import mc.ollie.App;
 import mc.ollie.DatabaseManager;
+import mc.ollie.TrustManager;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -77,6 +82,9 @@ public class JoinLeaveListener implements Listener {
 
         // Notify staff about notes on this player
         notifyStaffNotes(player);
+
+        // Smart join alert for staff
+        sendSmartJoinAlert(player);
     }
 
     @EventHandler
@@ -110,5 +118,104 @@ public class JoinLeaveListener implements Listener {
                 }
             }
         }, 1L);
+    }
+
+    private void sendSmartJoinAlert(Player player) {
+        if (!plugin.getFileManager().getSettings().getBoolean("enabled-modules.alts", true)) return;
+        if (!plugin.getFileManager().getProtection().getBoolean("alts.notify", true)) return;
+
+        String uuid = player.getUniqueId().toString();
+        String name = player.getName();
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<String> altUuids = plugin.getDatabaseManager().getAltUuids(uuid);
+            int bannedAlts = 0;
+            for (String altUuid : altUuids) {
+                if (plugin.getDatabaseManager().isBanned(altUuid)) bannedAlts++;
+            }
+
+            String trust = "UNKNOWN";
+            if (plugin.getTrustManager() != null) {
+                trust = plugin.getTrustManager().getTrustLevel(uuid);
+            }
+
+            int caseCount = plugin.getDatabaseManager().getCaseCountByPlayer(name);
+            int noteCount = 0;
+            List<DatabaseManager.NoteInfo> notes = plugin.getDatabaseManager().getNotesByUuid(uuid);
+            if (notes != null) noteCount = notes.size();
+            int reportCount = plugin.getDatabaseManager().getRecentReportCount(name, 30);
+
+            boolean hasVpn = false;
+            List<DatabaseManager.IpHistoryEntry> ips = plugin.getDatabaseManager().getIpHistory(uuid);
+            for (DatabaseManager.IpHistoryEntry ip : ips) {
+                DatabaseManager.VpnCacheEntry vpn = plugin.getDatabaseManager().getVpnCache(ip.ip);
+                if (vpn != null && vpn.isVpn) { hasVpn = true; break; }
+            }
+
+            // Only show alert if there's something noteworthy
+            boolean hasAlts = !altUuids.isEmpty();
+            boolean hasIssues = bannedAlts > 0 || hasVpn || caseCount > 0 || reportCount > 0
+                    || (trust.equals(TrustManager.NEW));
+
+            if (!hasAlts && !hasIssues) return;
+
+            final int finalBannedAlts = bannedAlts;
+            final String finalTrust = trust;
+            final int finalCaseCount = caseCount;
+            final int finalNoteCount = noteCount;
+            final int finalReportCount = reportCount;
+            final boolean finalHasVpn = hasVpn;
+            final int altCount = altUuids.size();
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append(ChatColor.DARK_GRAY).append("[").append(ChatColor.GOLD).append("!").append(ChatColor.DARK_GRAY).append("] ");
+                sb.append(ChatColor.YELLOW).append(name).append(ChatColor.GRAY).append(" joined");
+
+                if (altCount > 0) {
+                    sb.append(ChatColor.GRAY).append(" | Alts: ").append(ChatColor.WHITE).append(altCount);
+                    if (finalBannedAlts > 0) {
+                        sb.append(ChatColor.RED).append(" (").append(finalBannedAlts).append(" banned)");
+                    }
+                }
+
+                if (finalHasVpn) {
+                    sb.append(ChatColor.RED).append(" | VPN");
+                }
+
+                ChatColor trustColor = finalTrust.equals(TrustManager.NEW) ? ChatColor.RED :
+                        finalTrust.equals(TrustManager.MEMBER) ? ChatColor.YELLOW : ChatColor.GREEN;
+                sb.append(ChatColor.GRAY).append(" | Trust: ").append(trustColor).append(finalTrust);
+
+                if (finalCaseCount > 0) {
+                    sb.append(ChatColor.GRAY).append(" | Cases: ").append(ChatColor.RED).append(finalCaseCount);
+                }
+
+                TextComponent mainMsg = new TextComponent(sb.toString());
+
+                // Add clickable buttons
+                TextComponent altsBtn = new TextComponent(ChatColor.DARK_GRAY + " [" + ChatColor.AQUA + "Alts" + ChatColor.DARK_GRAY + "]");
+                altsBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/alts " + name));
+                altsBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW + "View alt accounts")));
+
+                TextComponent historyBtn = new TextComponent(ChatColor.DARK_GRAY + " [" + ChatColor.RED + "History" + ChatColor.DARK_GRAY + "]");
+                historyBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/history " + name));
+                historyBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW + "View history")));
+
+                TextComponent timelineBtn = new TextComponent(ChatColor.DARK_GRAY + " [" + ChatColor.LIGHT_PURPLE + "Timeline" + ChatColor.DARK_GRAY + "]");
+                timelineBtn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/timeline " + name));
+                timelineBtn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.YELLOW + "View timeline")));
+
+                mainMsg.addExtra(altsBtn);
+                mainMsg.addExtra(historyBtn);
+                mainMsg.addExtra(timelineBtn);
+
+                for (Player staff : Bukkit.getOnlinePlayers()) {
+                    if (staff.hasPermission("Axentra.alts")) {
+                        staff.spigot().sendMessage(mainMsg);
+                    }
+                }
+            });
+        });
     }
 }
