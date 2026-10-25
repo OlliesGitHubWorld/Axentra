@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Axentra - Minecraft Server Management Plugin</title>
-    <meta name="description" content="Axentra — A powerful, lightweight Minecraft server management plugin with 70+ commands. Moderation, chat, teleportation, punishments, vanish, TPA and more. Free & open source.">
+    <meta name="description" content="Axentra — A powerful, lightweight Minecraft server management plugin with 100+ commands. Moderation, player protection, homes, chat, teleportation, punishments, vanish, TPA and more. Free & open source.">
     <meta name="keywords" content="Axentra, AxentraMC, Minecraft plugin, server management, Spigot plugin, Paper plugin, Minecraft moderation, Minecraft commands, free Minecraft plugin, open source">
     <meta name="theme-color" content="#00bcd4">
     <link rel="canonical" href="https://axentramc.com/">
     <meta property="og:title" content="Axentra — The Only Plugin Your Server Needs">
-    <meta property="og:description" content="70+ commands. Zero dependencies. Moderation, punishments, vanish, TPA, and more — all in one lightweight plugin. Free & open source.">
+    <meta property="og:description" content="100+ commands. Zero dependencies. Moderation, player protection, homes, vanish, TPA, and more — all in one lightweight plugin. Free & open source.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://axentramc.com">
     <meta property="og:image" content="https://axentramc.com/assets/og-image.png">
@@ -17,7 +17,7 @@
     <meta property="og:locale" content="en_US">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Axentra — The Only Plugin Your Server Needs">
-    <meta name="twitter:description" content="70+ commands. Zero dependencies. Moderation, punishments, vanish, TPA, and more — all in one lightweight plugin. Free & open source.">
+    <meta name="twitter:description" content="100+ commands. Zero dependencies. Moderation, player protection, homes, vanish, TPA, and more — all in one lightweight plugin. Free & open source.">
     <meta name="twitter:image" content="https://axentramc.com/assets/og-image.png">
     <meta name="twitter:image:alt" content="Axentra - Minecraft Server Management Plugin">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
@@ -58,10 +58,10 @@
     <section class="hero">
         <div class="hero-bg"></div>
         <div class="container hero-content">
-            <div class="hero-badge">v1.6.0 - Staff Management &amp; Modular System</div>
+            <div class="hero-badge">v1.7.0 - Player Protection Update</div>
             <h1 class="hero-title">Axentra</h1>
             <p class="hero-subtitle">A powerful, lightweight Minecraft server management plugin</p>
-            <p class="hero-desc">All-in-one server management with 70+ commands &mdash; moderation, staff tools, chat, teleportation, and more. No bloat. No dependencies.</p>
+            <p class="hero-desc">All-in-one server management with 100+ commands &mdash; moderation, player protection, staff tools, homes, chat, teleportation, and more. No bloat. No dependencies.</p>
             <div class="hero-badges">
                 <img src="https://img.shields.io/github/v/release/OlliesGitHubWorld/Axentra?style=flat-square&label=Latest%20Release&color=00bcd4" alt="Latest Release">
                 <img src="https://img.shields.io/github/downloads/OlliesGitHubWorld/Axentra/total?style=flat-square&label=Downloads&color=00bcd4" alt="Downloads">
@@ -74,12 +74,12 @@
             </div>
             <div class="hero-stats">
                 <div class="stat">
-                    <span class="stat-number">70+</span>
+                    <span class="stat-number">100+</span>
                     <span class="stat-label">Commands</span>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat">
-                    <span class="stat-number">3</span>
+                    <span class="stat-number">4</span>
                     <span class="stat-label">Config Files</span>
                 </div>
                 <div class="stat-divider"></div>
@@ -99,18 +99,23 @@
             <div class="features-grid">
                 <div class="feature-card feature-highlight">
                     <div class="feature-icon">&#x1F6E1;</div>
-                    <h3>Staff Management</h3>
-                    <p>Staffmode with tool hotbar (freeze, random TP, InvSee, punish, vanish), duty tracking, player reports with GUI, staff statistics, and auto-duty on staffmode toggle.</p>
+                    <h3>Player Protection</h3>
+                    <p>Inventory snapshots with restore GUI, trust system (NEW &rarr; MEMBER &rarr; TRUSTED), alt detection with risk scoring, VPN detection, freeze system, and player timeline.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">&#x1F528;</div>
-                    <h3>Smart Moderation</h3>
-                    <p>Punishment GUI with customizable templates, case system with unique IDs, history GUI with pagination, staff notes with join notifications, and full audit logging.</p>
+                    <h3>Staff Management</h3>
+                    <p>Staffmode with tool hotbar (freeze, random TP, InvSee, punish, vanish), duty tracking, player reports with GUI, staff statistics, and smart join alerts.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">&#x2694;</div>
-                    <h3>Full Moderation Suite</h3>
-                    <p>Ban, tempban, IP ban, kick, mute, tempmute, warn with SQLite storage. Automatic punishments at warn thresholds. Ban appeal link on ban screen.</p>
+                    <h3>Smart Moderation</h3>
+                    <p>Punishment GUI with customizable templates, case system with resolve/delete, history GUI, staff notes, audit log, and chat log snapshots.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F3E0;</div>
+                    <h3>Homes & Teleport</h3>
+                    <p>Set, teleport, delete homes with paginated GUI. Staff teleport commands, permission-based home limits, teleport delays, and world blacklists.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">&#x1F4AC;</div>
@@ -118,14 +123,9 @@
                     <p>Private messaging with social spy, broadcast, clear/mute/slow chat, staff chat, nicknames with color codes, and social link commands.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">&#x1F3AE;</div>
-                    <h3>Player Commands</h3>
-                    <p>Fly, heal, feed, repair, clear, hat, ping, god mode, gamemode shortcuts, speed control, and custom join & leave messages.</p>
-                </div>
-                <div class="feature-card">
                     <div class="feature-icon">&#x1F310;</div>
                     <h3>Teleportation</h3>
-                    <p>TPA request system with countdown, spawn with configurable countdown and death respawn, back command, and toggle for receiving requests.</p>
+                    <p>TPA request system with countdown, spawn with configurable countdown and death respawn, back command, tp/tphere/tpall, and /top.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">&#x1F441;</div>
@@ -140,7 +140,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">&#x2699;</div>
                     <h3>Modular & Configurable</h3>
-                    <p>13 toggleable modules in config.yml, in-game settings GUI, paginated help menu, fully configurable messages, live reload, and auto-updating config.</p>
+                    <p>21 toggleable modules in config.yml, 4 config files, in-game settings GUI, paginated help, fully configurable messages, live reload, and auto-updating config with comments.</p>
                 </div>
             </div>
         </div>
@@ -195,17 +195,29 @@
     <!-- Commands Preview -->
     <section id="commands" class="commands">
         <div class="container">
-            <h2 class="section-title">70+ commands, one plugin</h2>
+            <h2 class="section-title">100+ commands, one plugin</h2>
             <p class="section-subtitle">Every command fully configurable with permissions</p>
             <div class="commands-tabs">
-                <button class="tab-btn active" data-tab="moderation">Moderation</button>
+                <button class="tab-btn active" data-tab="protection">Protection</button>
+                <button class="tab-btn" data-tab="moderation">Moderation</button>
+                <button class="tab-btn" data-tab="homes">Homes</button>
                 <button class="tab-btn" data-tab="chat">Chat</button>
-                <button class="tab-btn" data-tab="player">Player</button>
                 <button class="tab-btn" data-tab="teleport">Teleport</button>
                 <button class="tab-btn" data-tab="utility">Utility</button>
             </div>
             <div class="commands-content">
-                <div class="tab-content active" id="tab-moderation">
+                <div class="tab-content active" id="tab-protection">
+                    <div class="command-list">
+                        <div class="command"><code>/restoreinv &lt;player&gt;</code><span>View &amp; restore inventory snapshots</span></div>
+                        <div class="command"><code>/trust &lt;player&gt;</code><span>View player trust level</span></div>
+                        <div class="command"><code>/trust set &lt;player&gt; &lt;level&gt;</code><span>Set trust level</span></div>
+                        <div class="command"><code>/alts &lt;player&gt;</code><span>View alt accounts</span></div>
+                        <div class="command"><code>/freeze &lt;player&gt;</code><span>Freeze a player</span></div>
+                        <div class="command"><code>/unfreeze &lt;player&gt;</code><span>Unfreeze a player</span></div>
+                        <div class="command"><code>/timeline &lt;player&gt;</code><span>View activity timeline</span></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-moderation">
                     <div class="command-list">
                         <div class="command"><code>/punish &lt;player&gt;</code><span>Open punishment GUI</span></div>
                         <div class="command"><code>/ban &lt;player&gt; [reason]</code><span>Permanently ban a player</span></div>
@@ -214,9 +226,21 @@
                         <div class="command"><code>/warn &lt;player&gt; [reason]</code><span>Warn a player</span></div>
                         <div class="command"><code>/kick &lt;player&gt; [reason]</code><span>Kick a player</span></div>
                         <div class="command"><code>/case &lt;id&gt;</code><span>View case details</span></div>
+                        <div class="command"><code>/case resolve &lt;id&gt;</code><span>Resolve a case</span></div>
                         <div class="command"><code>/history &lt;player&gt;</code><span>View moderation history</span></div>
                         <div class="command"><code>/auditlog &lt;staff&gt;</code><span>View staff action log</span></div>
-                        <div class="command"><code>/notes &lt;player&gt;</code><span>View staff notes</span></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-homes">
+                    <div class="command-list">
+                        <div class="command"><code>/sethome [name]</code><span>Set a home location</span></div>
+                        <div class="command"><code>/home [name]</code><span>Teleport to a home</span></div>
+                        <div class="command"><code>/delhome &lt;name&gt;</code><span>Delete a home</span></div>
+                        <div class="command"><code>/homes [player]</code><span>View all homes in GUI</span></div>
+                        <div class="command"><code>/tp &lt;player&gt;</code><span>Teleport to a player</span></div>
+                        <div class="command"><code>/tphere &lt;player&gt;</code><span>Teleport player to you</span></div>
+                        <div class="command"><code>/tpall</code><span>Teleport all to you</span></div>
+                        <div class="command"><code>/top</code><span>Teleport to highest block</span></div>
                     </div>
                 </div>
                 <div class="tab-content" id="tab-chat">
@@ -231,38 +255,26 @@
                         <div class="command"><code>/nick &lt;name|off&gt;</code><span>Set nickname</span></div>
                     </div>
                 </div>
-                <div class="tab-content" id="tab-player">
-                    <div class="command-list">
-                        <div class="command"><code>/fly [player]</code><span>Toggle flight</span></div>
-                        <div class="command"><code>/heal [player]</code><span>Heal a player</span></div>
-                        <div class="command"><code>/feed [player]</code><span>Feed a player</span></div>
-                        <div class="command"><code>/god [player]</code><span>Toggle god mode</span></div>
-                        <div class="command"><code>/vanish [player]</code><span>Toggle vanish</span></div>
-                        <div class="command"><code>/gamemode &lt;mode&gt;</code><span>Change gamemode</span></div>
-                        <div class="command"><code>/speed &lt;1-10&gt;</code><span>Set walk/fly speed</span></div>
-                        <div class="command"><code>/invsee &lt;player&gt;</code><span>View inventory</span></div>
-                    </div>
-                </div>
                 <div class="tab-content" id="tab-teleport">
                     <div class="command-list">
                         <div class="command"><code>/tpa &lt;player&gt;</code><span>Send teleport request</span></div>
                         <div class="command"><code>/tpaccept</code><span>Accept request</span></div>
                         <div class="command"><code>/tpdeny</code><span>Deny request</span></div>
+                        <div class="command"><code>/tpahere &lt;player&gt;</code><span>Request player to teleport to you</span></div>
                         <div class="command"><code>/spawn [player]</code><span>Teleport to spawn</span></div>
-                        <div class="command"><code>/setspawn</code><span>Set world spawn</span></div>
                         <div class="command"><code>/back</code><span>Return to previous location</span></div>
                     </div>
                 </div>
                 <div class="tab-content" id="tab-utility">
                     <div class="command-list">
+                        <div class="command"><code>/fly [player]</code><span>Toggle flight</span></div>
+                        <div class="command"><code>/heal [player]</code><span>Heal a player</span></div>
+                        <div class="command"><code>/vanish [player]</code><span>Toggle vanish</span></div>
+                        <div class="command"><code>/gamemode &lt;mode&gt;</code><span>Change gamemode</span></div>
                         <div class="command"><code>/repair</code><span>Repair held item</span></div>
                         <div class="command"><code>/clear [player]</code><span>Clear inventory</span></div>
-                        <div class="command"><code>/hat</code><span>Wear item as hat</span></div>
                         <div class="command"><code>/workbench</code><span>Open crafting table</span></div>
-                        <div class="command"><code>/anvil</code><span>Open anvil</span></div>
                         <div class="command"><code>/enderchest</code><span>Open ender chest</span></div>
-                        <div class="command"><code>/day</code><span>Set time to day</span></div>
-                        <div class="command"><code>/sun</code><span>Set weather to clear</span></div>
                     </div>
                 </div>
             </div>
