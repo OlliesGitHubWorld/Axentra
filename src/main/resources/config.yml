@@ -129,6 +129,18 @@ announce-warn: true
 #   mute    - Mutes the player (prevents chatting)
 #   tempban - Temporarily bans the player (requires a "duration" field, e.g. "1d", "12h", "30m")
 #   ban     - Permanently bans the player
+#   freeze  - Freezes the player (add a "duration", e.g. "10m", to make it a temp freeze)
+#
+# Keys can be an exact warn count ("5"), a range ("1-10") or an open range ("10+").
+# An exact key always wins over a range; otherwise the first matching range is used.
+# Example:
+#   "1-10":
+#     action: kick
+#     reason: "ᴄʜᴇᴀᴛ ᴅᴇᴛᴇᴄᴛᴇᴅ. ʏᴏᴜ ɢᴏᴛ ᴀ ᴡᴀʀɴɪɴɢ!"
+#   "2":
+#     action: freeze
+#     duration: "5m"
+#     reason: "Wait for a staff member."
 #
 # Add or remove thresholds as needed. Set to {} to disable all auto-punishments.
 
@@ -202,66 +214,142 @@ vanish-action-bar-interval: 40
 report-cooldown-seconds: 60
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                   General Settings                      │
+# └─────────────────────────────────────────────────────────┘
+
+# Show info messages in the console (startup banner, DB connected, config migrations).
+# Error messages are always shown regardless of this setting.
+# Set to false to reduce console spam and disk writes.
+verbose-logging: true
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                  Module Toggles                         │
 # └─────────────────────────────────────────────────────────┘
 #
 # Enable or disable entire features/commands.
-# Set to false to completely disable the module.
+# When a module is disabled:
+#   - Its commands are fully unregistered (players see "Unknown command")
+#   - Its listeners are not registered (zero performance overhead)
+#   - No other plugin can intercept or show usage for these commands
+#
 # Requires a server restart (not just /axentra reload) to take effect.
 
 enabled-modules:
-  # Teleportation
+  # ── Teleportation ──
+
+  # /tpa, /tpaccept, /tpdeny, /tpacancel, /tptoggle — player-to-player teleport requests
   tpa: true
+  # /spawn, /setspawn — teleport to world spawn
   spawn: true
+  # /back — return to previous location after teleport or death
   back: true
 
-  # Chat & messaging
+  # ── Chat & Messaging ──
+
+  # /msg, /reply, /msgtoggle — private messages between players
   messaging: true
   # Disable this if you use another chat plugin (e.g. EssentialsChat, ChatControl).
   # When false, Axentra will NOT listen to chat events at all — mutechat, slowchat,
   # staffchat toggle, and chat history for cases will be disabled.
   # Mute enforcement and mute-blocked-commands will still work independently.
+  # Commands: /clearchat, /mutechat, /slowchat, /staffchat
   chat-management: true
-  # /nick, /realname, /me
+  # /nick, /realname, /me — set display names and action messages
   nickname: true
-  # /discord, /website, /store
+  # /discord, /website, /store — show your server's social media links
   social-commands: true
 
-  # Player utilities
-  # /fly, /heal, /feed, /god, /speed, /gamemode, /clear, /repair, /hat, /suicide, /ping
+  # ── Player Utilities ──
+
+  # A collection of admin/player convenience commands:
+  #   /fly        — toggle flight mode for yourself or others
+  #   /heal       — restore health to full
+  #   /feed       — restore hunger to full
+  #   /god        — toggle invincibility (no damage)
+  #   /speed      — set walk or fly speed (1-10)
+  #   /gamemode   — change gamemode (also /gm, /gms, /gmc, /gma, /gmsp)
+  #   /clear      — clear a player's inventory
+  #   /repair     — repair the item in your hand
+  #   /hat        — place held item on your head as a helmet
+  #   /suicide    — kill yourself
+  #   /ping       — check your or another player's latency
   player-utilities: true
-  # /vanish
+  # /vanish — become invisible to other players (staff feature)
   vanish: true
-  # /invsee, /enderchestsee
+  # /invsee — view another player's inventory
+  # /enderchestsee — view another player's ender chest
   invsee: true
 
-  # World utilities
-  # /anvil, /workbench, /cartography, /grindstone, /loom, /smithingtable, /stonecutter, /enderchest
+  # ── World Utilities ──
+
+  # Opens virtual workstation GUIs without needing to place blocks:
+  #   /anvil, /workbench, /cartography, /grindstone,
+  #   /loom, /smithingtable, /stonecutter, /enderchest
   workbench-commands: true
-  # /weather, /sun, /rain, /storm, /time, /day, /night, /noon, /midnight
+  # /weather (clear/rain/storm), /sun, /rain, /storm
+  # /time (set/add), /day, /night, /noon, /midnight
   weather-time: true
 
-  # Staff management
-  # /duty, /staffmode, /report, /reports, /staffstats, /stafflist
+  # ── Staff Management ──
+
+  # /duty — toggle on/off duty status (tracks staff activity time)
+  # /staffmode — enter staff mode with special tools
+  # /report — let players report others to staff
+  # /reports — view and manage open reports
+  # /staffstats — view staff activity statistics
+  # /stafflist — view online staff and duty status
   staff-management: true
 
-  # Protection & tracking (v1.7.0)
-  # Inventory snapshots on death/join/quit/world-change/clear
+  # ── Protection & Tracking ──
+  # These modules add database tracking. Disable any you don't need
+  # to save disk space and reduce database writes.
+
+  # Saves a copy of player inventories on death/join/quit/world-change/clear.
+  # Allows staff to view and restore inventories with /restoreinv.
+  # Configure triggers in protection.yml. Disable to save disk space.
   snapshots: true
-  # Trust system (NEW -> MEMBER -> TRUSTED)
+  # Tracks playtime and auto-assigns trust levels (NEW -> MEMBER -> TRUSTED).
+  # Used for chat restrictions on new players. Configure in protection.yml.
   trust: true
-  # Alt detection via shared IPs
+  # Detects alt accounts by tracking shared IP addresses.
+  # Shows staff alerts on join if a player has alts. Command: /alts
   alts: true
-  # VPN detection via proxycheck.io (requires API key in protection.yml)
+  # VPN/proxy detection via proxycheck.io API.
+  # Requires an API key in protection.yml. No commands — runs on join.
   vpn: true
-  # Freeze system (/freeze, /unfreeze)
+  # /freeze, /unfreeze — prevent a player from moving/interacting.
+  # Used during investigations. Configure in protection.yml.
   freeze: true
-  # Player timeline (/timeline)
+  # /timeline — view a player's activity log (joins, punishments, trust changes).
+  # Requires session tracking (at least one of: snapshots, trust, alts, or timeline enabled).
   timeline: true
-  # Home system (/sethome, /home, /delhome, /homes)
+  # /sethome, /home, /delhome, /homes — player home system
   homes: true
-  # Staff teleport (/tp, /tphere, /tpall, /tpahere, /top)
+  # Staff teleport commands: /tp, /tphere, /tpall, /tpahere, /top
   teleport: true
+
+  # ── Server Health ──
+
+  # /lag — TPS overview, chunk analysis, entity breakdown, history.
+  # Includes TPS/MSPT measurement and TPS history recording.
+  lag: true
+  # Health score calculation (0-100 composite of TPS, MSPT, memory, entities).
+  health-score: true
+  # Staff alerts when TPS drops below threshold for too long.
+  alerts: true
+  # Automatic ground-item cleanup (interval or on TPS alert).
+  # /lag clear [items|mobs|all]
+  cleanup: true
+  # Per-chunk entity limits. Blocks spawns when exceeded.
+  entity-limits: true
+  # /restart — scheduled and manual server restarts with countdown.
+  restarts: true
+  # /maintenance — lock server for staff-only access.
+  maintenance: true
+  # /setwarp, /delwarp, /warp, /warps, /editwarp — server warp points.
+  warps: true
+  # /rtp — random teleport to a safe location in the wild.
+  rtp: true
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Homes Settings                       │
@@ -274,6 +362,43 @@ homes:
   teleport-delay: 3
   # Worlds where /sethome is not allowed
   blacklisted-worlds: []
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Warp Settings                       │
+# └─────────────────────────────────────────────────────────┘
+
+warps:
+  # Default icon in the /warps GUI (Material name)
+  default-icon: "ENDER_PEARL"
+  # Delay in seconds before teleporting to a warp (0 = instant)
+  teleport-delay: 3
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                     RTP Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+rtp:
+  # Cooldown in seconds between /rtp uses per player.
+  cooldown-seconds: 300
+  # Delay in seconds before teleporting (0 = instant).
+  teleport-delay: 5
+  # Per-world RTP configuration.
+  worlds:
+    world:
+      enabled: true
+      min-radius: 500
+      max-radius: 10000
+      center-x: 0
+      center-z: 0
+    world_nether:
+      enabled: true
+      min-radius: 100
+      max-radius: 3000
+      center-x: 0
+      center-z: 0
+      max-y: 120
+    world_the_end:
+      enabled: false
 
 # ══════════════════════════════════════════════════════════
 #                     End of Config

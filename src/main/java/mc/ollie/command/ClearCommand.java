@@ -1,7 +1,6 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
-import mc.ollie.SnapshotManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

@@ -11,7 +11,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class StaffstatsCommand implements CommandExecutor, TabCompleter {
@@ -40,13 +39,16 @@ public class StaffstatsCommand implements CommandExecutor, TabCompleter {
 
         // /staffstats top
         if (args.length == 1 && args[0].equalsIgnoreCase("top")) {
-            showLeaderboard(sender);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                List<DatabaseManager.LeaderboardEntry> entries = plugin.getDatabaseManager().getStaffLeaderboard(10);
+                Bukkit.getScheduler().runTask(plugin, () -> showLeaderboard(sender, entries));
+            });
             return true;
         }
 
         // /staffstats [player]
         String targetName;
-        String targetUuid;
+        String onlineUuid = null;
 
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
@@ -55,20 +57,23 @@ public class StaffstatsCommand implements CommandExecutor, TabCompleter {
             }
             Player player = (Player) sender;
             targetName = player.getName();
-            targetUuid = player.getUniqueId().toString();
+            onlineUuid = player.getUniqueId().toString();
         } else {
             targetName = args[0];
             Player targetPlayer = Bukkit.getPlayer(targetName);
-            targetUuid = targetPlayer != null
-                    ? targetPlayer.getUniqueId().toString()
-                    : plugin.getDatabaseManager().getUuidByName(targetName);
-            if (targetUuid == null) targetUuid = targetName;
+            if (targetPlayer != null) onlineUuid = targetPlayer.getUniqueId().toString();
         }
 
-        showStats(sender, targetName, targetUuid);
+        String knownUuid = onlineUuid;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            String targetUuid = knownUuid != null ? knownUuid : plugin.getDatabaseManager().getUuidByName(targetName);
+            if (targetUuid == null) targetUuid = targetName;
+            showStats(sender, targetName, targetUuid);
+        });
         return true;
     }
 
+    /** Runs async: loads the stats, then sends them on the main thread. */
     private void showStats(CommandSender sender, String staffName, String staffUuid) {
         int totalCases   = plugin.getDatabaseManager().getStaffCaseCount(staffName);
         int bans         = plugin.getDatabaseManager().getStaffCaseCountByType(staffName, "BAN");
@@ -82,26 +87,26 @@ public class StaffstatsCommand implements CommandExecutor, TabCompleter {
         long dutyWeek  = staffUuid != null ? plugin.getDatabaseManager().getStaffDutyMinutes(staffUuid, "week")  : 0L;
         long dutyTotal = staffUuid != null ? plugin.getDatabaseManager().getStaffDutyMinutes(staffUuid, "total") : 0L;
 
-        sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
-        sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "  Staff Stats: " + ChatColor.WHITE + staffName);
-        sender.sendMessage("");
-        sender.sendMessage(ChatColor.GRAY + "  Total Cases:     " + ChatColor.WHITE + totalCases);
-        sender.sendMessage(ChatColor.GRAY + "  Bans:            " + ChatColor.WHITE + bans
-                + ChatColor.DARK_GRAY + " (+" + tempBans + " temp)");
-        sender.sendMessage(ChatColor.GRAY + "  Kicks:           " + ChatColor.WHITE + kicks);
-        sender.sendMessage(ChatColor.GRAY + "  Mutes:           " + ChatColor.WHITE + mutes);
-        sender.sendMessage(ChatColor.GRAY + "  Warns:           " + ChatColor.WHITE + warns);
-        sender.sendMessage(ChatColor.GRAY + "  Reports Closed:  " + ChatColor.WHITE + reportsClosed);
-        sender.sendMessage("");
-        sender.sendMessage(ChatColor.GRAY + "  Duty Time (Today):  " + ChatColor.WHITE + formatMinutes(dutyDay));
-        sender.sendMessage(ChatColor.GRAY + "  Duty Time (Week):   " + ChatColor.WHITE + formatMinutes(dutyWeek));
-        sender.sendMessage(ChatColor.GRAY + "  Duty Time (Total):  " + ChatColor.WHITE + formatMinutes(dutyTotal));
-        sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
+            sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "  Staff Stats: " + ChatColor.WHITE + staffName);
+            sender.sendMessage("");
+            sender.sendMessage(ChatColor.GRAY + "  Total Cases:     " + ChatColor.WHITE + totalCases);
+            sender.sendMessage(ChatColor.GRAY + "  Bans:            " + ChatColor.WHITE + bans
+                    + ChatColor.DARK_GRAY + " (+" + tempBans + " temp)");
+            sender.sendMessage(ChatColor.GRAY + "  Kicks:           " + ChatColor.WHITE + kicks);
+            sender.sendMessage(ChatColor.GRAY + "  Mutes:           " + ChatColor.WHITE + mutes);
+            sender.sendMessage(ChatColor.GRAY + "  Warns:           " + ChatColor.WHITE + warns);
+            sender.sendMessage(ChatColor.GRAY + "  Reports Closed:  " + ChatColor.WHITE + reportsClosed);
+            sender.sendMessage("");
+            sender.sendMessage(ChatColor.GRAY + "  Duty Time (Today):  " + ChatColor.WHITE + formatMinutes(dutyDay));
+            sender.sendMessage(ChatColor.GRAY + "  Duty Time (Week):   " + ChatColor.WHITE + formatMinutes(dutyWeek));
+            sender.sendMessage(ChatColor.GRAY + "  Duty Time (Total):  " + ChatColor.WHITE + formatMinutes(dutyTotal));
+            sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
+        });
     }
 
-    private void showLeaderboard(CommandSender sender) {
-        List<DatabaseManager.LeaderboardEntry> entries = plugin.getDatabaseManager().getStaffLeaderboard(10);
-
+    private void showLeaderboard(CommandSender sender, List<DatabaseManager.LeaderboardEntry> entries) {
         sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
         sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "  Staff Leaderboard " + ChatColor.GRAY + "(Top 10 by cases)");
         sender.sendMessage("");

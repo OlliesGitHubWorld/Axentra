@@ -61,7 +61,7 @@ public class RestoreInvGUI {
 
         String title = ChatColor.DARK_GRAY + "\u2726 " + ChatColor.DARK_GREEN + ChatColor.BOLD + "Snapshots"
                 + ChatColor.DARK_GRAY + " \u2726 " + ChatColor.RESET + playerName;
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = MenuHolder.create(54, title);
 
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
         for (int i = 0; i < 54; i++) inv.setItem(i, bg);
@@ -146,7 +146,7 @@ public class RestoreInvGUI {
         this.previewSnapshot = snapshot;
         String title = ChatColor.DARK_GRAY + "\u2726 " + ChatColor.GOLD + ChatColor.BOLD + "Preview"
                 + ChatColor.DARK_GRAY + " \u2726 " + ChatColor.RESET + "#" + snapshot.id;
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = MenuHolder.create(54, title);
 
         // Fill with background
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
@@ -274,7 +274,7 @@ public class RestoreInvGUI {
         this.previewSnapshot = snapshot;
         String title = ChatColor.DARK_GRAY + "\u2726 " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Enderchest"
                 + ChatColor.DARK_GRAY + " \u2726 " + ChatColor.RESET + "#" + snapshot.id;
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = MenuHolder.create(54, title);
 
         // Fill with background
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");

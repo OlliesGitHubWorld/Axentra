@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.7.0
+version: 1.8.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -462,6 +462,11 @@ commands:
     usage: /unfreeze <player>
     permission: Axentra.freeze
     permission-message: "&cYou don't have permission to use this command!"
+  tempfreeze:
+    description: Freeze a player for a set time
+    usage: /tempfreeze <player> <duration>
+    permission: Axentra.freeze
+    permission-message: "&cYou don't have permission to use this command!"
   timeline:
     description: View a player's activity timeline
     usage: /timeline <player> [filter]
@@ -489,7 +494,7 @@ commands:
     permission-message: "&cYou don't have permission to use this command!"
   tp:
     description: Teleport to a player or teleport a player to another
-    usage: /tp <player> [player]
+    usage: /tp <player> [player] | /tp [player] <x> <y> <z>
     permission: Axentra.tp
     permission-message: "&cYou don't have permission to use this command!"
   tphere:
@@ -511,6 +516,52 @@ commands:
     description: Teleport to the highest block at your location
     usage: /top
     permission: Axentra.top
+    permission-message: "&cYou don't have permission to use this command!"
+  lag:
+    description: View server performance and manage lag
+    usage: /lag [chunks|entities|history|clear|player]
+    permission: Axentra.lag
+    permission-message: "&cYou don't have permission to use this command!"
+  restart:
+    description: Schedule or trigger a server restart
+    usage: /restart [schedule|cancel|status|now]
+    permission: Axentra.restart
+    permission-message: "&cYou don't have permission to use this command!"
+  maintenance:
+    description: Toggle maintenance mode
+    usage: /maintenance <on [duration] [-c countdown] [reason]|off|status|add|remove> [player]
+    permission: Axentra.maintenance
+    permission-message: "&cYou don't have permission to use this command!"
+  setwarp:
+    description: Set a warp point
+    usage: /setwarp <name>
+    permission: Axentra.setwarp
+    permission-message: "&cYou don't have permission to use this command!"
+  delwarp:
+    description: Delete a warp point
+    usage: /delwarp <name>
+    permission: Axentra.delwarp
+    permission-message: "&cYou don't have permission to use this command!"
+  warp:
+    description: Teleport to a warp
+    usage: /warp <name>
+    permission: Axentra.warp
+    permission-message: "&cYou don't have permission to use this command!"
+  warps:
+    description: View all warps in a GUI
+    usage: /warps
+    permission: Axentra.warps
+    permission-message: "&cYou don't have permission to use this command!"
+  editwarp:
+    description: Edit a warp's icon, permission, position or name
+    usage: /editwarp <name> <icon|permission|order|rename> <value>
+    permission: Axentra.editwarp
+    permission-message: "&cYou don't have permission to use this command!"
+  rtp:
+    description: Teleport to a random safe location
+    usage: /rtp [world]
+    aliases: [wild]
+    permission: Axentra.rtp
     permission-message: "&cYou don't have permission to use this command!"
   axentra:
     description: Main Axentra command
@@ -783,7 +834,7 @@ permissions:
     description: Allows viewing player alt accounts
     default: op
   Axentra.alts.ip:
-    description: Allows viewing player IP addresses in alt lookup
+    description: Allows seeing player IP addresses (/alts, /timeline, /banip and /tempbanip output)
     default: op
   Axentra.freeze:
     description: Allows freezing and unfreezing players
@@ -833,3 +884,48 @@ permissions:
   Axentra.top:
     description: Allows teleporting to the highest block
     default: true
+  Axentra.lag:
+    description: Allows viewing server performance info
+    default: op
+  Axentra.lag.clear:
+    description: Allows clearing ground items and mobs
+    default: op
+  Axentra.lag.alerts:
+    description: Receives TPS lag alerts
+    default: op
+  Axentra.restart:
+    description: Allows managing server restarts
+    default: op
+  Axentra.maintenance:
+    description: Allows managing maintenance mode
+    default: op
+  Axentra.maintenance.bypass:
+    description: Allows joining during maintenance
+    default: op
+  Axentra.setwarp:
+    description: Allows setting warps
+    default: op
+  Axentra.delwarp:
+    description: Allows deleting warps
+    default: op
+  Axentra.warp:
+    description: Allows teleporting to warps
+    default: true
+  Axentra.warps:
+    description: Allows viewing the warps GUI
+    default: true
+  Axentra.editwarp:
+    description: Allows editing warp properties
+    default: op
+  Axentra.rtp:
+    description: Allows using random teleport
+    default: true
+  Axentra.rtp.bypass:
+    description: Bypasses RTP cooldown
+    default: op
+  Axentra.entitylimit.bypass:
+    description: Bypasses entity limit restrictions
+    default: op
+  Axentra.cleanup.bypass:
+    description: Items dropped by this player are never cleaned
+    default: false

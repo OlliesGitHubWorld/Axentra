@@ -127,8 +127,32 @@ freeze:
   # Action when a frozen player logs out: NONE, ALERT, or BAN.
   logout-action: ALERT
   # If logout-action is BAN, these settings are used for the auto-ban.
+  # Set logout-ban-duration to "" for a permanent ban.
   logout-ban-reason: "Logged out while frozen"
   logout-ban-duration: "7d"
+  # How far (in blocks) a frozen player can walk from the spot they were frozen at.
+  # 0 = fully locked in place (they can still look around).
+  movement-radius: 1.0
+  # Tag shown in front of a frozen player's name.
+  tag: "&b&l❄ FROZEN &r"
+  # Where the tag is shown. The nametag uses the main scoreboard team, so it may
+  # not show if another plugin (e.g. TAB) manages nametags.
+  tag-display:
+    nametag: true
+    tablist: true
+  # Format of a frozen player's chat when chat-only-with-staff is true.
+  # Placeholders: %tag%, %player%, %message%
+  chat-format: "%tag%&7%player%: &f%message%"
+  # Show a status line (with time left for temp freezes) in the action bar.
+  actionbar: true
+  # Particles around frozen players (visible to everyone).
+  # type: any particle without extra data, e.g. SNOWFLAKE, CLOUD, END_ROD, ENCHANT, SOUL_FIRE_FLAME
+  particles:
+    enabled: true
+    type: SNOWFLAKE
+    count: 8
+    offset: 0.4
+    interval-ticks: 10
 
 # ══════════════════════════════════════════════════════════
 #                 End of Protection Config

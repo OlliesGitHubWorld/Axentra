@@ -6,7 +6,8 @@ import mc.ollie.gui.HomesGUI;
 import mc.ollie.gui.PunishGUI;
 import mc.ollie.gui.RestoreInvGUI;
 import mc.ollie.gui.TimelineGUI;
-import org.bukkit.ChatColor;
+import mc.ollie.gui.TpsHistoryGUI;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +27,16 @@ public class ModerationGUIListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();
         String title = event.getView().getTitle();
+
+        // TPS History GUI
+        if (title.equals(TpsHistoryGUI.GUI_TITLE)) {
+            event.setCancelled(true);
+            TpsHistoryGUI tpsGUI = TpsHistoryGUI.getOpenGUI(player);
+            if (tpsGUI != null && event.getCurrentItem() != null) {
+                tpsGUI.handleClick(player, event.getRawSlot());
+            }
+            return;
+        }
 
         // Punish GUI
         PunishGUI punishGUI = PunishGUI.getActiveGUI(title);
@@ -94,6 +105,25 @@ public class ModerationGUIListener implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         String title = event.getView().getTitle();
+        if (event.getPlayer() instanceof Player player) {
+            TpsHistoryGUI.removeOpenGUI(player);
+        }
+        if (!plugin.isEnabled()) {
+            removeGUIs(title);
+            return;
+        }
+        // Switching pages opens a new inventory with the same title, which fires this close
+        // event right after the new page was registered. Wait a tick and only drop the GUI
+        // when nobody has a menu with this title open any more.
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                if (online.getOpenInventory().getTitle().equals(title)) return;
+            }
+            removeGUIs(title);
+        });
+    }
+
+    private void removeGUIs(String title) {
         PunishGUI.removeActiveGUI(title);
         HistoryGUI.removeActiveGUI(title);
         RestoreInvGUI.removeActiveGUI(title);

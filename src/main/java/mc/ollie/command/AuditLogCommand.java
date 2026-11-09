@@ -67,17 +67,24 @@ public class AuditLogCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        List<DatabaseManager.AuditEntry> allEntries = plugin.getDatabaseManager().getAuditLogByStaff(staffName, 100);
+        int finalPage = page;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<DatabaseManager.AuditEntry> allEntries = plugin.getDatabaseManager().getAuditLogByStaff(staffName, 100);
+            Bukkit.getScheduler().runTask(plugin, () -> showPage(sender, staffName, finalPage, allEntries));
+        });
+        return true;
+    }
 
+    private void showPage(CommandSender sender, String staffName, int page, List<DatabaseManager.AuditEntry> allEntries) {
         if (allEntries.isEmpty()) {
             sender.sendMessage(getMessage("auditlog-empty").replace("%staff%", staffName));
-            return true;
+            return;
         }
 
         int totalPages = (int) Math.ceil((double) allEntries.size() / ENTRIES_PER_PAGE);
         if (page < 1 || page > totalPages) {
             sender.sendMessage(ChatColor.RED + "Page " + page + " does not exist. (1-" + totalPages + ")");
-            return true;
+            return;
         }
 
         int start = (page - 1) * ENTRIES_PER_PAGE;
@@ -103,7 +110,6 @@ public class AuditLogCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
-        return true;
     }
 
     private String getActionColor(String action) {

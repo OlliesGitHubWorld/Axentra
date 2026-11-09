@@ -3,12 +3,24 @@ package mc.ollie;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DatabaseManager {
 
     private final App plugin;
     private Connection connection;
+
+    // player uuid -> mute expiry millis (Long.MAX_VALUE = permanent, 0 = not muted)
+    private final Map<String, Long> muteCache = new ConcurrentHashMap<>();
+
+    private static final long NAME_CACHE_MS = 30_000;
+    private volatile List<String> knownNamesCache = new ArrayList<>();
+    private volatile long knownNamesCachedAt = 0;
+    private volatile List<String> warnedNamesCache = new ArrayList<>();
+    private volatile long warnedNamesCachedAt = 0;
 
     public DatabaseManager(App plugin) {
         this.plugin = plugin;
@@ -408,12 +420,176 @@ public class DatabaseManager {
         }
     }
 
+    // ── v1.8.0 Data classes ─────────────────────────────────
+
+    public static class TpsHistoryEntry {
+        public final long time;
+        public final double tps1m;
+        public final double tps5m;
+        public final double tps15m;
+        public final double msptAvg;
+        public final double msptMax;
+        public final long memoryUsed;
+        public final long memoryMax;
+        public final int healthScore;
+        public final int onlinePlayers;
+
+        public TpsHistoryEntry(long time, double tps1m, double tps5m, double tps15m,
+                              double msptAvg, double msptMax, long memoryUsed, long memoryMax,
+                              int healthScore, int onlinePlayers) {
+            this.time = time;
+            this.tps1m = tps1m;
+            this.tps5m = tps5m;
+            this.tps15m = tps15m;
+            this.msptAvg = msptAvg;
+            this.msptMax = msptMax;
+            this.memoryUsed = memoryUsed;
+            this.memoryMax = memoryMax;
+            this.healthScore = healthScore;
+            this.onlinePlayers = onlinePlayers;
+        }
+    }
+
+    public static class LagAlertInfo {
+        public final int id;
+        public final long time;
+        public final double tps;
+        public final int durationSeconds;
+        public final int healthScore;
+        public final boolean resolved;
+        public final long resolvedAt;
+
+        public LagAlertInfo(int id, long time, double tps, int durationSeconds,
+                           int healthScore, boolean resolved, long resolvedAt) {
+            this.id = id;
+            this.time = time;
+            this.tps = tps;
+            this.durationSeconds = durationSeconds;
+            this.healthScore = healthScore;
+            this.resolved = resolved;
+            this.resolvedAt = resolvedAt;
+        }
+    }
+
+    public static class LagAlertChunkInfo {
+        public final int id;
+        public final int alertId;
+        public final String world;
+        public final int chunkX;
+        public final int chunkZ;
+        public final double score;
+        public final int entityCount;
+        public final int tileEntityCount;
+        public final String topContributorUuid;
+        public final String topContributorName;
+
+        public LagAlertChunkInfo(int id, int alertId, String world, int chunkX, int chunkZ,
+                                double score, int entityCount, int tileEntityCount,
+                                String topContributorUuid, String topContributorName) {
+            this.id = id;
+            this.alertId = alertId;
+            this.world = world;
+            this.chunkX = chunkX;
+            this.chunkZ = chunkZ;
+            this.score = score;
+            this.entityCount = entityCount;
+            this.tileEntityCount = tileEntityCount;
+            this.topContributorUuid = topContributorUuid;
+            this.topContributorName = topContributorName;
+        }
+    }
+
+    public static class ChunkActivityEntry {
+        public final int id;
+        public final String playerUuid;
+        public final String playerName;
+        public final String world;
+        public final int chunkX;
+        public final int chunkZ;
+        public final String actionType;
+        public final String detail;
+        public final int count;
+        public final long time;
+
+        public ChunkActivityEntry(int id, String playerUuid, String playerName,
+                                 String world, int chunkX, int chunkZ,
+                                 String actionType, String detail, int count, long time) {
+            this.id = id;
+            this.playerUuid = playerUuid;
+            this.playerName = playerName;
+            this.world = world;
+            this.chunkX = chunkX;
+            this.chunkZ = chunkZ;
+            this.actionType = actionType;
+            this.detail = detail;
+            this.count = count;
+            this.time = time;
+        }
+    }
+
+    public static class WarpInfo {
+        public final int id;
+        public final String name;
+        public final String world;
+        public final double x;
+        public final double y;
+        public final double z;
+        public final float yaw;
+        public final float pitch;
+        public final String icon;
+        public final String createdBy;
+        public final long createdAt;
+        public final String permission;
+
+        public WarpInfo(int id, String name, String world, double x, double y, double z,
+                       float yaw, float pitch, String icon, String createdBy, long createdAt,
+                       String permission) {
+            this.id = id;
+            this.name = name;
+            this.world = world;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.icon = icon;
+            this.createdBy = createdBy;
+            this.createdAt = createdAt;
+            this.permission = permission;
+        }
+    }
+
+    public static class MaintenanceInfo {
+        public final boolean active;
+        public final String activatedBy;
+        public final long activatedAt;
+        public final int durationMinutes;
+        public final String reason;
+
+        public MaintenanceInfo(boolean active, String activatedBy, long activatedAt,
+                              int durationMinutes, String reason) {
+            this.active = active;
+            this.activatedBy = activatedBy;
+            this.activatedAt = activatedAt;
+            this.durationMinutes = durationMinutes;
+            this.reason = reason;
+        }
+    }
+
     // ── Setup ───────────────────────────────────────────────
 
     public void setup() {
         try {
             File dbFile = new File(plugin.getDataFolder(), "data.db");
             connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+
+            // WAL lets reads and writes from different threads run side by side, and busy_timeout
+            // waits for a lock instead of failing with "database is locked" when it's busy.
+            try (Statement pragma = connection.createStatement()) {
+                pragma.execute("PRAGMA journal_mode=WAL");
+                pragma.execute("PRAGMA synchronous=NORMAL");
+                pragma.execute("PRAGMA busy_timeout=5000");
+            }
 
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(
@@ -666,6 +842,11 @@ public class DatabaseManager {
                                 ")"
                 );
 
+                // Add expires_at to existing frozen_players tables (temp freezes, 0 = permanent)
+                try {
+                    statement.executeUpdate("ALTER TABLE frozen_players ADD COLUMN expires_at INTEGER DEFAULT 0");
+                } catch (SQLException ignored) { }
+
                 statement.executeUpdate(
                         "CREATE TABLE IF NOT EXISTS homes (" +
                                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -689,9 +870,117 @@ public class DatabaseManager {
                 try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_homes_uuid ON homes(player_uuid)"); } catch (SQLException ignored) {}
                 try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_name_history_uuid ON name_history(player_uuid)"); } catch (SQLException ignored) {}
                 try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_trust_history_uuid ON trust_history(player_uuid)"); } catch (SQLException ignored) {}
+
+                // ── Server Health tables (v1.8.0) ──
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS tps_history (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "time INTEGER NOT NULL," +
+                                "tps_1m REAL NOT NULL," +
+                                "tps_5m REAL NOT NULL," +
+                                "tps_15m REAL NOT NULL," +
+                                "mspt_avg REAL NOT NULL," +
+                                "mspt_max REAL NOT NULL," +
+                                "memory_used INTEGER NOT NULL," +
+                                "memory_max INTEGER NOT NULL," +
+                                "health_score INTEGER NOT NULL," +
+                                "online_players INTEGER NOT NULL" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS lag_alerts (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "time INTEGER NOT NULL," +
+                                "tps REAL NOT NULL," +
+                                "duration_seconds INTEGER NOT NULL," +
+                                "health_score INTEGER NOT NULL," +
+                                "resolved INTEGER DEFAULT 0," +
+                                "resolved_at INTEGER" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS lag_alert_chunks (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "alert_id INTEGER NOT NULL," +
+                                "world TEXT NOT NULL," +
+                                "chunk_x INTEGER NOT NULL," +
+                                "chunk_z INTEGER NOT NULL," +
+                                "score REAL NOT NULL," +
+                                "entity_count INTEGER NOT NULL," +
+                                "tile_entity_count INTEGER NOT NULL," +
+                                "top_contributor_uuid TEXT," +
+                                "top_contributor_name TEXT" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS chunk_activity (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "player_uuid TEXT NOT NULL," +
+                                "player_name TEXT NOT NULL," +
+                                "world TEXT NOT NULL," +
+                                "chunk_x INTEGER NOT NULL," +
+                                "chunk_z INTEGER NOT NULL," +
+                                "action_type TEXT NOT NULL," +
+                                "detail TEXT," +
+                                "count INTEGER NOT NULL DEFAULT 1," +
+                                "time INTEGER NOT NULL" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS warps (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "name TEXT NOT NULL UNIQUE," +
+                                "world TEXT NOT NULL," +
+                                "x REAL NOT NULL," +
+                                "y REAL NOT NULL," +
+                                "z REAL NOT NULL," +
+                                "yaw REAL NOT NULL," +
+                                "pitch REAL NOT NULL," +
+                                "icon TEXT," +
+                                "created_by TEXT NOT NULL," +
+                                "created_at INTEGER NOT NULL," +
+                                "permission TEXT" +
+                                ")"
+                );
+
+                // Add sort_order to existing warps tables (0 = unsorted, falls back to name order)
+                try {
+                    statement.executeUpdate("ALTER TABLE warps ADD COLUMN sort_order INTEGER DEFAULT 0");
+                } catch (SQLException ignored) { }
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS rtp_cooldowns (" +
+                                "player_uuid TEXT PRIMARY KEY," +
+                                "last_used INTEGER NOT NULL" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS maintenance (" +
+                                "id INTEGER PRIMARY KEY CHECK (id = 1)," +
+                                "active INTEGER NOT NULL DEFAULT 0," +
+                                "activated_by TEXT," +
+                                "activated_at INTEGER," +
+                                "duration_minutes INTEGER," +
+                                "reason TEXT" +
+                                ")"
+                );
+
+                // v1.8.0 indexes
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_tps_history_time ON tps_history(time)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_lag_alerts_time ON lag_alerts(time)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_lag_alert_chunks_alert ON lag_alert_chunks(alert_id)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chunk_activity_chunk ON chunk_activity(world, chunk_x, chunk_z)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chunk_activity_player ON chunk_activity(player_uuid)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chunk_activity_time ON chunk_activity(time)"); } catch (SQLException ignored) {}
             }
 
-            plugin.getLogger().info("Database connected!");
+            plugin.logInfo("Database connected!");
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to connect to database: " + e.getMessage());
         }
@@ -904,6 +1193,7 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to mute player: " + e.getMessage());
         }
+        muteCache.remove(playerUuid);
     }
 
     public void unmutePlayer(String playerName) {
@@ -914,20 +1204,46 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to unmute player: " + e.getMessage());
         }
+        // Unmute goes by name, so we can't map it to one UUID; unmutes are rare, just reload everyone
+        muteCache.clear();
     }
 
+    /**
+     * Cached: checked on every chat message, so only the first check per player hits the DB.
+     * The cache is invalidated by mutePlayer/unmutePlayer.
+     */
     public boolean isMuted(String playerUuid) {
+        Long expiry = muteCache.get(playerUuid);
+        if (expiry == null) {
+            expiry = loadMuteExpiry(playerUuid);
+            muteCache.put(playerUuid, expiry);
+        }
+        return expiry > System.currentTimeMillis();
+    }
+
+    /** Returns the mute expiry in millis, Long.MAX_VALUE for permanent, 0 when not muted. */
+    private long loadMuteExpiry(String playerUuid) {
         try (PreparedStatement stmt = connection.prepareStatement(
-                "SELECT 1 FROM mutes WHERE player_uuid = ? AND active = 1 AND (expires_at IS NULL OR expires_at > ?)")) {
+                "SELECT expires_at FROM mutes WHERE player_uuid = ? AND active = 1 AND (expires_at IS NULL OR expires_at > ?)")) {
             stmt.setString(1, playerUuid);
             stmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            long expiry = 0;
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
+                while (rs.next()) {
+                    Timestamp expiresAt = rs.getTimestamp("expires_at");
+                    expiry = Math.max(expiry, expiresAt == null ? Long.MAX_VALUE : expiresAt.getTime());
+                }
             }
+            return expiry;
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to check mute: " + e.getMessage());
-            return false;
+            return 0;
         }
+    }
+
+    /** Drops a player's cached mute state, e.g. when they leave. */
+    public void forgetMute(String playerUuid) {
+        muteCache.remove(playerUuid);
     }
 
     public boolean isMutedByName(String playerName) {
@@ -974,7 +1290,9 @@ public class DatabaseManager {
         return names;
     }
 
+    /** Used for tab completion, so cached briefly instead of querying on every keystroke. */
     public List<String> getActiveWarnedNames() {
+        if (System.currentTimeMillis() - warnedNamesCachedAt < NAME_CACHE_MS) return warnedNamesCache;
         List<String> names = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(
                 "SELECT DISTINCT player_name FROM warns WHERE active = 1")) {
@@ -984,6 +1302,8 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to get warned names: " + e.getMessage());
         }
+        warnedNamesCache = names;
+        warnedNamesCachedAt = System.currentTimeMillis();
         return names;
     }
 
@@ -1152,7 +1472,9 @@ public class DatabaseManager {
         return cases;
     }
 
+    /** Used for tab completion, so cached briefly instead of querying on every keystroke. */
     public List<String> getKnownPlayerNames() {
+        if (System.currentTimeMillis() - knownNamesCachedAt < NAME_CACHE_MS) return knownNamesCache;
         List<String> names = new ArrayList<>();
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT DISTINCT player_name FROM cases")) {
@@ -1162,7 +1484,24 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to get known player names: " + e.getMessage());
         }
+        knownNamesCache = names;
+        knownNamesCachedAt = System.currentTimeMillis();
         return names;
+    }
+
+    /** Number of earlier cases per reason for a player, used for punishment escalation. */
+    public java.util.Map<String, Integer> getCaseCountsByReason(String playerUuid) {
+        java.util.Map<String, Integer> counts = new java.util.HashMap<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT reason, COUNT(*) AS amount FROM cases WHERE player_uuid = ? AND reason IS NOT NULL GROUP BY reason")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) counts.put(rs.getString("reason"), rs.getInt("amount"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to count cases by reason: " + e.getMessage());
+        }
+        return counts;
     }
 
     public int getCaseCountByPlayer(String playerName) {
@@ -1613,7 +1952,7 @@ public class DatabaseManager {
                 "UPDATE cases SET active = 0 WHERE type IN ('KICK', 'WARN') AND active = 1")) {
             int updated = stmt.executeUpdate();
             if (updated > 0) {
-                plugin.getLogger().info("Migrated " + updated + " KICK/WARN cases to resolved.");
+                plugin.logInfo("Migrated " + updated + " KICK/WARN cases to resolved.");
             }
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to migrate instant cases: " + e.getMessage());
@@ -2091,11 +2430,17 @@ public class DatabaseManager {
     // ── Frozen Players ───────────────────────────────────────
 
     public void freezePlayer(String playerUuid, String frozenBy) {
+        freezePlayer(playerUuid, frozenBy, 0L);
+    }
+
+    /** @param expiresAt epoch millis when the freeze ends, or 0 for permanent */
+    public void freezePlayer(String playerUuid, String frozenBy, long expiresAt) {
         try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT OR REPLACE INTO frozen_players (player_uuid, frozen_by, frozen_at) VALUES (?, ?, ?)")) {
+                "INSERT OR REPLACE INTO frozen_players (player_uuid, frozen_by, frozen_at, expires_at) VALUES (?, ?, ?, ?)")) {
             stmt.setString(1, playerUuid);
             stmt.setString(2, frozenBy);
             stmt.setLong(3, System.currentTimeMillis());
+            stmt.setLong(4, expiresAt);
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to freeze player: " + e.getMessage());
@@ -2114,8 +2459,9 @@ public class DatabaseManager {
 
     public boolean isPlayerFrozen(String playerUuid) {
         try (PreparedStatement stmt = connection.prepareStatement(
-                "SELECT 1 FROM frozen_players WHERE player_uuid = ?")) {
+                "SELECT 1 FROM frozen_players WHERE player_uuid = ? AND (expires_at IS NULL OR expires_at = 0 OR expires_at > ?)")) {
             stmt.setString(1, playerUuid);
+            stmt.setLong(2, System.currentTimeMillis());
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
@@ -2134,6 +2480,18 @@ public class DatabaseManager {
             plugin.getLogger().severe("Failed to get frozen players: " + e.getMessage());
         }
         return uuids;
+    }
+
+    /** Returns every frozen player's UUID mapped to its expiry (epoch millis, 0 = permanent). */
+    public Map<String, Long> getFrozenPlayers() {
+        Map<String, Long> frozen = new HashMap<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT player_uuid, expires_at FROM frozen_players")) {
+            while (rs.next()) frozen.put(rs.getString("player_uuid"), rs.getLong("expires_at"));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get frozen players: " + e.getMessage());
+        }
+        return frozen;
     }
 
     // ── Homes ────────────────────────────────────────────────
@@ -2294,6 +2652,552 @@ public class DatabaseManager {
             plugin.getLogger().severe("Failed to get recent report count: " + e.getMessage());
         }
         return 0;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //                v1.8.0 – Server Health
+    // ══════════════════════════════════════════════════════════
+
+    // ── TPS History ─────────────────────────────────────────
+
+    public void insertTpsHistory(long time, double tps1m, double tps5m, double tps15m,
+                                 double msptAvg, double msptMax, long memoryUsed, long memoryMax,
+                                 int healthScore, int onlinePlayers) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO tps_history (time, tps_1m, tps_5m, tps_15m, mspt_avg, mspt_max, " +
+                "memory_used, memory_max, health_score, online_players) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            stmt.setLong(1, time);
+            stmt.setDouble(2, tps1m);
+            stmt.setDouble(3, tps5m);
+            stmt.setDouble(4, tps15m);
+            stmt.setDouble(5, msptAvg);
+            stmt.setDouble(6, msptMax);
+            stmt.setLong(7, memoryUsed);
+            stmt.setLong(8, memoryMax);
+            stmt.setInt(9, healthScore);
+            stmt.setInt(10, onlinePlayers);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to insert TPS history: " + e.getMessage());
+        }
+    }
+
+    public List<TpsHistoryEntry> getTpsHistory(long since, int limit) {
+        List<TpsHistoryEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM tps_history WHERE time >= ? ORDER BY time DESC LIMIT ?")) {
+            stmt.setLong(1, since);
+            stmt.setInt(2, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    entries.add(new TpsHistoryEntry(
+                            rs.getLong("time"), rs.getDouble("tps_1m"), rs.getDouble("tps_5m"),
+                            rs.getDouble("tps_15m"), rs.getDouble("mspt_avg"), rs.getDouble("mspt_max"),
+                            rs.getLong("memory_used"), rs.getLong("memory_max"),
+                            rs.getInt("health_score"), rs.getInt("online_players")));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get TPS history: " + e.getMessage());
+        }
+        return entries;
+    }
+
+    public TpsHistoryEntry getLatestTpsHistory() {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM tps_history ORDER BY time DESC LIMIT 1")) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new TpsHistoryEntry(
+                            rs.getLong("time"), rs.getDouble("tps_1m"), rs.getDouble("tps_5m"),
+                            rs.getDouble("tps_15m"), rs.getDouble("mspt_avg"), rs.getDouble("mspt_max"),
+                            rs.getLong("memory_used"), rs.getLong("memory_max"),
+                            rs.getInt("health_score"), rs.getInt("online_players"));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get latest TPS history: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public void purgeTpsHistory(int retentionDays) {
+        long cutoff = System.currentTimeMillis() - (retentionDays * 86400000L);
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "DELETE FROM tps_history WHERE time < ?")) {
+            stmt.setLong(1, cutoff);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to purge TPS history: " + e.getMessage());
+        }
+    }
+
+    // ── Lag Alerts ──────────────────────────────────────────
+
+    public int insertLagAlert(long time, double tps, int durationSeconds, int healthScore) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO lag_alerts (time, tps, duration_seconds, health_score) VALUES (?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setLong(1, time);
+            stmt.setDouble(2, tps);
+            stmt.setInt(3, durationSeconds);
+            stmt.setInt(4, healthScore);
+            stmt.executeUpdate();
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to insert lag alert: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    public void addLagAlertChunk(int alertId, String world, int chunkX, int chunkZ,
+                                 double score, int entityCount, int tileEntityCount,
+                                 String topContributorUuid, String topContributorName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO lag_alert_chunks (alert_id, world, chunk_x, chunk_z, score, entity_count, " +
+                "tile_entity_count, top_contributor_uuid, top_contributor_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            stmt.setString(1, String.valueOf(alertId));
+            stmt.setString(2, world);
+            stmt.setInt(3, chunkX);
+            stmt.setInt(4, chunkZ);
+            stmt.setDouble(5, score);
+            stmt.setInt(6, entityCount);
+            stmt.setInt(7, tileEntityCount);
+            stmt.setString(8, topContributorUuid);
+            stmt.setString(9, topContributorName);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to add lag alert chunk: " + e.getMessage());
+        }
+    }
+
+    public void resolveLagAlert(int alertId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE lag_alerts SET resolved = 1, resolved_at = ? WHERE id = ?")) {
+            stmt.setLong(1, System.currentTimeMillis());
+            stmt.setInt(2, alertId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to resolve lag alert: " + e.getMessage());
+        }
+    }
+
+    public LagAlertInfo getLatestUnresolvedAlert() {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM lag_alerts WHERE resolved = 0 ORDER BY time DESC LIMIT 1")) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return readLagAlert(rs);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get unresolved alert: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<LagAlertInfo> getRecentAlerts(int limit) {
+        List<LagAlertInfo> alerts = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM lag_alerts ORDER BY time DESC LIMIT ?")) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) alerts.add(readLagAlert(rs));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get recent alerts: " + e.getMessage());
+        }
+        return alerts;
+    }
+
+    public List<LagAlertChunkInfo> getAlertChunks(int alertId) {
+        List<LagAlertChunkInfo> chunks = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM lag_alert_chunks WHERE alert_id = ? ORDER BY score DESC")) {
+            stmt.setInt(1, alertId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    chunks.add(new LagAlertChunkInfo(
+                            rs.getInt("id"), rs.getInt("alert_id"), rs.getString("world"),
+                            rs.getInt("chunk_x"), rs.getInt("chunk_z"), rs.getDouble("score"),
+                            rs.getInt("entity_count"), rs.getInt("tile_entity_count"),
+                            rs.getString("top_contributor_uuid"), rs.getString("top_contributor_name")));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get alert chunks: " + e.getMessage());
+        }
+        return chunks;
+    }
+
+    private LagAlertInfo readLagAlert(ResultSet rs) throws SQLException {
+        return new LagAlertInfo(
+                rs.getInt("id"), rs.getLong("time"), rs.getDouble("tps"),
+                rs.getInt("duration_seconds"), rs.getInt("health_score"),
+                rs.getInt("resolved") == 1, rs.getLong("resolved_at"));
+    }
+
+    // ── Chunk Activity ──────────────────────────────────────
+
+    public void insertChunkActivity(String playerUuid, String playerName, String world,
+                                    int chunkX, int chunkZ, String actionType, String detail, int count) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO chunk_activity (player_uuid, player_name, world, chunk_x, chunk_z, " +
+                "action_type, detail, count, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            stmt.setString(1, playerUuid);
+            stmt.setString(2, playerName);
+            stmt.setString(3, world);
+            stmt.setInt(4, chunkX);
+            stmt.setInt(5, chunkZ);
+            stmt.setString(6, actionType);
+            stmt.setString(7, detail);
+            stmt.setInt(8, count);
+            stmt.setLong(9, System.currentTimeMillis());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to insert chunk activity: " + e.getMessage());
+        }
+    }
+
+    public void batchInsertChunkActivity(List<ChunkActivityEntry> entries) {
+        String sql = "INSERT INTO chunk_activity (player_uuid, player_name, world, chunk_x, chunk_z, " +
+                "action_type, detail, count, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            for (ChunkActivityEntry e : entries) {
+                stmt.setString(1, e.playerUuid);
+                stmt.setString(2, e.playerName);
+                stmt.setString(3, e.world);
+                stmt.setInt(4, e.chunkX);
+                stmt.setInt(5, e.chunkZ);
+                stmt.setString(6, e.actionType);
+                stmt.setString(7, e.detail);
+                stmt.setInt(8, e.count);
+                stmt.setLong(9, e.time);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to batch insert chunk activity: " + e.getMessage());
+        }
+    }
+
+    public List<ChunkActivityEntry> getChunkActivity(String world, int chunkX, int chunkZ, long since) {
+        List<ChunkActivityEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM chunk_activity WHERE world = ? AND chunk_x = ? AND chunk_z = ? AND time >= ? ORDER BY time DESC")) {
+            stmt.setString(1, world);
+            stmt.setInt(2, chunkX);
+            stmt.setInt(3, chunkZ);
+            stmt.setLong(4, since);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) entries.add(readChunkActivity(rs));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get chunk activity: " + e.getMessage());
+        }
+        return entries;
+    }
+
+    public List<ChunkActivityEntry> getPlayerChunkActivity(String playerUuid, long since) {
+        List<ChunkActivityEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM chunk_activity WHERE player_uuid = ? AND time >= ? ORDER BY time DESC")) {
+            stmt.setString(1, playerUuid);
+            stmt.setLong(2, since);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) entries.add(readChunkActivity(rs));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get player chunk activity: " + e.getMessage());
+        }
+        return entries;
+    }
+
+    /**
+     * Gets the top contributors to a specific chunk, aggregated by total count.
+     */
+    public List<ChunkActivityEntry> getTopChunkContributors(String world, int chunkX, int chunkZ, long since, int limit) {
+        List<ChunkActivityEntry> entries = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT player_uuid, player_name, SUM(count) as total " +
+                "FROM chunk_activity WHERE world = ? AND chunk_x = ? AND chunk_z = ? AND time >= ? " +
+                "GROUP BY player_uuid ORDER BY total DESC LIMIT ?")) {
+            stmt.setString(1, world);
+            stmt.setInt(2, chunkX);
+            stmt.setInt(3, chunkZ);
+            stmt.setLong(4, since);
+            stmt.setInt(5, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    entries.add(new ChunkActivityEntry(
+                            0, rs.getString("player_uuid"), rs.getString("player_name"),
+                            world, chunkX, chunkZ, "TOTAL", null, rs.getInt("total"), 0));
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get top chunk contributors: " + e.getMessage());
+        }
+        return entries;
+    }
+
+    public void purgeChunkActivity(int retentionDays) {
+        long cutoff = System.currentTimeMillis() - (retentionDays * 86400000L);
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "DELETE FROM chunk_activity WHERE time < ?")) {
+            stmt.setLong(1, cutoff);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to purge chunk activity: " + e.getMessage());
+        }
+    }
+
+    private ChunkActivityEntry readChunkActivity(ResultSet rs) throws SQLException {
+        return new ChunkActivityEntry(
+                rs.getInt("id"), rs.getString("player_uuid"), rs.getString("player_name"),
+                rs.getString("world"), rs.getInt("chunk_x"), rs.getInt("chunk_z"),
+                rs.getString("action_type"), rs.getString("detail"),
+                rs.getInt("count"), rs.getLong("time"));
+    }
+
+    // ── Warps ───────────────────────────────────────────────
+
+    public void setWarp(String name, String world, double x, double y, double z,
+                        float yaw, float pitch, String icon, String createdBy, String permission) {
+        try (PreparedStatement check = connection.prepareStatement(
+                "SELECT id FROM warps WHERE LOWER(name) = LOWER(?)")) {
+            check.setString(1, name);
+            try (ResultSet rs = check.executeQuery()) {
+                if (rs.next()) {
+                    // Moving an existing warp keeps its icon, permission and position in the list
+                    try (PreparedStatement update = connection.prepareStatement(
+                            "UPDATE warps SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ?, " +
+                            "created_by = ?, created_at = ? WHERE id = ?")) {
+                        update.setString(1, world);
+                        update.setDouble(2, x);
+                        update.setDouble(3, y);
+                        update.setDouble(4, z);
+                        update.setFloat(5, yaw);
+                        update.setFloat(6, pitch);
+                        update.setString(7, createdBy);
+                        update.setLong(8, System.currentTimeMillis());
+                        update.setInt(9, rs.getInt("id"));
+                        update.executeUpdate();
+                    }
+                } else {
+                    // New warps go to the end of the list
+                    try (PreparedStatement insert = connection.prepareStatement(
+                            "INSERT INTO warps (name, world, x, y, z, yaw, pitch, icon, created_by, created_at, permission, sort_order) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+                            "(SELECT COALESCE(MAX(sort_order), 0) + 1 FROM warps))")) {
+                        insert.setString(1, name);
+                        insert.setString(2, world);
+                        insert.setDouble(3, x);
+                        insert.setDouble(4, y);
+                        insert.setDouble(5, z);
+                        insert.setFloat(6, yaw);
+                        insert.setFloat(7, pitch);
+                        insert.setString(8, icon);
+                        insert.setString(9, createdBy);
+                        insert.setLong(10, System.currentTimeMillis());
+                        insert.setString(11, permission);
+                        insert.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to set warp: " + e.getMessage());
+        }
+    }
+
+    public WarpInfo getWarp(String name) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM warps WHERE LOWER(name) = LOWER(?)")) {
+            stmt.setString(1, name);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return readWarp(rs);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get warp: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<WarpInfo> getAllWarps() {
+        List<WarpInfo> warps = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM warps ORDER BY sort_order ASC, name ASC")) {
+            while (rs.next()) warps.add(readWarp(rs));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get all warps: " + e.getMessage());
+        }
+        return warps;
+    }
+
+    public List<String> getWarpNames() {
+        List<String> names = new ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT name FROM warps ORDER BY sort_order ASC, name ASC")) {
+            while (rs.next()) names.add(rs.getString("name"));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get warp names: " + e.getMessage());
+        }
+        return names;
+    }
+
+    public void deleteWarp(String name) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "DELETE FROM warps WHERE LOWER(name) = LOWER(?)")) {
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to delete warp: " + e.getMessage());
+        }
+    }
+
+    public void updateWarpIcon(String name, String icon) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE warps SET icon = ? WHERE LOWER(name) = LOWER(?)")) {
+            stmt.setString(1, icon);
+            stmt.setString(2, name);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to update warp icon: " + e.getMessage());
+        }
+    }
+
+    public void updateWarpPermission(String name, String permission) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE warps SET permission = ? WHERE LOWER(name) = LOWER(?)")) {
+            stmt.setString(1, permission);
+            stmt.setString(2, name);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to update warp permission: " + e.getMessage());
+        }
+    }
+
+    /** Renames a warp. Callers must check that the new name is not already taken. */
+    public boolean renameWarp(String oldName, String newName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE warps SET name = ? WHERE LOWER(name) = LOWER(?)")) {
+            stmt.setString(1, newName);
+            stmt.setString(2, oldName);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to rename warp: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Moves a warp to the given 0-based position in the list and renumbers all warps.
+     * The position is clamped to the list bounds.
+     *
+     * @return the warp's new 0-based position, or -1 if the warp does not exist
+     */
+    public synchronized int moveWarp(String name, int position) {
+        List<String> names = getWarpNames();
+        String match = null;
+        for (String n : names) {
+            if (n.equalsIgnoreCase(name)) {
+                match = n;
+                break;
+            }
+        }
+        if (match == null) return -1;
+
+        names.remove(match);
+        int target = Math.max(0, Math.min(position, names.size()));
+        names.add(target, match);
+
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE warps SET sort_order = ? WHERE name = ?")) {
+            for (int i = 0; i < names.size(); i++) {
+                stmt.setInt(1, i + 1);
+                stmt.setString(2, names.get(i));
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to reorder warps: " + e.getMessage());
+            return -1;
+        }
+        return target;
+    }
+
+    private WarpInfo readWarp(ResultSet rs) throws SQLException {
+        return new WarpInfo(
+                rs.getInt("id"), rs.getString("name"), rs.getString("world"),
+                rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"),
+                rs.getFloat("yaw"), rs.getFloat("pitch"), rs.getString("icon"),
+                rs.getString("created_by"), rs.getLong("created_at"), rs.getString("permission"));
+    }
+
+    // ── RTP Cooldowns ───────────────────────────────────────
+
+    public void setRtpCooldown(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT OR REPLACE INTO rtp_cooldowns (player_uuid, last_used) VALUES (?, ?)")) {
+            stmt.setString(1, playerUuid);
+            stmt.setLong(2, System.currentTimeMillis());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to set RTP cooldown: " + e.getMessage());
+        }
+    }
+
+    public long getRtpCooldown(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT last_used FROM rtp_cooldowns WHERE player_uuid = ?")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getLong("last_used");
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get RTP cooldown: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    // ── Maintenance ─────────────────────────────────────────
+
+    public void setMaintenance(boolean active, String activatedBy, int durationMinutes, String reason) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT OR REPLACE INTO maintenance (id, active, activated_by, activated_at, duration_minutes, reason) " +
+                "VALUES (1, ?, ?, ?, ?, ?)")) {
+            stmt.setInt(1, active ? 1 : 0);
+            stmt.setString(2, activatedBy);
+            stmt.setLong(3, System.currentTimeMillis());
+            stmt.setInt(4, durationMinutes);
+            stmt.setString(5, reason);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to set maintenance: " + e.getMessage());
+        }
+    }
+
+    public MaintenanceInfo getMaintenance() {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM maintenance WHERE id = 1")) {
+            if (rs.next()) {
+                return new MaintenanceInfo(
+                        rs.getInt("active") == 1, rs.getString("activated_by"),
+                        rs.getLong("activated_at"), rs.getInt("duration_minutes"),
+                        rs.getString("reason"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get maintenance: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public void clearMaintenance() {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE maintenance SET active = 0 WHERE id = 1")) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to clear maintenance: " + e.getMessage());
+        }
     }
 
     public Connection getConnection() {

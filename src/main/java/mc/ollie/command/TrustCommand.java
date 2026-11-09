@@ -2,7 +2,6 @@ package mc.ollie.command;
 
 import mc.ollie.App;
 import mc.ollie.DatabaseManager;
-import mc.ollie.TrustManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

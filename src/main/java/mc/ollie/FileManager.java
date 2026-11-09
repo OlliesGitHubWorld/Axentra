@@ -21,6 +21,9 @@ public class FileManager {
     private File protectionFile;
     private FileConfiguration protectionConfig;
 
+    private File healthFile;
+    private FileConfiguration healthConfig;
+
     public FileManager(App plugin) {
         this.plugin = plugin;
     }
@@ -43,6 +46,11 @@ public class FileManager {
         if (!protectionFile.exists()) plugin.saveResource("protection.yml", false);
         mergeDefaults("protection.yml");
         protectionConfig = YamlConfiguration.loadConfiguration(protectionFile);
+
+        healthFile = new File(plugin.getDataFolder(), "health.yml");
+        if (!healthFile.exists()) plugin.saveResource("health.yml", false);
+        mergeDefaults("health.yml");
+        healthConfig = YamlConfiguration.loadConfiguration(healthFile);
     }
 
     /**
@@ -175,7 +183,7 @@ public class FileManager {
         // Log added keys (only leaf keys, not sections)
         for (String key : missingKeys) {
             if (!defaultConfig.isConfigurationSection(key)) {
-                plugin.getLogger().info("[" + fileName + "] Added missing key: " + key);
+                plugin.logInfo("[" + fileName + "] Added missing key: " + key);
             }
         }
 
@@ -266,10 +274,14 @@ public class FileManager {
 
         mergeDefaults("protection.yml");
         protectionConfig = YamlConfiguration.loadConfiguration(protectionFile);
+
+        mergeDefaults("health.yml");
+        healthConfig = YamlConfiguration.loadConfiguration(healthFile);
     }
 
     public FileConfiguration getMessages() { return messagesConfig; }
     public FileConfiguration getSettings() { return plugin.getConfig(); }
     public FileConfiguration getPunishments() { return punishmentsConfig; }
     public FileConfiguration getProtection() { return protectionConfig; }
+    public FileConfiguration getHealth() { return healthConfig; }
 }

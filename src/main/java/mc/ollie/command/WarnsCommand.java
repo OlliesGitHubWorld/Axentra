@@ -60,11 +60,17 @@ public class WarnsCommand implements CommandExecutor, TabCompleter {
             playerName = args[0];
         }
 
-        List<DatabaseManager.WarnInfo> warns = plugin.getDatabaseManager().getWarnsByName(playerName);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<DatabaseManager.WarnInfo> warns = plugin.getDatabaseManager().getWarnsByName(playerName);
+            Bukkit.getScheduler().runTask(plugin, () -> showWarns(sender, playerName, warns));
+        });
+        return true;
+    }
 
+    private void showWarns(CommandSender sender, String playerName, List<DatabaseManager.WarnInfo> warns) {
         if (warns.isEmpty()) {
             sender.sendMessage(getMessage("warns-none").replace("%player%", playerName));
-            return true;
+            return;
         }
 
         sender.sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "---- Warnings for " + playerName + " (" + warns.size() + ") ----");
@@ -74,7 +80,5 @@ public class WarnsCommand implements CommandExecutor, TabCompleter {
                     + ChatColor.GRAY + " by " + ChatColor.YELLOW + warn.warnedBy
                     + ChatColor.GRAY + " on " + warn.warnedAt);
         }
-
-        return true;
     }
 }

@@ -1,7 +1,6 @@
 package mc.ollie.gui;
 
 import mc.ollie.App;
-import mc.ollie.DatabaseManager;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,7 +61,7 @@ public class PunishGUI {
         }
 
         String title = ChatColor.DARK_GRAY + "✦ " + ChatColor.RED + ChatColor.BOLD + "Punish" + ChatColor.DARK_GRAY + " ✦ " + ChatColor.RESET + targetName;
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = MenuHolder.create(54, title);
 
         // Fill everything with dark background
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
@@ -75,6 +74,9 @@ public class PunishGUI {
         // ═══════════════════════════════════════════
         ItemStack topBar = createItem(Material.RED_STAINED_GLASS_PANE, " ");
         for (int i = 0; i < 9; i++) inv.setItem(i, topBar);
+
+        // Earlier cases per reason, used to pick the escalation step of each template
+        Map<String, Integer> offenses = plugin.getDatabaseManager().getCaseCountsByReason(resolveUuid());
 
         // Player head with info
         int caseCount = plugin.getDatabaseManager().getCaseCountByPlayer(targetName);
@@ -113,7 +115,7 @@ public class PunishGUI {
         for (String key : templates.getKeys(false)) {
             ConfigurationSection tmpl = templates.getConfigurationSection(key);
             if (tmpl == null) continue;
-            String action = tmpl.getString("action", "warn").toLowerCase();
+            String action = getSteps(tmpl).get(0).action;
             switch (action) {
                 case "warn":     warnKeys.add(key); break;
                 case "mute":
@@ -130,19 +132,19 @@ public class PunishGUI {
         // Row 1: Warnings
         inv.setItem(9, createCategory(Material.YELLOW_STAINED_GLASS_PANE,
                 ChatColor.YELLOW + "" + ChatColor.BOLD + "⚠ WARNINGS"));
-        placeTemplates(inv, templates, warnKeys, new int[]{11, 12, 13, 14, 15, 16});
+        placeTemplates(inv, templates, warnKeys, new int[]{11, 12, 13, 14, 15, 16}, offenses);
 
         // Row 2: Mutes & Kicks
         inv.setItem(18, createCategory(Material.ORANGE_STAINED_GLASS_PANE,
                 ChatColor.GOLD + "" + ChatColor.BOLD + "🔇 MUTES & KICKS"));
         List<String> muteKickKeys = new ArrayList<>(muteKeys);
         muteKickKeys.addAll(kickKeys);
-        placeTemplates(inv, templates, muteKickKeys, new int[]{20, 21, 22, 23, 24, 25});
+        placeTemplates(inv, templates, muteKickKeys, new int[]{20, 21, 22, 23, 24, 25}, offenses);
 
         // Row 3: Bans
         inv.setItem(27, createCategory(Material.RED_STAINED_GLASS_PANE,
                 ChatColor.RED + "" + ChatColor.BOLD + "🔨 BANS"));
-        placeTemplates(inv, templates, banKeys, new int[]{29, 30, 31, 32, 33, 34});
+        placeTemplates(inv, templates, banKeys, new int[]{29, 30, 31, 32, 33, 34}, offenses);
 
         // ═══════════════════════════════════════════
         // Row 4: Player history shortcut
@@ -172,7 +174,51 @@ public class PunishGUI {
         staff.openInventory(inv);
     }
 
-    private void placeTemplates(Inventory inv, ConfigurationSection templates, List<String> keys, int[] slots) {
+    /** One step of a template: an action with an optional duration, e.g. "tempmute 1h". */
+    private static class Step {
+        final String action;
+        final String duration;
+
+        Step(String action, String duration) {
+            this.action = action;
+            this.duration = duration;
+        }
+
+        String label() {
+            return action.toUpperCase() + (duration.isEmpty() ? "" : " " + duration);
+        }
+    }
+
+    /**
+     * The template's escalation ladder ("escalation" list), or its single action/duration
+     * when it has none.
+     */
+    private List<Step> getSteps(ConfigurationSection tmpl) {
+        List<Step> steps = new ArrayList<>();
+        for (String entry : tmpl.getStringList("escalation")) {
+            String[] parts = entry.trim().split("\\s+", 2);
+            if (parts[0].isEmpty()) continue;
+            steps.add(new Step(parts[0].toLowerCase(), parts.length > 1 ? parts[1].trim() : ""));
+        }
+        if (steps.isEmpty()) {
+            steps.add(new Step(tmpl.getString("action", "warn").toLowerCase(), tmpl.getString("duration", "")));
+        }
+        return steps;
+    }
+
+    /** Picks the step for the next offense: earlier cases with the same reason, capped at the last step. */
+    private int stepIndex(List<Step> steps, Map<String, Integer> offenses, String reason) {
+        return Math.min(offenses.getOrDefault(reason, 0), steps.size() - 1);
+    }
+
+    private String resolveUuid() {
+        Player target = Bukkit.getPlayer(targetName);
+        return target != null ? target.getUniqueId().toString()
+                : Bukkit.getOfflinePlayer(targetName).getUniqueId().toString();
+    }
+
+    private void placeTemplates(Inventory inv, ConfigurationSection templates, List<String> keys, int[] slots,
+                                Map<String, Integer> offenses) {
         for (int i = 0; i < Math.min(keys.size(), slots.length); i++) {
             String key = keys.get(i);
             ConfigurationSection tmpl = templates.getConfigurationSection(key);
@@ -180,9 +226,11 @@ public class PunishGUI {
 
             String displayName = ChatColor.translateAlternateColorCodes('&',
                     tmpl.getString("display-name", key));
-            String action = tmpl.getString("action", "warn").toUpperCase();
             String reason = tmpl.getString("reason", "No reason specified");
-            String duration = tmpl.getString("duration", "");
+            List<Step> steps = getSteps(tmpl);
+            int current = stepIndex(steps, offenses, reason);
+            String action = steps.get(current).action.toUpperCase();
+            String duration = steps.get(current).duration;
             String materialName = tmpl.getString("icon", "PAPER");
 
             Material material;
@@ -198,6 +246,20 @@ public class PunishGUI {
             lore.add(ChatColor.GRAY + "Reason: " + ChatColor.WHITE + reason);
             if (!duration.isEmpty()) {
                 lore.add(ChatColor.GRAY + "Duration: " + ChatColor.WHITE + duration);
+            }
+            if (steps.size() > 1) {
+                int previous = offenses.getOrDefault(reason, 0);
+                lore.add("");
+                lore.add(ChatColor.GRAY + "Offense " + ChatColor.WHITE + "#" + (previous + 1)
+                        + ChatColor.DARK_GRAY + " (" + previous + " earlier)");
+                for (int s = 0; s < steps.size(); s++) {
+                    boolean isCurrent = s == current;
+                    String prefix = isCurrent ? ChatColor.GREEN + " ▶ " : ChatColor.DARK_GRAY + "   ";
+                    String suffix = s == steps.size() - 1 ? "+" : "";
+                    lore.add(prefix + (s + 1) + suffix + ". "
+                            + (isCurrent ? getActionColor(steps.get(s).action) : ChatColor.DARK_GRAY.toString())
+                            + steps.get(s).label());
+                }
             }
             lore.add("");
             lore.add(ChatColor.YELLOW + "▶ Click to apply");
@@ -241,19 +303,20 @@ public class PunishGUI {
             ConfigurationSection tmpl = templates.getConfigurationSection(key);
             if (tmpl == null) return;
 
-            String action = tmpl.getString("action", "warn").toLowerCase();
             String reason = tmpl.getString("reason", "Punishment applied");
-            String durationStr = tmpl.getString("duration", "");
+            // Recount on click so two staff punishing at once both escalate correctly
+            List<Step> steps = getSteps(tmpl);
+            Step step = steps.get(stepIndex(steps,
+                    plugin.getDatabaseManager().getCaseCountsByReason(resolveUuid()), reason));
 
             staff.closeInventory();
-            applyPunishment(staff, action, reason, durationStr);
+            applyPunishment(staff, step.action, reason, step.duration);
         }
     }
 
     private void applyPunishment(Player staff, String action, String reason, String durationStr) {
         Player target = Bukkit.getPlayer(targetName);
-        String uuid = target != null ? target.getUniqueId().toString()
-                : Bukkit.getOfflinePlayer(targetName).getUniqueId().toString();
+        String uuid = resolveUuid();
 
         // Get chat snapshot
         String chatLog = null;

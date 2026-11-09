@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wiki - Axentra</title>
-    <meta name="description" content="Axentra Wiki — Full documentation for the Axentra Minecraft plugin. Installation guide, 70+ commands, permissions, and configuration reference.">
+    <meta name="description" content="Axentra Wiki — Full documentation for the Axentra Minecraft plugin. Installation guide, 110+ commands, permissions, server health tools and configuration reference.">
     <meta name="keywords" content="Axentra, AxentraMC, Axentra wiki, Minecraft plugin documentation, Axentra commands, Axentra permissions, Axentra configuration, Spigot plugin">
     <meta name="theme-color" content="#00bcd4">
     <link rel="canonical" href="https://axentramc.com/wiki.html">
@@ -51,6 +51,9 @@
             <a href="#commands">Commands</a>
             <a href="#permissions">Permissions</a>
             <a href="#configuration">Configuration</a>
+            <a href="#server-health">Server Health</a>
+            <a href="#warps">Warps</a>
+            <a href="#protection">Protection</a>
             <a href="#punishment-gui">Punish GUI</a>
             <a href="#vanish">Vanish</a>
             <a href="#faq">FAQ</a>
@@ -71,13 +74,18 @@
                 <a href="#installation" class="sidebar-link">Installation</a>
                 <a href="#commands" class="sidebar-link">Commands</a>
                 <div class="sidebar-sub">
+                    <a href="#cmd-protection">Player Protection</a>
+                    <a href="#cmd-health">Server Health</a>
+                    <a href="#cmd-server-control">Restarts &amp; Maintenance</a>
                     <a href="#cmd-staff-management">Staff Management</a>
                     <a href="#cmd-smart-moderation">Smart Moderation</a>
                     <a href="#cmd-chat">Chat Control</a>
                     <a href="#cmd-messaging">Messaging</a>
                     <a href="#cmd-moderation">Moderation</a>
                     <a href="#cmd-player">Player & Utility</a>
+                    <a href="#cmd-homes">Homes</a>
                     <a href="#cmd-teleport">Teleportation</a>
+                    <a href="#cmd-warps">Warps &amp; RTP</a>
                     <a href="#cmd-world">World</a>
                     <a href="#cmd-plugin">Plugin</a>
                 </div>
@@ -87,7 +95,12 @@
                     <a href="#cfg-config">config.yml</a>
                     <a href="#cfg-messages">messages.yml</a>
                     <a href="#cfg-punishments">punishments.yml</a>
+                    <a href="#cfg-protection">protection.yml</a>
+                    <a href="#cfg-health">health.yml</a>
                 </div>
+                <a href="#server-health" class="sidebar-link">Server Health</a>
+                <a href="#warps" class="sidebar-link">Warps &amp; RTP</a>
+                <a href="#protection" class="sidebar-link">Player Protection</a>
                 <a href="#punishment-gui" class="sidebar-link">Punishment GUI</a>
                 <a href="#vanish" class="sidebar-link">Vanish System</a>
                 <a href="#faq" class="sidebar-link">FAQ</a>
@@ -100,7 +113,12 @@
             <!-- Getting Started -->
             <section id="getting-started" class="wiki-section">
                 <h1>Getting Started</h1>
-                <p class="wiki-lead">Axentra is a lightweight, all-in-one server management plugin for Minecraft. It replaces multiple plugins with a single jar &mdash; moderation, chat, teleportation, vanish, and more.</p>
+                <p class="wiki-lead">Axentra is a lightweight, all-in-one server management plugin for Minecraft. It replaces multiple plugins with a single jar &mdash; moderation, player protection, server health, restarts, maintenance, homes, warps, chat, vanish, and more.</p>
+
+                <div class="wiki-info-box">
+                    <h4>Latest: v1.8.0 &mdash; Server Health Update</h4>
+                    <p>Adds <a href="#server-health">server health tools</a> (<code>/lag</code>, health score, TPS alerts, cleanup, entity limits), scheduled restarts, maintenance mode, <a href="#warps">warps and random teleport</a>, tempfreeze and escalating punishments. See the <a href="changelog.html">changelog</a> for every change.</p>
+                </div>
 
                 <div class="wiki-info-box">
                     <h4>Requirements</h4>
@@ -120,7 +138,11 @@
                     </a>
                     <a href="#commands" class="wiki-quick-link">
                         <h4>Commands</h4>
-                        <p>Full list of 70+ commands with usage</p>
+                        <p>Full list of 110+ commands with usage</p>
+                    </a>
+                    <a href="#server-health" class="wiki-quick-link">
+                        <h4>Server Health</h4>
+                        <p>Lag tools, alerts, restarts and maintenance</p>
                     </a>
                     <a href="#permissions" class="wiki-quick-link">
                         <h4>Permissions</h4>
@@ -129,6 +151,10 @@
                     <a href="#configuration" class="wiki-quick-link">
                         <h4>Configuration</h4>
                         <p>Customize every setting and message</p>
+                    </a>
+                    <a href="#protection" class="wiki-quick-link">
+                        <h4>Player Protection</h4>
+                        <p>Snapshots, trust, alts, VPN, freeze, timeline</p>
                     </a>
                 </div>
             </section>
@@ -158,8 +184,11 @@
                     <li><code>config.yml</code> &mdash; General plugin settings</li>
                     <li><code>messages.yml</code> &mdash; All plugin messages (fully customizable)</li>
                     <li><code>punishments.yml</code> &mdash; Punishment GUI templates</li>
+                    <li><code>protection.yml</code> &mdash; Snapshots, trust, alts, VPN and freeze</li>
+                    <li><code>health.yml</code> &mdash; TPS monitoring, lag chunks, alerts, cleanup, entity limits, restarts and maintenance</li>
                 </ul>
-                <p>Edit the files to your liking, then run <code>/axentra reload</code> to apply changes without restarting.</p>
+                <p>Edit the files to your liking, then run <code>/axentra reload</code> to apply changes without restarting. Module toggles in <code>enabled-modules</code> require a server restart.</p>
+                <p>When you update Axentra, new config keys are added to your existing files automatically (with their comments) &mdash; your own values are kept.</p>
 
                 <h2>Building from Source</h2>
                 <div class="wiki-code-block">
@@ -173,7 +202,64 @@ cd Axentra
             <!-- Commands -->
             <section id="commands" class="wiki-section">
                 <h1>Commands</h1>
-                <p>Axentra provides 70+ commands organized into categories. All commands, messages, and permissions are fully configurable.</p>
+                <p>Axentra provides 110+ commands organized into categories. All commands, messages, and permissions are fully configurable. Commands of a disabled module are fully unregistered.</p>
+
+                <h2 id="cmd-protection">Player Protection</h2>
+                <p>Introduced in v1.7.0. See <a href="#protection">Player Protection</a> for how each system works.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/restoreinv &lt;player&gt;</code></td><td>Open the inventory snapshot GUI for a player</td><td><code>Axentra.restoreinv</code></td></tr>
+                            <tr><td><code>/restoreinv &lt;player&gt; snapshot &lt;id&gt;</code></td><td>View or restore a specific snapshot</td><td><code>Axentra.restoreinv</code></td></tr>
+                            <tr><td><code>/trust &lt;player&gt;</code></td><td>View a player's trust level and playtime</td><td><code>Axentra.trust</code></td></tr>
+                            <tr><td><code>/trust set &lt;player&gt; &lt;NEW|MEMBER|TRUSTED&gt;</code></td><td>Manually set a trust level</td><td><code>Axentra.trust.admin</code></td></tr>
+                            <tr><td><code>/trust reset &lt;player&gt;</code></td><td>Reset to automatic trust progression</td><td><code>Axentra.trust.admin</code></td></tr>
+                            <tr><td><code>/alts &lt;player&gt;</code></td><td>View accounts that share an IP, with risk score</td><td><code>Axentra.alts</code></td></tr>
+                            <tr><td><code>/freeze &lt;player&gt;</code></td><td>Freeze a player (persists through restarts)</td><td><code>Axentra.freeze</code></td></tr>
+                            <tr><td><code>/tempfreeze &lt;player&gt; &lt;duration&gt;</code></td><td>Freeze a player for a set time, e.g. <code>10m</code>. Unfreezes automatically, even while offline</td><td><code>Axentra.freeze</code></td></tr>
+                            <tr><td><code>/unfreeze &lt;player&gt;</code></td><td>Unfreeze a player</td><td><code>Axentra.freeze</code></td></tr>
+                            <tr><td><code>/timeline &lt;player&gt; [filter]</code></td><td>Activity timeline. Filters: <code>JOIN</code>, <code>QUIT</code>, <code>CASE</code>, <code>DEATH</code>, <code>NAME_CHANGE</code>, <code>IP_CHANGE</code></td><td><code>Axentra.timeline</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-health">Server Health</h2>
+                <p>Introduced in v1.8.0. See <a href="#server-health">Server Health</a> for how the scores and alerts work.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/lag</code></td><td>Overview of TPS (1m/5m/15m), MSPT, memory, uptime, players, per-world stats and the health score</td><td><code>Axentra.lag</code></td></tr>
+                            <tr><td><code>/lag chunks</code></td><td>The 10 heaviest chunks with hover details and a clickable [TP] button</td><td><code>Axentra.lag</code></td></tr>
+                            <tr><td><code>/lag entities</code></td><td>Entities per type with a Normal / Elevated / High status</td><td><code>Axentra.lag</code></td></tr>
+                            <tr><td><code>/lag history [hours]</code></td><td>TPS history GUI with hover details and period buttons</td><td><code>Axentra.lag</code></td></tr>
+                            <tr><td><code>/lag player &lt;name&gt;</code></td><td>A player's lag-relevant activity over the last 7 days</td><td><code>Axentra.lag</code></td></tr>
+                            <tr><td><code>/lag clear [items|mobs|all]</code></td><td>Clear ground items and/or hostile mobs</td><td><code>Axentra.lag.clear</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-server-control">Restarts &amp; Maintenance</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/restart now</code></td><td>Restart after a 10-second countdown</td><td><code>Axentra.restart</code></td></tr>
+                            <tr><td><code>/restart schedule &lt;time&gt;</code></td><td>Restart after a countdown, e.g. <code>300</code>, <code>30s</code>, <code>5m</code> or <code>1h</code></td><td><code>Axentra.restart</code></td></tr>
+                            <tr><td><code>/restart cancel</code></td><td>Cancel a pending restart</td><td><code>Axentra.restart</code></td></tr>
+                            <tr><td><code>/restart status</code></td><td>Show the next restart</td><td><code>Axentra.restart</code></td></tr>
+                            <tr><td><code>/maintenance on [duration] [-c countdown] [reason]</code></td><td>Start maintenance, e.g. <code>/maintenance on 1h30m -c 2m Updating plugins</code></td><td><code>Axentra.maintenance</code></td></tr>
+                            <tr><td><code>/maintenance off</code></td><td>End maintenance (also cancels a running countdown)</td><td><code>Axentra.maintenance</code></td></tr>
+                            <tr><td><code>/maintenance status</code></td><td>Show the status, reason, time left and expected end</td><td><code>Axentra.maintenance</code></td></tr>
+                            <tr><td><code>/maintenance add|remove &lt;player&gt;</code></td><td>Manage the maintenance whitelist</td><td><code>Axentra.maintenance</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="wiki-info-box">
+                    <h4>Spigot's own /restart</h4>
+                    <p>Spigot and Paper have a built-in <code>/restart</code>. Axentra takes over the command while the <code>restarts</code> module is enabled. Spigot's version stays available as <code>/spigot:restart</code>.</p>
+                </div>
 
                 <h2 id="cmd-staff-management">Staff Management</h2>
                 <p>The staff management system introduced in v1.6.0. Toggle duty, enter staffmode with tools, handle player reports, and track staff performance.</p>
@@ -199,6 +285,7 @@ cd Axentra
                         <li><strong>Ice</strong> &mdash; Right-click a player to freeze/unfreeze them</li>
                         <li><strong>Book</strong> &mdash; Right-click a player to open their inventory (/invsee)</li>
                         <li><strong>Paper</strong> &mdash; Right-click a player to view their history</li>
+                        <li><strong>Anvil</strong> &mdash; Right-click a player to open the punishment GUI</li>
                         <li><strong>Ender Eye</strong> &mdash; Toggle vanish on/off</li>
                         <li><strong>Redstone</strong> &mdash; Exit staffmode (restores your inventory)</li>
                     </ul>
@@ -212,6 +299,8 @@ cd Axentra
                         <tbody>
                             <tr><td><code>/punish &lt;player&gt;</code></td><td>Opens the punishment GUI with templates</td><td><code>Axentra.punish</code></td></tr>
                             <tr><td><code>/case &lt;id&gt;</code></td><td>View details of a moderation case</td><td><code>Axentra.case</code></td></tr>
+                            <tr><td><code>/case resolve &lt;id&gt;</code></td><td>Mark a case as resolved</td><td><code>Axentra.case</code></td></tr>
+                            <tr><td><code>/case delete &lt;id&gt;</code></td><td>Permanently delete a case</td><td><code>Axentra.case.delete</code></td></tr>
                             <tr><td><code>/history &lt;player&gt;</code></td><td>View a player's full moderation history (GUI)</td><td><code>Axentra.history</code></td></tr>
                             <tr><td><code>/note add &lt;player&gt; &lt;text&gt;</code></td><td>Add a staff note on a player</td><td><code>Axentra.note</code></td></tr>
                             <tr><td><code>/note remove &lt;id&gt;</code></td><td>Remove a staff note</td><td><code>Axentra.note</code></td></tr>
@@ -240,7 +329,7 @@ cd Axentra
                     <table>
                         <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
                         <tbody>
-                            <tr><td><code>/msg &lt;player&gt; &lt;message&gt;</code></td><td><code>/tell /whisper /w /pm</code></td><td>Send a private message</td><td><code>Axentra.msg</code></td></tr>
+                            <tr><td><code>/msg &lt;player&gt; &lt;message&gt;</code></td><td><code>/tell /whisper /w /message /pm</code></td><td>Send a private message</td><td><code>Axentra.msg</code></td></tr>
                             <tr><td><code>/reply &lt;message&gt;</code></td><td><code>/r</code></td><td>Reply to the last private message</td><td><code>Axentra.msg</code></td></tr>
                             <tr><td><code>/msgtoggle</code></td><td>&mdash;</td><td>Toggle receiving private messages</td><td><code>Axentra.msg</code></td></tr>
                         </tbody>
@@ -296,8 +385,8 @@ cd Axentra
                             <tr><td><code>/realname &lt;nickname&gt;</code></td><td>&mdash;</td><td>Find real name of nicknamed player</td><td><code>Axentra.realname</code></td></tr>
                             <tr><td><code>/me &lt;action&gt;</code></td><td>&mdash;</td><td>Send an action message</td><td><code>Axentra.me</code></td></tr>
                             <tr><td><code>/anvil</code></td><td>&mdash;</td><td>Open anvil</td><td><code>Axentra.anvil</code></td></tr>
-                            <tr><td><code>/workbench</code></td><td><code>/wb /craft</code></td><td>Open crafting table</td><td><code>Axentra.workbench</code></td></tr>
-                            <tr><td><code>/cartography</code></td><td><code>/carto</code></td><td>Open cartography table</td><td><code>Axentra.cartography</code></td></tr>
+                            <tr><td><code>/workbench</code></td><td><code>/wb /craft /craftingtable</code></td><td>Open crafting table</td><td><code>Axentra.workbench</code></td></tr>
+                            <tr><td><code>/cartography</code></td><td><code>/carto /cartographytable</code></td><td>Open cartography table</td><td><code>Axentra.cartography</code></td></tr>
                             <tr><td><code>/grindstone</code></td><td><code>/grind</code></td><td>Open grindstone</td><td><code>Axentra.grindstone</code></td></tr>
                             <tr><td><code>/loom</code></td><td>&mdash;</td><td>Open loom</td><td><code>Axentra.loom</code></td></tr>
                             <tr><td><code>/smithingtable</code></td><td><code>/smithing /smith</code></td><td>Open smithing table</td><td><code>Axentra.smithingtable</code></td></tr>
@@ -307,11 +396,30 @@ cd Axentra
                     </table>
                 </div>
 
+                <h2 id="cmd-homes">Homes</h2>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/sethome [name]</code></td><td>&mdash;</td><td>Set a home at your location</td><td><code>Axentra.sethome</code></td></tr>
+                            <tr><td><code>/home [name]</code></td><td>&mdash;</td><td>Teleport to a home</td><td><code>Axentra.home</code></td></tr>
+                            <tr><td><code>/delhome &lt;name&gt;</code></td><td>&mdash;</td><td>Delete a home</td><td><code>Axentra.delhome</code></td></tr>
+                            <tr><td><code>/homes [player]</code></td><td>&mdash;</td><td>View homes in a GUI</td><td><code>Axentra.homes</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <h2 id="cmd-teleport">Teleportation</h2>
                 <div class="wiki-table-wrapper">
                     <table>
                         <thead><tr><th>Command</th><th>Description</th><th>Permission</th></tr></thead>
                         <tbody>
+                            <tr><td><code>/tp &lt;player&gt; [player]</code></td><td>Teleport to a player, or one player to another</td><td><code>Axentra.tp</code></td></tr>
+                            <tr><td><code>/tp [player] &lt;x&gt; &lt;y&gt; &lt;z&gt;</code></td><td>Teleport yourself or a player to coordinates (supports <code>~</code> for relative)</td><td><code>Axentra.tp</code></td></tr>
+                            <tr><td><code>/tphere &lt;player&gt;</code></td><td>Teleport a player to you</td><td><code>Axentra.tphere</code></td></tr>
+                            <tr><td><code>/tpall</code></td><td>Teleport all players to you</td><td><code>Axentra.tpall</code></td></tr>
+                            <tr><td><code>/tpahere &lt;player&gt;</code></td><td>Request a player to teleport to you</td><td><code>Axentra.tpahere</code></td></tr>
+                            <tr><td><code>/top</code></td><td>Teleport to the highest block above you</td><td><code>Axentra.top</code></td></tr>
                             <tr><td><code>/spawn [player]</code></td><td>Teleport to server spawn</td><td><code>Axentra.spawn</code></td></tr>
                             <tr><td><code>/setspawn</code></td><td>Set the server spawn (exact location, centered on block)</td><td><code>Axentra.setspawn</code></td></tr>
                             <tr><td><code>/back</code></td><td>Return to previous location</td><td><code>Axentra.back</code></td></tr>
@@ -320,6 +428,25 @@ cd Axentra
                             <tr><td><code>/tpdeny</code></td><td>Deny a teleport request</td><td><code>Axentra.tpa</code></td></tr>
                             <tr><td><code>/tpacancel</code></td><td>Cancel your outgoing request</td><td><code>Axentra.tpa</code></td></tr>
                             <tr><td><code>/tptoggle</code></td><td>Toggle receiving teleport requests</td><td><code>Axentra.tpa</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cmd-warps">Warps &amp; RTP</h2>
+                <p>Introduced in v1.8.0. See <a href="#warps">Warps &amp; RTP</a> for the GUI controls.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>/setwarp &lt;name&gt;</code></td><td>&mdash;</td><td>Create a warp, or move an existing one to your location</td><td><code>Axentra.setwarp</code></td></tr>
+                            <tr><td><code>/delwarp &lt;name&gt;</code></td><td>&mdash;</td><td>Delete a warp</td><td><code>Axentra.delwarp</code></td></tr>
+                            <tr><td><code>/warp &lt;name&gt;</code></td><td>&mdash;</td><td>Teleport to a warp</td><td><code>Axentra.warp</code></td></tr>
+                            <tr><td><code>/warps</code></td><td>&mdash;</td><td>Open the warps GUI</td><td><code>Axentra.warps</code></td></tr>
+                            <tr><td><code>/editwarp &lt;name&gt; icon &lt;material|hand&gt;</code></td><td>&mdash;</td><td>Set the GUI icon; <code>hand</code> uses the item you're holding</td><td><code>Axentra.editwarp</code></td></tr>
+                            <tr><td><code>/editwarp &lt;name&gt; permission &lt;perm|none&gt;</code></td><td>&mdash;</td><td>Require a permission to use the warp</td><td><code>Axentra.editwarp</code></td></tr>
+                            <tr><td><code>/editwarp &lt;name&gt; order &lt;position&gt;</code></td><td>&mdash;</td><td>Move the warp to a position in the list (1 = first)</td><td><code>Axentra.editwarp</code></td></tr>
+                            <tr><td><code>/editwarp &lt;name&gt; rename &lt;new name&gt;</code></td><td>&mdash;</td><td>Rename the warp (letters, numbers, <code>_</code> and <code>-</code>, max 32)</td><td><code>Axentra.editwarp</code></td></tr>
+                            <tr><td><code>/rtp [world]</code></td><td><code>/wild</code></td><td>Teleport to a random safe location</td><td><code>Axentra.rtp</code></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -352,6 +479,7 @@ cd Axentra
                             <tr><td><code>/axentra settings</code></td><td><code>/ax settings</code></td><td>Opens the staff settings GUI</td><td><code>Axentra.admin</code></td></tr>
                             <tr><td><code>/axentra help</code></td><td><code>/ax help</code></td><td>Shows all commands</td><td>&mdash;</td></tr>
                             <tr><td><code>/axentra information</code></td><td><code>/ax information</code></td><td>Shows plugin information</td><td>&mdash;</td></tr>
+                            <tr><td><code>/help</code></td><td>&mdash;</td><td>Paginated list of commands you can use</td><td>&mdash;</td></tr>
                             <tr><td><code>/discord</code></td><td>&mdash;</td><td>Show the server's Discord link</td><td>&mdash;</td></tr>
                             <tr><td><code>/website</code></td><td>&mdash;</td><td>Show the server's website</td><td>&mdash;</td></tr>
                             <tr><td><code>/store</code></td><td>&mdash;</td><td>Show the server's store link</td><td>&mdash;</td></tr>
@@ -361,8 +489,9 @@ cd Axentra
 
                 <div class="wiki-info-box">
                     <h4>Duration Format</h4>
-                    <p>For commands that use durations (tempban, tempmute, etc.), use these formats:</p>
+                    <p>For commands that use durations (tempban, tempmute, tempfreeze, maintenance, etc.), use these formats:</p>
                     <ul>
+                        <li><code>45s</code> &mdash; 45 seconds</li>
                         <li><code>30m</code> &mdash; 30 minutes</li>
                         <li><code>12h</code> &mdash; 12 hours</li>
                         <li><code>7d</code> &mdash; 7 days</li>
@@ -374,7 +503,7 @@ cd Axentra
             <!-- Permissions -->
             <section id="permissions" class="wiki-section">
                 <h1>Permissions</h1>
-                <p>Permissions with <strong>Everyone</strong> as default are granted to all players automatically. All others default to <strong>OP</strong>.</p>
+                <p>Permissions with <strong>Everyone</strong> as default are granted to all players automatically. <strong>OP</strong> permissions are granted to operators. <strong>Nobody</strong> means the permission must be given explicitly (even OPs don't have it).</p>
 
                 <div class="wiki-table-wrapper">
                     <table>
@@ -382,7 +511,8 @@ cd Axentra
                         <tbody>
                             <tr><td><code>Axentra.admin</code></td><td>OP</td><td>Access to all /axentra subcommands</td></tr>
                             <tr><td><code>Axentra.punish</code></td><td>OP</td><td>Use the punishment GUI</td></tr>
-                            <tr><td><code>Axentra.case</code></td><td>OP</td><td>View moderation cases</td></tr>
+                            <tr><td><code>Axentra.case</code></td><td>OP</td><td>View and resolve moderation cases</td></tr>
+                            <tr><td><code>Axentra.case.delete</code></td><td>OP</td><td>Permanently delete cases</td></tr>
                             <tr><td><code>Axentra.history</code></td><td>OP</td><td>View player moderation history</td></tr>
                             <tr><td><code>Axentra.note</code></td><td>OP</td><td>Manage staff notes + join notifications</td></tr>
                             <tr><td><code>Axentra.auditlog</code></td><td>OP</td><td>View the audit log</td></tr>
@@ -392,6 +522,29 @@ cd Axentra
                             <tr><td><code>Axentra.reports</code></td><td>OP</td><td>View and manage reports</td></tr>
                             <tr><td><code>Axentra.staffstats</code></td><td>OP</td><td>View staff statistics</td></tr>
                             <tr><td><code>Axentra.stafflist</code></td><td>OP</td><td>View online staff list</td></tr>
+                            <tr><td><code>Axentra.restoreinv</code></td><td>OP</td><td>View and restore inventory snapshots</td></tr>
+                            <tr><td><code>Axentra.trust</code></td><td>OP</td><td>View player trust levels</td></tr>
+                            <tr><td><code>Axentra.trust.admin</code></td><td>OP</td><td>Set and reset trust levels (<code>/trust set</code>, <code>/trust reset</code>)</td></tr>
+                            <tr><td><code>Axentra.alts</code></td><td>OP</td><td>View alt accounts + alt/VPN join alerts</td></tr>
+                            <tr><td><code>Axentra.alts.ip</code></td><td>OP</td><td>See IP addresses in /alts, /timeline, /banip and /tempbanip output</td></tr>
+                            <tr><td><code>Axentra.freeze</code></td><td>OP</td><td>Freeze/unfreeze players + frozen logout alerts</td></tr>
+                            <tr><td><code>Axentra.freeze.exempt</code></td><td>OP</td><td>Cannot be frozen</td></tr>
+                            <tr><td><code>Axentra.timeline</code></td><td>OP</td><td>View player activity timelines</td></tr>
+                            <tr><td><code>Axentra.lag</code></td><td>OP</td><td>Use /lag and its views (chunks, entities, history, player)</td></tr>
+                            <tr><td><code>Axentra.lag.clear</code></td><td>OP</td><td>Use /lag clear</td></tr>
+                            <tr><td><code>Axentra.lag.alerts</code></td><td>OP</td><td>Receive TPS lag alerts</td></tr>
+                            <tr><td><code>Axentra.cleanup.bypass</code></td><td>Nobody</td><td>Items dropped by this player are never cleared by auto-cleanup</td></tr>
+                            <tr><td><code>Axentra.entitylimit.bypass</code></td><td>OP</td><td>Bypass per-chunk entity limits</td></tr>
+                            <tr><td><code>Axentra.restart</code></td><td>OP</td><td>Use /restart</td></tr>
+                            <tr><td><code>Axentra.maintenance</code></td><td>OP</td><td>Use /maintenance</td></tr>
+                            <tr><td><code>Axentra.maintenance.bypass</code></td><td>OP</td><td>Join while maintenance is active</td></tr>
+                            <tr><td><code>Axentra.setwarp</code></td><td>OP</td><td>Create and move warps</td></tr>
+                            <tr><td><code>Axentra.delwarp</code></td><td>OP</td><td>Delete warps</td></tr>
+                            <tr><td><code>Axentra.warp</code></td><td>Everyone</td><td>Teleport to warps</td></tr>
+                            <tr><td><code>Axentra.warps</code></td><td>Everyone</td><td>Open the warps GUI</td></tr>
+                            <tr><td><code>Axentra.editwarp</code></td><td>OP</td><td>Edit, reorder and rename warps (also in the GUI)</td></tr>
+                            <tr><td><code>Axentra.rtp</code></td><td>Everyone</td><td>Use /rtp</td></tr>
+                            <tr><td><code>Axentra.rtp.bypass</code></td><td>OP</td><td>Skip the /rtp cooldown</td></tr>
                             <tr><td><code>Axentra.broadcast</code></td><td>OP</td><td>Use /broadcast</td></tr>
                             <tr><td><code>Axentra.clearchat</code></td><td>OP</td><td>Use /clearchat</td></tr>
                             <tr><td><code>Axentra.clearchat.bypass</code></td><td>OP</td><td>Chat not cleared by /clearchat</td></tr>
@@ -431,6 +584,20 @@ cd Axentra
                             <tr><td><code>Axentra.setspawn</code></td><td>OP</td><td>Use /setspawn</td></tr>
                             <tr><td><code>Axentra.back</code></td><td>Everyone</td><td>Use /back</td></tr>
                             <tr><td><code>Axentra.tpa</code></td><td>Everyone</td><td>Use all TPA commands</td></tr>
+                            <tr><td><code>Axentra.tpahere</code></td><td>OP</td><td>Use /tpahere</td></tr>
+                            <tr><td><code>Axentra.tp</code></td><td>OP</td><td>Use /tp</td></tr>
+                            <tr><td><code>Axentra.tphere</code></td><td>OP</td><td>Use /tphere</td></tr>
+                            <tr><td><code>Axentra.tpall</code></td><td>OP</td><td>Use /tpall</td></tr>
+                            <tr><td><code>Axentra.top</code></td><td>Everyone</td><td>Use /top</td></tr>
+                            <tr><td><code>Axentra.sethome</code></td><td>Everyone</td><td>Set homes</td></tr>
+                            <tr><td><code>Axentra.home</code></td><td>Everyone</td><td>Teleport to your homes</td></tr>
+                            <tr><td><code>Axentra.home.others</code></td><td>OP</td><td>Teleport to other players' homes</td></tr>
+                            <tr><td><code>Axentra.home.bypass</code></td><td>OP</td><td>Skip the home teleport delay</td></tr>
+                            <tr><td><code>Axentra.delhome</code></td><td>Everyone</td><td>Delete your homes</td></tr>
+                            <tr><td><code>Axentra.homes</code></td><td>Everyone</td><td>Open the homes GUI</td></tr>
+                            <tr><td><code>Axentra.homes.others</code></td><td>OP</td><td>View other players' homes</td></tr>
+                            <tr><td><code>Axentra.homes.&lt;n&gt;</code></td><td>&mdash;</td><td>Allow up to <em>n</em> homes (e.g. <code>Axentra.homes.5</code>)</td></tr>
+                            <tr><td><code>Axentra.homes.unlimited</code></td><td>OP</td><td>Unlimited homes</td></tr>
                             <tr><td><code>Axentra.vanish</code></td><td>OP</td><td>Toggle vanish for yourself</td></tr>
                             <tr><td><code>Axentra.vanish.others</code></td><td>OP</td><td>Toggle vanish for others</td></tr>
                             <tr><td><code>Axentra.vanish.see</code></td><td>OP</td><td>See vanished players</td></tr>
@@ -473,7 +640,7 @@ cd Axentra
             <!-- Configuration -->
             <section id="configuration" class="wiki-section">
                 <h1>Configuration</h1>
-                <p>Axentra uses three YAML files for all settings. After editing, run <code>/axentra reload</code> to apply changes live.</p>
+                <p>Axentra uses five YAML files for all settings. After editing, run <code>/axentra reload</code> to apply changes live.</p>
 
                 <h2 id="cfg-config">config.yml</h2>
                 <p>The main configuration file with all plugin settings.</p>
@@ -486,6 +653,7 @@ cd Axentra
                     <table>
                         <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
                         <tbody>
+                            <tr><td><code>spawn-world</code></td><td><code>""</code></td><td>World whose spawn is used when no <code>/setspawn</code> point exists. Empty = default world. Useful on multiworld servers.</td></tr>
                             <tr><td><code>spawn.world</code></td><td><em>auto</em></td><td>Set automatically by <code>/setspawn</code>. World name for spawn.</td></tr>
                             <tr><td><code>spawn.x / y / z</code></td><td><em>auto</em></td><td>Exact spawn coordinates (centered on block).</td></tr>
                             <tr><td><code>spawn.yaw / pitch</code></td><td><em>auto</em></td><td>Player look direction at spawn.</td></tr>
@@ -554,7 +722,8 @@ cd Axentra
     action: ban
     reason: "You have accumulated 10 warnings."</code></pre>
                 </div>
-                <p>Supported actions: <code>kick</code>, <code>mute</code>, <code>tempban</code> (requires <code>duration</code>), <code>ban</code>. Set to <code>{}</code> to disable.</p>
+                <p>Supported actions: <code>kick</code>, <code>mute</code>, <code>tempban</code> (requires <code>duration</code>), <code>ban</code> and <code>freeze</code> (with a <code>duration</code> it becomes a tempfreeze). Set to <code>{}</code> to disable.</p>
+                <p>Instead of an exact number you can use a range: <code>"1-10"</code> applies to warns 1 through 10, and <code>"10+"</code> to 10 warns and up. Put range keys in quotes. An exact number always takes priority over a range.</p>
 
                 <h3>TPA Settings</h3>
                 <div class="wiki-table-wrapper">
@@ -583,16 +752,80 @@ cd Axentra
                     </table>
                 </div>
 
-                <h3>Module Toggles</h3>
-                <p>Disable entire features (requires server restart):</p>
+                <h3>Homes</h3>
                 <div class="wiki-table-wrapper">
                     <table>
-                        <thead><tr><th>Module</th><th>Default</th><th>Description</th></tr></thead>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
                         <tbody>
-                            <tr><td><code>enabled-modules.tpa</code></td><td><code>true</code></td><td>TPA request system</td></tr>
-                            <tr><td><code>enabled-modules.spawn</code></td><td><code>true</code></td><td>Spawn commands</td></tr>
-                            <tr><td><code>enabled-modules.back</code></td><td><code>true</code></td><td>Back command</td></tr>
-                            <tr><td><code>enabled-modules.messaging</code></td><td><code>true</code></td><td>Private messaging</td></tr>
+                            <tr><td><code>homes.default-limit</code></td><td><code>3</code></td><td>Max homes per player (override with <code>Axentra.homes.&lt;n&gt;</code>)</td></tr>
+                            <tr><td><code>homes.teleport-delay</code></td><td><code>3</code></td><td>Seconds before teleporting home (0 = instant)</td></tr>
+                            <tr><td><code>homes.blacklisted-worlds</code></td><td><code>[]</code></td><td>Worlds where /sethome is not allowed</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Warps</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>warps.default-icon</code></td><td><code>ENDER_PEARL</code></td><td>Icon for new warps in the /warps GUI</td></tr>
+                            <tr><td><code>warps.teleport-delay</code></td><td><code>3</code></td><td>Seconds before teleporting (0 = instant). Moving cancels the teleport</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Random Teleport</h3>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>rtp.cooldown-seconds</code></td><td><code>300</code></td><td>Cooldown between /rtp uses per player</td></tr>
+                            <tr><td><code>rtp.teleport-delay</code></td><td><code>5</code></td><td>Seconds before teleporting (0 = instant)</td></tr>
+                            <tr><td><code>rtp.worlds.&lt;world&gt;.enabled</code></td><td><code>true</code></td><td>Allow /rtp in this world (<code>world_the_end</code> is off by default)</td></tr>
+                            <tr><td><code>rtp.worlds.&lt;world&gt;.min-radius</code> / <code>max-radius</code></td><td><code>500</code> / <code>10000</code></td><td>Distance range from the center (Nether: 100 / 3000)</td></tr>
+                            <tr><td><code>rtp.worlds.&lt;world&gt;.center-x</code> / <code>center-z</code></td><td><code>0</code></td><td>Center point of the search area</td></tr>
+                            <tr><td><code>rtp.worlds.&lt;world&gt;.max-y</code></td><td>&mdash;</td><td>Highest allowed Y. The Nether uses <code>120</code> to stay below the bedrock roof</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Module Toggles</h3>
+                <p>Disable entire features under <code>enabled-modules</code>. A disabled module's commands are fully unregistered (players see "Unknown command") and its listeners are not registered. <strong>Requires a server restart.</strong> Core moderation (kick, ban, mute, warn, case, history, punish, notes, auditlog) is always enabled.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Module</th><th>Covers</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>tpa</code></td><td>/tpa, /tpaccept, /tpdeny, /tpacancel, /tptoggle</td></tr>
+                            <tr><td><code>spawn</code></td><td>/spawn, /setspawn</td></tr>
+                            <tr><td><code>back</code></td><td>/back</td></tr>
+                            <tr><td><code>messaging</code></td><td>/msg, /reply, /msgtoggle</td></tr>
+                            <tr><td><code>chat-management</code></td><td>/clearchat, /mutechat, /slowchat, /staffchat + chat listener (disable when using another chat plugin)</td></tr>
+                            <tr><td><code>nickname</code></td><td>/nick, /realname, /me</td></tr>
+                            <tr><td><code>social-commands</code></td><td>/discord, /website, /store</td></tr>
+                            <tr><td><code>player-utilities</code></td><td>/fly, /heal, /feed, /god, /speed, /gamemode, /clear, /repair, /hat, /suicide, /ping</td></tr>
+                            <tr><td><code>vanish</code></td><td>/vanish</td></tr>
+                            <tr><td><code>invsee</code></td><td>/invsee, /enderchestsee</td></tr>
+                            <tr><td><code>workbench-commands</code></td><td>/anvil, /workbench, /cartography, /grindstone, /loom, /smithingtable, /stonecutter, /enderchest</td></tr>
+                            <tr><td><code>weather-time</code></td><td>/weather, /sun, /rain, /storm, /time, /day, /night, /noon, /midnight</td></tr>
+                            <tr><td><code>staff-management</code></td><td>/duty, /staffmode, /report, /reports, /staffstats, /stafflist</td></tr>
+                            <tr><td><code>snapshots</code></td><td>Inventory snapshots + /restoreinv</td></tr>
+                            <tr><td><code>trust</code></td><td>Trust levels + /trust</td></tr>
+                            <tr><td><code>alts</code></td><td>Alt detection + /alts</td></tr>
+                            <tr><td><code>vpn</code></td><td>VPN/proxy check on join (also needs <code>vpn.enabled</code> in protection.yml)</td></tr>
+                            <tr><td><code>freeze</code></td><td>/freeze, /unfreeze</td></tr>
+                            <tr><td><code>timeline</code></td><td>/timeline</td></tr>
+                            <tr><td><code>homes</code></td><td>/sethome, /home, /delhome, /homes</td></tr>
+                            <tr><td><code>teleport</code></td><td>/tp, /tphere, /tpall, /tpahere, /top</td></tr>
+                            <tr><td><code>lag</code></td><td>/lag, TPS/MSPT measurement and TPS history</td></tr>
+                            <tr><td><code>health-score</code></td><td>The 0&ndash;100 health score</td></tr>
+                            <tr><td><code>alerts</code></td><td>Staff alerts on sustained low TPS</td></tr>
+                            <tr><td><code>cleanup</code></td><td>Automatic ground-item cleanup + /lag clear</td></tr>
+                            <tr><td><code>entity-limits</code></td><td>Per-chunk entity limits</td></tr>
+                            <tr><td><code>restarts</code></td><td>/restart and daily restarts</td></tr>
+                            <tr><td><code>maintenance</code></td><td>/maintenance</td></tr>
+                            <tr><td><code>warps</code></td><td>/setwarp, /delwarp, /warp, /warps, /editwarp</td></tr>
+                            <tr><td><code>rtp</code></td><td>/rtp</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -603,6 +836,8 @@ cd Axentra
                         <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
                         <tbody>
                             <tr><td><code>invsee-read-only</code></td><td><code>true</code></td><td>Prevent modifying items in /invsee</td></tr>
+                            <tr><td><code>report-cooldown-seconds</code></td><td><code>60</code></td><td>Cooldown between /report uses per player</td></tr>
+                            <tr><td><code>verbose-logging</code></td><td><code>true</code></td><td>Show info messages in the console. Errors are always shown.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -626,9 +861,27 @@ cd Axentra
                             <tr><td><code>reason</code></td><td>Yes</td><td>The reason shown to the player</td></tr>
                             <tr><td><code>duration</code></td><td>For temp*</td><td>Duration (e.g. <code>1h</code>, <code>7d</code>, <code>30d</code>)</td></tr>
                             <tr><td><code>icon</code></td><td>Yes</td><td>Minecraft material for the GUI icon</td></tr>
+                            <tr><td><code>escalation</code></td><td>No</td><td>A list of steps for repeat offenses. When set, <code>action</code> and <code>duration</code> are ignored</td></tr>
                         </tbody>
                     </table>
                 </div>
+
+                <h3>Escalation</h3>
+                <p>With an <code>escalation</code> list, the punishment depends on how many earlier cases the player has with the <strong>same reason</strong>: the 1st offense uses step 1, the 2nd uses step 2, and so on. After the last step, the last step keeps being used. The GUI shows which step applies (e.g. "Offense #3") before you click.</p>
+                <div class="wiki-code-block">
+                    <pre><code>  spam:
+    display-name: "&eSpam"
+    action: warn
+    reason: "Spamming in chat"
+    icon: PAPER
+    escalation:
+      - "warn"
+      - "warn"
+      - "tempmute 30m"
+      - "tempmute 2h"
+      - "tempmute 1d"</code></pre>
+                </div>
+                <p>Default ladders are included for spam, caps, toxicity, advertising, grief, X-ray, general mutes and lag machines. Remove the <code>escalation</code> block from a template to turn it off.</p>
 
                 <h3>Default Templates</h3>
                 <div class="wiki-code-block">
@@ -653,6 +906,169 @@ cd Axentra
     icon: DIAMOND_ORE</code></pre>
                 </div>
                 <p>Add, remove, or modify templates as needed. Changes apply after <code>/axentra reload</code>.</p>
+
+                <h2 id="cfg-protection">protection.yml</h2>
+                <p>Settings for the Player Protection features (v1.7.0).</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>snapshots.triggers.*</code></td><td><code>true</code></td><td>Take a snapshot on <code>death</code>, <code>join</code>, <code>quit</code>, <code>world-change</code>, <code>clear</code></td></tr>
+                            <tr><td><code>snapshots.max-per-player</code></td><td><code>30</code></td><td>Oldest snapshots are removed above this limit</td></tr>
+                            <tr><td><code>snapshots.max-age-days</code></td><td><code>14</code></td><td>Snapshots older than this are deleted</td></tr>
+                            <tr><td><code>trust.member-playtime-minutes</code></td><td><code>60</code></td><td>Playtime for NEW &rarr; MEMBER</td></tr>
+                            <tr><td><code>trust.trusted-playtime-minutes</code></td><td><code>600</code></td><td>Playtime for MEMBER &rarr; TRUSTED</td></tr>
+                            <tr><td><code>trust.trusted-clean-days</code></td><td><code>14</code></td><td>No cases in the last X days required for TRUSTED</td></tr>
+                            <tr><td><code>trust.downgrade.on-warn-or-mute</code></td><td><code>true</code></td><td>Drop one level on warn/mute</td></tr>
+                            <tr><td><code>trust.downgrade.on-ban</code></td><td><code>true</code></td><td>Reset to NEW on ban/tempban</td></tr>
+                            <tr><td><code>trust.downgrade.on-reports-*</code></td><td><code>false</code> / <code>3</code> / <code>30</code></td><td>Downgrade after X reports within Y minutes</td></tr>
+                            <tr><td><code>trust.new-restrictions.*</code></td><td>&mdash;</td><td>For NEW players: <code>block-links</code>, <code>link-regex</code>, <code>slowmode-seconds</code>, <code>max-caps-percent</code>, <code>block-msg-to-untrusted</code>, <code>blocked-commands</code></td></tr>
+                            <tr><td><code>alts.notify</code></td><td><code>true</code></td><td>Notify staff when a joining player has alts/VPN/notes</td></tr>
+                            <tr><td><code>alts.risk-weights.*</code></td><td>30 / 20 / 15 / 5</td><td>Risk score weights: <code>banned-alt</code>, <code>vpn-detected</code>, <code>trust-new</code>, <code>case-count</code></td></tr>
+                            <tr><td><code>vpn.enabled</code></td><td><code>false</code></td><td>Enable VPN detection (needs <code>vpn.api-key</code> from proxycheck.io)</td></tr>
+                            <tr><td><code>vpn.action</code></td><td><code>ALERT</code></td><td><code>ALERT</code> (notify staff) or <code>KICK</code></td></tr>
+                            <tr><td><code>vpn.cache-hours</code> / <code>timeout-ms</code></td><td><code>24</code> / <code>3000</code></td><td>Result cache and API timeout</td></tr>
+                            <tr><td><code>vpn.whitelist</code></td><td><code>[]</code></td><td>UUIDs that are never checked</td></tr>
+                            <tr><td><code>freeze.message-interval-seconds</code></td><td><code>5</code></td><td>Interval of the freeze reminder</td></tr>
+                            <tr><td><code>freeze.chat-only-with-staff</code></td><td><code>true</code></td><td>Frozen players can only chat with staff</td></tr>
+                            <tr><td><code>freeze.allowed-commands</code></td><td><code>[msg, r, reply, helpop]</code></td><td>Commands frozen players can still use</td></tr>
+                            <tr><td><code>freeze.logout-action</code></td><td><code>ALERT</code></td><td><code>NONE</code>, <code>ALERT</code> or <code>BAN</code></td></tr>
+                            <tr><td><code>freeze.logout-ban-reason</code> / <code>logout-ban-duration</code></td><td><code>"Logged out while frozen"</code> / <code>"7d"</code></td><td>Used when <code>logout-action</code> is <code>BAN</code>. Leave the duration empty for a permanent ban</td></tr>
+                            <tr><td><code>freeze.movement-radius</code></td><td><code>1.0</code></td><td>How far frozen players can walk (<code>0</code> = fully stuck)</td></tr>
+                            <tr><td><code>freeze.tag</code></td><td><code>"&amp;b&amp;l❄ FROZEN &amp;r"</code></td><td>Tag shown for frozen players</td></tr>
+                            <tr><td><code>freeze.tag-display.nametag</code> / <code>tablist</code></td><td><code>true</code></td><td>Show the tag above the head and in the tab list</td></tr>
+                            <tr><td><code>freeze.chat-format</code></td><td><code>"%tag%&amp;7%player%: &amp;f%message%"</code></td><td>Chat format for frozen players</td></tr>
+                            <tr><td><code>freeze.actionbar</code></td><td><code>true</code></td><td>Action bar with the freeze status and time left</td></tr>
+                            <tr><td><code>freeze.particles.*</code></td><td><code>SNOWFLAKE</code>, 8, 0.4, 10</td><td><code>enabled</code>, <code>type</code>, <code>count</code>, <code>offset</code> and <code>interval-ticks</code> of the particles around frozen players</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 id="cfg-health">health.yml</h2>
+                <p>Settings for the Server Health features (v1.8.0). See <a href="#server-health">Server Health</a> for how they work.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>tps.green-threshold</code> / <code>yellow-threshold</code></td><td><code>19.0</code> / <code>15.0</code></td><td>TPS colors: green from 19, yellow from 15, red below</td></tr>
+                            <tr><td><code>tps.history-retention-days</code></td><td><code>30</code></td><td>How long TPS history is kept</td></tr>
+                            <tr><td><code>lag-chunks.weights.entity</code></td><td><code>1</code></td><td>Score per entity (players don't count)</td></tr>
+                            <tr><td><code>lag-chunks.weights.tile-entities.*</code></td><td><code>HOPPER: 5</code>, <code>SPAWNER: 3</code>, &hellip;</td><td>Score per tile entity type that actually ticks</td></tr>
+                            <tr><td><code>lag-chunks.weights.other-tile-entity</code></td><td><code>0</code></td><td>Score for unlisted tile entities (chests, signs, &hellip;)</td></tr>
+                            <tr><td><code>lag-chunks.min-score</code></td><td><code>10</code></td><td>Chunks below this score are hidden in /lag chunks</td></tr>
+                            <tr><td><code>lag-chunks.warning-score</code> / <code>critical-score</code></td><td><code>100</code> / <code>250</code></td><td>Yellow and red score colors</td></tr>
+                            <tr><td><code>lag-chunks.avg-entities-warning</code> / <code>-critical</code></td><td><code>8</code> / <code>20</code></td><td>Average entities per chunk for the Elevated / High status in /lag entities</td></tr>
+                            <tr><td><code>lag-chunks.tracked-blocks</code> / <code>tracked-entities</code></td><td>hoppers, pistons, &hellip;</td><td>What counts as lag-relevant activity in /lag player</td></tr>
+                            <tr><td><code>alerts.threshold</code></td><td><code>15.0</code></td><td>TPS below this triggers an alert</td></tr>
+                            <tr><td><code>alerts.duration-seconds</code></td><td><code>30</code></td><td>How long TPS must stay low before alerting</td></tr>
+                            <tr><td><code>alerts.cooldown-seconds</code></td><td><code>300</code></td><td>Minimum time between alerts</td></tr>
+                            <tr><td><code>alerts.recovery-message</code></td><td><code>true</code></td><td>Message when TPS recovers</td></tr>
+                            <tr><td><code>health-score.weights.*</code></td><td>40 / 20 / 15 / 15 / 10</td><td>Weights for <code>tps</code>, <code>mspt</code>, <code>memory</code>, <code>entities-per-chunk</code> and <code>reports-and-staff</code></td></tr>
+                            <tr><td><code>health-score.labels.*</code></td><td>90 / 70 / 50</td><td>Minimum score for Excellent, Good and Fair (below = Poor)</td></tr>
+                            <tr><td><code>cleanup.enabled</code></td><td><code>true</code></td><td>Automatic ground-item cleanup</td></tr>
+                            <tr><td><code>cleanup.interval-minutes</code></td><td><code>10</code></td><td>Cleanup interval (0 = only on TPS alert)</td></tr>
+                            <tr><td><code>cleanup.only-on-alert</code></td><td><code>false</code></td><td>Only clean up while a TPS alert is active</td></tr>
+                            <tr><td><code>cleanup.warnings</code></td><td><code>[60, 30, 10]</code></td><td>Warnings in seconds before cleanup</td></tr>
+                            <tr><td><code>cleanup.warning-mode</code></td><td><code>both</code></td><td><code>chat</code>, <code>actionbar</code> or <code>both</code></td></tr>
+                            <tr><td><code>cleanup.skip-named-items</code></td><td><code>true</code></td><td>Never remove items with a custom name</td></tr>
+                            <tr><td><code>cleanup.whitelist</code></td><td>diamonds, netherite, elytra, &hellip;</td><td>Materials that are never removed</td></tr>
+                            <tr><td><code>entity-limits.enabled</code></td><td><code>true</code></td><td>Per-chunk entity limits</td></tr>
+                            <tr><td><code>entity-limits.remove-excess</code></td><td><code>false</code></td><td>Also remove entities above the limit</td></tr>
+                            <tr><td><code>entity-limits.limits.*</code></td><td><code>ANIMALS: 40</code>, <code>VILLAGER: 20</code>, &hellip;</td><td>Limit per type or group per chunk</td></tr>
+                            <tr><td><code>restarts.daily</code></td><td><code>[]</code></td><td>Daily restart times in <code>HH:mm</code>, e.g. <code>"05:00"</code></td></tr>
+                            <tr><td><code>restarts.timezone</code></td><td><code>UTC</code></td><td>Timezone for daily restarts</td></tr>
+                            <tr><td><code>restarts.warnings</code></td><td>1800 &hellip; 1</td><td>Warning times in seconds before a restart</td></tr>
+                            <tr><td><code>restarts.sound</code> / <code>sound-last-seconds</code></td><td><code>BLOCK_NOTE_BLOCK_PLING</code> / <code>10</code></td><td>Countdown sound in the last seconds</td></tr>
+                            <tr><td><code>restarts.pre-commands</code></td><td><code>[save-all]</code></td><td>Commands run before restarting</td></tr>
+                            <tr><td><code>restarts.kick-message</code></td><td>&mdash;</td><td>Message shown when players are kicked for the restart</td></tr>
+                            <tr><td><code>restarts.use-spigot-restart</code></td><td><code>false</code></td><td>Use Spigot's restart script (needs <code>restart-script</code> in spigot.yml)</td></tr>
+                            <tr><td><code>restarts.auto-restart-on-lag.*</code></td><td>off, 8.0 TPS, 5 min</td><td>Restart automatically when TPS stays critically low</td></tr>
+                            <tr><td><code>restarts.bossbar-color</code> / <code>bossbar-style</code></td><td><code>RED</code> / <code>SOLID</code></td><td>Countdown bossbar look</td></tr>
+                            <tr><td><code>maintenance.countdown-seconds</code></td><td><code>60</code></td><td>Countdown before players are kicked (override with <code>-c</code>)</td></tr>
+                            <tr><td><code>maintenance.bossbar</code> / <code>title-last-seconds</code> / <code>sound-last-seconds</code></td><td><code>true</code> / <code>10</code> / <code>10</code></td><td>Countdown bossbar, title and tick sound</td></tr>
+                            <tr><td><code>maintenance.end-sound</code></td><td><code>ENTITY_ENDER_DRAGON_GROWL</code></td><td>Sound when the countdown ends (<code>none</code> to disable)</td></tr>
+                            <tr><td><code>maintenance.motd</code> / <code>kick-message</code> / <code>join-denied</code></td><td>&mdash;</td><td>Texts with placeholders <code>%reason%</code>, <code>%by%</code>, <code>%since%</code>, <code>%duration%</code>, <code>%remaining%</code>, <code>%ends%</code>, <code>%discord%</code>, <code>%website%</code></td></tr>
+                            <tr><td><code>maintenance.default-reason</code></td><td><code>Scheduled maintenance</code></td><td>Reason when none is given</td></tr>
+                            <tr><td><code>maintenance.hide-players</code></td><td><code>true</code></td><td>Hide the player count in the server list</td></tr>
+                            <tr><td><code>maintenance.whitelist</code></td><td><code>[]</code></td><td>Names or UUIDs that can join (also managed with <code>/maintenance add|remove</code>)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Server Health -->
+            <section id="server-health" class="wiki-section">
+                <h1>Server Health</h1>
+                <p>The Server Health update (v1.8.0) helps you find lag before players complain. All settings live in <a href="#cfg-health"><code>health.yml</code></a>.</p>
+
+                <h2>The /lag Overview</h2>
+                <p><code>/lag</code> shows TPS over 1, 5 and 15 minutes, MSPT (average and peak over the last 100 ticks), memory, uptime, players, entities and loaded chunks per world, and the health score. Clickable buttons open the chunk, entity and history views. On Paper, TPS and MSPT come straight from the server; on Spigot, Axentra measures them itself.</p>
+
+                <h2>Lag Chunks</h2>
+                <p><code>/lag chunks</code> gives every loaded chunk a score and lists the 10 heaviest. Each entity counts 1 point, and tile entities that actually tick count extra (hopper 5, spawner 3, furnace 2, &hellip;). Chests, signs and other passive blocks count 0, so a chunk full of storage doesn't show up as laggy. Players are never counted. Hover over a chunk to see what's in it, and click [TP] to go there.</p>
+
+                <h2>Health Score</h2>
+                <p>A single number from 0 to 100 that combines TPS (40%), MSPT (20%), memory (15%), entities per chunk (15%) and open reports plus whether staff are online (10%). 90+ is Excellent, 70+ Good, 50+ Fair and below 50 Poor. The weights and thresholds can be changed in <code>health.yml</code>.</p>
+
+                <h2>TPS History &amp; Alerts</h2>
+                <p>TPS, MSPT, memory, health and player count are saved every minute. <code>/lag history</code> shows them as 28 time blocks: the color shows the lowest TPS in that block and the stack size the average. When TPS stays below <code>alerts.threshold</code> for <code>alerts.duration-seconds</code>, staff with <code>Axentra.lag.alerts</code> get an alert with the heaviest chunk and its biggest cause, and a recovery message once TPS is back.</p>
+
+                <h2>Cleanup &amp; Entity Limits</h2>
+                <p>Ground items are cleared every 10 minutes by default, with warnings before each cleanup. Whitelisted materials and named items are never removed. Set <code>cleanup.only-on-alert</code> to clear items only during a lag alert. Entity limits block new spawns once a chunk reaches its limit for a type or group such as <code>ANIMALS</code>.</p>
+
+                <h2>Scheduled Restarts</h2>
+                <p>Schedule a restart with <code>/restart schedule 10m</code>, or set daily restart times in <code>restarts.daily</code>. Players see a bossbar, warnings in chat, a sound in the last seconds and a title in the last 10 seconds. Commands in <code>pre-commands</code> (like <code>save-all</code>) run first. With <code>auto-restart-on-lag</code>, the server restarts by itself when TPS stays critically low.</p>
+
+                <h2>Maintenance Mode</h2>
+                <p><code>/maintenance on 1h30m -c 2m Updating plugins</code> warns players for 2 minutes, then kicks everyone who can't bypass it and locks the server for 1.5 hours. The server list shows a maintenance MOTD with the reason and time left, and players who try to join see when the server is expected back. Maintenance survives restarts and turns off automatically when the duration ends. Ops, players on the maintenance whitelist and players with <code>Axentra.maintenance.bypass</code> can still join.</p>
+            </section>
+
+            <!-- Warps & RTP -->
+            <section id="warps" class="wiki-section">
+                <h1>Warps &amp; RTP</h1>
+                <p>Warps are server-wide teleport points that everyone can use from <code>/warps</code> or <code>/warp &lt;name&gt;</code>. Give a warp a permission with <code>/editwarp &lt;name&gt; permission &lt;perm&gt;</code> to hide it from players without it.</p>
+
+                <h2>Editing in the GUI</h2>
+                <p>Staff with <code>Axentra.editwarp</code> can manage warps directly in <code>/warps</code>. They see every warp, including its position and permission.</p>
+                <div class="wiki-table-wrapper">
+                    <table>
+                        <thead><tr><th>Action</th><th>What it does</th></tr></thead>
+                        <tbody>
+                            <tr><td>Click</td><td>Teleport to the warp</td></tr>
+                            <tr><td>Shift-click</td><td>Select the warp to move it. It glows while selected</td></tr>
+                            <tr><td>Click another warp</td><td>Place the selected warp in that spot. Works across pages</td></tr>
+                            <tr><td>Click the selected warp</td><td>Cancel moving</td></tr>
+                            <tr><td>Press 1&ndash;9</td><td>Use the item in that hotbar slot as the icon</td></tr>
+                            <tr><td>Press Q</td><td>Rename the warp: type the new name in chat, or <code>cancel</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>New warps are added at the end of the list. Running <code>/setwarp</code> on an existing warp only moves its location and keeps its icon, permission and position.</p>
+
+                <h2>Random Teleport</h2>
+                <p><code>/rtp</code> (or <code>/wild</code>) teleports a player to a random safe spot between <code>min-radius</code> and <code>max-radius</code> from the world's center. Lava, fire, cactus and the void are avoided, and in the Nether the location stays below the bedrock roof. Each world has its own settings in <code>config.yml</code>, and The End is off by default.</p>
+            </section>
+
+            <!-- Player Protection -->
+            <section id="protection" class="wiki-section">
+                <h1>Player Protection</h1>
+                <p>The Player Protection update (v1.7.0) helps staff investigate players and undo damage. All settings live in <a href="#cfg-protection"><code>protection.yml</code></a>.</p>
+
+                <h2>Inventory Snapshots</h2>
+                <p>Axentra saves a copy of a player's inventory on death, join, quit, world change and <code>/clear</code>. Use <code>/restoreinv &lt;player&gt;</code> to browse snapshots in a GUI and restore one. Old snapshots are removed by <code>max-per-player</code> and <code>max-age-days</code>.</p>
+
+                <h2>Trust System</h2>
+                <p>Every player has a trust level: <strong>NEW</strong> &rarr; <strong>MEMBER</strong> &rarr; <strong>TRUSTED</strong>. Players move up automatically based on playtime and a clean record, and are downgraded on punishments. NEW players can be restricted (no links, caps limit, slowmode, no /msg to untrusted players, blocked commands). Staff can override with <code>/trust set</code>.</p>
+
+                <h2>Alts &amp; VPN</h2>
+                <p>Axentra tracks IP addresses to find accounts that share an IP. <code>/alts &lt;player&gt;</code> shows them with a risk score based on banned alts, VPN usage, trust level and cases. With a free <a href="https://proxycheck.io" target="_blank">proxycheck.io</a> API key, VPN/proxy connections can be detected on join and either reported to staff or kicked. IP addresses are only visible to staff with <code>Axentra.alts.ip</code>.</p>
+
+                <h2>Freeze</h2>
+                <p>Frozen players can only move within a small radius (1 block by default), cannot interact, get a reminder every few seconds and can only use allowed commands. Ender pearls and chorus fruit are blocked. The freeze is stored in the database, so logging out or a restart doesn't remove it. When a frozen player logs out, staff can be alerted or the player can be banned automatically.</p>
+                <p>Use <code>/tempfreeze &lt;player&gt; &lt;duration&gt;</code> for a freeze that ends by itself, even if the player is offline. Frozen players get a <code>[Frozen]</code> tag above their head, in the tab list and in chat, snowflake particles that everyone can see, and an action bar with the time left. Each of these can be changed or turned off in <code>protection.yml</code>.</p>
+
+                <h2>Timeline &amp; Join Alerts</h2>
+                <p><code>/timeline &lt;player&gt;</code> shows a player's history: joins, quits, cases, deaths, name changes and IP changes. When a player joins, staff see alts, VPN status, trust level and open cases in one alert.</p>
             </section>
 
             <!-- Punishment GUI -->
@@ -742,11 +1158,31 @@ cd Axentra
                     </div>
                     <div class="faq-item">
                         <h3>Can I disable features I don't need?</h3>
-                        <p>Yes. Use the <code>enabled-modules</code> section in <code>config.yml</code> to disable TPA, spawn, back, or messaging. This requires a server restart.</p>
+                        <p>Yes. Axentra has 30 modules in the <code>enabled-modules</code> section of <code>config.yml</code> &mdash; from TPA and homes to vanish, freeze, lag tools and warps. Disabled modules are fully unregistered. See <a href="#configuration">Module Toggles</a>. This requires a server restart.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I use Axentra with another chat plugin?</h3>
+                        <p>Yes. Set <code>enabled-modules.chat-management</code> to <code>false</code> so Axentra doesn't listen to chat events. Mutes and <code>mute-blocked-commands</code> keep working.</p>
                     </div>
                     <div class="faq-item">
                         <h3>Where is data stored?</h3>
-                        <p>All data (bans, mutes, warns, cases, notes, nicknames, audit log) is stored in a local SQLite database at <code>plugins/Axentra/axentra.db</code>.</p>
+                        <p>All data (bans, mutes, warns, cases, notes, nicknames, audit log, snapshots, homes, warps, TPS history, &hellip;) is stored in a local SQLite database at <code>plugins/Axentra/data.db</code>.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What are data.db-wal and data.db-shm?</h3>
+                        <p>Since v1.8.0 the database runs in WAL mode, which prevents "database is locked" errors. These two files belong to the database. This is normal &mdash; don't delete them while the server is running.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>/restart restarts the server immediately</h3>
+                        <p>Spigot and Paper have their own <code>/restart</code>. Before v1.8.0 it took priority over Axentra's command &mdash; update to the latest version. Spigot's built-in restart is still available as <code>/spigot:restart</code>.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>The [Frozen] tag doesn't show above a player's head</h3>
+                        <p>The nametag uses the main scoreboard. Plugins that manage nametags themselves, such as TAB, can override it. The tag in the tab list and in chat still works.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Staff can see players' IP addresses</h3>
+                        <p>IPs are only shown to players with <code>Axentra.alts.ip</code>. If a group has <code>Axentra.*</code>, explicitly set <code>Axentra.alts.ip</code> to <code>false</code> for staff that shouldn't see them.</p>
                     </div>
                     <div class="faq-item">
                         <h3>How do I reset a config file?</h3>
@@ -767,17 +1203,17 @@ cd Axentra
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h3>Axentra</h3>
+                    <div class="footer-brand-name">Axentra</div>
                     <p>Made with love by <a href="https://github.com/OlliesGitHubWorld" target="_blank">OlliesWorld</a></p>
                 </div>
                 <div class="footer-links">
-                    <h4>Resources</h4>
+                    <div class="footer-links-title">Resources</div>
                     <a href="wiki.html">Wiki</a>
                     <a href="wiki.html#commands">Commands</a>
                     <a href="changelog.html">Changelog</a>
                 </div>
                 <div class="footer-links">
-                    <h4>Community</h4>
+                    <div class="footer-links-title">Community</div>
                     <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>

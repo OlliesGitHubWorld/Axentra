@@ -1,0 +1,274 @@
+#       _____                        __            _____
+#      /  _  \ ___  ___ ____   _____/  |________  /  _  \
+#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \
+#    /    |    \>    <\  ___/|   |  \  |  |  | \/    |    \
+#    \____|__  /__/\_ \\___  >___|  /__|  |__|  \____|__  /
+#            \/      \/    \/     \/                    \/
+#
+# ┌─────────────────────────────────────────────────────────┐
+# │                Axentra Health Config                    │
+# │                  Made by OlliesWorld                    │
+# └─────────────────────────────────────────────────────────┘
+#
+#  This file configures the Server Health features (v1.8.0).
+#  After making changes, use /axentra reload to apply them.
+#
+# ══════════════════════════════════════════════════════════
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    TPS Settings                         │
+# └─────────────────────────────────────────────────────────┘
+
+tps:
+  # TPS at or above this value is considered green (healthy).
+  green-threshold: 19.0
+  # TPS at or above this value is considered yellow (warning). Below is red.
+  yellow-threshold: 15.0
+  # How many days to keep TPS history records.
+  history-retention-days: 30
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Lag Chunks                           │
+# └─────────────────────────────────────────────────────────┘
+
+lag-chunks:
+  # Weights used to calculate a chunk's lag score (/lag chunks and lag alerts).
+  # The score is an indication of how much work a chunk causes, not measured lag.
+  weights:
+    # Per entity (mobs, items, armor stands, ...). Players are not counted.
+    entity: 1
+    # Tile entities NOT listed below (chests, signs, beds, sculk sensors, ...).
+    # These barely cost performance, so they are ignored by default.
+    other-tile-entity: 0
+    # Tile entities that actually tick and cost performance.
+    tile-entities:
+      HOPPER: 5
+      SPAWNER: 3
+      TRIAL_SPAWNER: 3
+      BEACON: 3
+      FURNACE: 2
+      BLAST_FURNACE: 2
+      SMOKER: 2
+      BREWING_STAND: 2
+      CRAFTER: 2
+      CONDUIT: 2
+      REPEATING_COMMAND_BLOCK: 2
+      DISPENSER: 1
+      DROPPER: 1
+      COMPARATOR: 1
+      CAMPFIRE: 1
+      SOUL_CAMPFIRE: 1
+
+  # Chunks with a score below this are not shown in /lag chunks.
+  min-score: 10
+  # Score colours in /lag chunks: green below warning, yellow from warning, red from critical.
+  warning-score: 100
+  critical-score: 250
+
+  # Status in /lag entities. Based on density instead of totals, so it works for any player count:
+  # the average entities per loaded chunk, and the busiest single chunk (uses warning/critical-score).
+  avg-entities-warning: 8
+  avg-entities-critical: 20
+
+  # Blocks that count as "lag-relevant" when placed in a chunk.
+  tracked-blocks:
+    - HOPPER
+    - OBSERVER
+    - PISTON
+    - STICKY_PISTON
+    - REDSTONE_WIRE
+    - REPEATER
+    - COMPARATOR
+    - DISPENSER
+    - DROPPER
+
+  # Entity creation events to track.
+  tracked-entities:
+    - ITEM_FRAME
+    - GLOW_ITEM_FRAME
+    - ARMOR_STAND
+    - MINECART
+    - CHEST_MINECART
+    - HOPPER_MINECART
+    - TNT_MINECART
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                       Alerts                            │
+# └─────────────────────────────────────────────────────────┘
+
+alerts:
+  # TPS below this value triggers a lag alert.
+  threshold: 15.0
+  # TPS must remain below the threshold for this many seconds before alerting.
+  duration-seconds: 30
+  # Minimum time in seconds between alerts (5 minutes).
+  cooldown-seconds: 300
+  # Send a message when TPS recovers above the threshold.
+  recovery-message: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Health Score                         │
+# └─────────────────────────────────────────────────────────┘
+
+health-score:
+  # Weights for each component of the overall health score (should sum to 100).
+  weights:
+    tps: 40
+    mspt: 20
+    memory: 15
+    entities-per-chunk: 15
+    reports-and-staff: 10
+
+  # Score thresholds for each label.
+  labels:
+    excellent: 90
+    good: 70
+    fair: 50
+    # Below 50 = "Poor"
+
+  # Thresholds used to normalize individual metrics.
+  thresholds:
+    perfect-mspt: 30.0
+    bad-mspt: 100.0
+    perfect-entities-per-chunk: 20
+    bad-entities-per-chunk: 100
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                       Cleanup                           │
+# └─────────────────────────────────────────────────────────┘
+
+cleanup:
+  enabled: true
+  # Auto cleanup interval in minutes (0 = only on TPS alert).
+  interval-minutes: 10
+  # Only run cleanup when a TPS alert is active.
+  only-on-alert: false
+  # Warnings sent at these seconds before cleanup.
+  warnings:
+    - 60
+    - 30
+    - 10
+  # How warnings are displayed: chat, actionbar, or both.
+  warning-mode: both
+  # Don't remove dropped items that have a custom display name.
+  skip-named-items: true
+  # Materials that are never removed by cleanup.
+  whitelist:
+    - DIAMOND
+    - NETHERITE_INGOT
+    - NETHERITE_SCRAP
+    - ELYTRA
+    - BEACON
+    - NETHER_STAR
+    - DRAGON_EGG
+    - ENCHANTED_GOLDEN_APPLE
+    - TOTEM_OF_UNDYING
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Entity Limits                        │
+# └─────────────────────────────────────────────────────────┘
+
+entity-limits:
+  enabled: true
+  # Whether to automatically remove entities that exceed the limit.
+  remove-excess: false
+  # Per-type or per-group limits (per chunk).
+  limits:
+    ANIMALS: 40
+    VILLAGER: 20
+    ITEM_FRAME: 50
+    GLOW_ITEM_FRAME: 50
+    ARMOR_STAND: 30
+    MINECART: 20
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Restarts                           │
+# └─────────────────────────────────────────────────────────┘
+
+restarts:
+  # Scheduled daily restart times in HH:mm format. Empty list = disabled.
+  daily: []
+    # - "05:00"
+  # Timezone for daily restart times.
+  timezone: "UTC"
+  # Warnings sent at these seconds before restart.
+  warnings:
+    - 1800
+    - 900
+    - 600
+    - 300
+    - 60
+    - 30
+    - 10
+    - 5
+    - 4
+    - 3
+    - 2
+    - 1
+  # Play a sound in the last N seconds of the countdown.
+  sound-last-seconds: 10
+  # Sound to play during the final countdown.
+  sound: "BLOCK_NOTE_BLOCK_PLING"
+  # Commands to run before the server restarts.
+  pre-commands:
+    - "save-all"
+  # Message shown to players when they are kicked for a restart.
+  kick-message: "&cServer is restarting! Please reconnect in a moment."
+  # Use Spigot's restart script mechanism (requires restart-script in spigot.yml).
+  # When false, uses Bukkit.shutdown().
+  use-spigot-restart: false
+  # Automatically restart the server if TPS stays critically low.
+  auto-restart-on-lag:
+    enabled: false
+    tps-threshold: 8.0
+    duration-minutes: 5
+  # BossBar color for the restart countdown.
+  bossbar-color: RED
+  # BossBar overlay style for the restart countdown.
+  bossbar-style: SOLID
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                     Maintenance                         │
+# └─────────────────────────────────────────────────────────┘
+
+maintenance:
+  # Warning countdown in seconds before maintenance kicks players (0 = start immediately).
+  # Players are warned in chat; /maintenance off during the countdown cancels it.
+  # Can be overridden per command: /maintenance on [duration] -c 30s [reason]
+  countdown-seconds: 60
+  # Show a bossbar with the remaining countdown time.
+  bossbar: true
+  bossbar-color: "RED"
+  # Show a title on screen in the last N seconds of the countdown.
+  title-last-seconds: 10
+  # Play a tick sound in the last N seconds of the countdown.
+  sound-last-seconds: 10
+  sound: "BLOCK_NOTE_BLOCK_PLING"
+  # Sound played when the countdown ends (just before players are kicked). "none" to disable.
+  end-sound: "ENTITY_ENDER_DRAGON_GROWL"
+  # Placeholders for motd, kick-message and join-denied:
+  #   %reason%    - reason given with /maintenance on [duration] [reason] (or default-reason)
+  #   %by%        - who enabled maintenance
+  #   %since%     - time maintenance started (HH:mm)
+  #   %duration%  - total planned duration (e.g. 1h 30m)
+  #   %remaining% - time left until maintenance ends automatically
+  #   %ends%      - expected end time (HH:mm)
+  #   %discord% / %website% - from social-links in config.yml
+  # MOTD shown in the server list during maintenance (2 lines max).
+  motd: "&c&lMaintenance &8» &7%reason%\n&7Back in: &f%remaining% &8| &7Updates: &b%discord%"
+  # Message shown to online players who get kicked when maintenance starts.
+  kick-message: "&c&lMAINTENANCE\n\n&7The server is now under maintenance.\n\n&7Reason: &f%reason%\n&7Started by: &f%by% &8(%since%)\n&7Expected back: &f%remaining% &8(around %ends%)\n\n&7Updates: &b%discord%"
+  # Message shown to players who try to join during maintenance.
+  join-denied: "&c&lMAINTENANCE\n\n&7The server is currently under maintenance.\n\n&7Reason: &f%reason%\n&7Started: &f%since%\n&7Expected back: &f%remaining% &8(around %ends%)\n\n&7Updates: &b%discord%\n&7Website: &b%website%"
+  # Reason shown when none was given.
+  default-reason: "Scheduled maintenance"
+  # Text shown for %duration%, %remaining% and %ends% when no duration was set.
+  unknown-duration-text: "Unknown"
+  # Hide the player count in the server list during maintenance.
+  hide-players: true
+  # UUIDs or names that can join during maintenance.
+  whitelist: []
+
+# ══════════════════════════════════════════════════════════
+#                   End of Health Config
+# ══════════════════════════════════════════════════════════

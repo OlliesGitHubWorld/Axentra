@@ -1,7 +1,6 @@
 package mc.ollie.gui;
 
 import mc.ollie.App;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,7 +23,7 @@ public class StaffGUI {
     }
 
     public void open(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 54, GUI_TITLE);
+        Inventory gui = MenuHolder.create(54, GUI_TITLE);
 
         // Fill everything with dark background
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");

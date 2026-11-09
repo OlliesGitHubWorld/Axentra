@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.FreezeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,9 +18,11 @@ import java.util.stream.Collectors;
 public class FreezeCommand implements CommandExecutor, TabCompleter {
 
     private final App plugin;
+    private final FreezeManager freezeManager;
 
-    public FreezeCommand(App plugin) {
+    public FreezeCommand(App plugin, FreezeManager freezeManager) {
         this.plugin = plugin;
+        this.freezeManager = freezeManager;
     }
 
     private String getMessage(String path) {
@@ -35,6 +38,10 @@ public class FreezeCommand implements CommandExecutor, TabCompleter {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName)
                     .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
+        if (args.length == 2 && label.equalsIgnoreCase("tempfreeze")) {
+            return Arrays.asList("30s", "5m", "10m", "30m", "1h").stream()
+                    .filter(s -> s.startsWith(args[1].toLowerCase())).collect(Collectors.toList());
+        }
         return Collections.emptyList();
     }
 
@@ -45,8 +52,9 @@ public class FreezeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length == 0) {
-            sender.sendMessage(getMessage("freeze-usage"));
+        boolean isTemp = label.equalsIgnoreCase("tempfreeze");
+        if (args.length == 0 || (isTemp && args.length < 2)) {
+            sender.sendMessage(getMessage(isTemp ? "tempfreeze-usage" : "freeze-usage"));
             return true;
         }
 
@@ -61,32 +69,27 @@ public class FreezeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String uuid = target.getUniqueId().toString();
+        if (isTemp) {
+            long duration = FreezeManager.parseDuration(args[1]);
+            if (duration <= 0) {
+                sender.sendMessage(getMessage("tempfreeze-invalid-duration"));
+                return true;
+            }
+            freezeManager.freeze(target, sender, duration);
+            sender.sendMessage(getMessage("freeze-tempfrozen-staff")
+                    .replace("%player%", target.getName())
+                    .replace("%duration%", FreezeManager.formatDuration(duration)));
+            return true;
+        }
+
         boolean isUnfreeze = label.equalsIgnoreCase("unfreeze");
 
-        if (isUnfreeze || plugin.getDatabaseManager().isPlayerFrozen(uuid)) {
-            // Unfreeze
-            plugin.getDatabaseManager().unfreezePlayer(uuid);
+        if (isUnfreeze || freezeManager.isFrozen(target.getUniqueId())) {
+            freezeManager.unfreeze(target.getUniqueId(), target.getName(), sender);
             sender.sendMessage(getMessage("freeze-unfrozen-staff").replace("%player%", target.getName()));
-            target.sendMessage(getMessage("freeze-unfrozen"));
-            plugin.getDatabaseManager().logAction(
-                    sender.getName(),
-                    sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE",
-                    "UNFREEZE", target.getName(), "");
         } else {
-            // Freeze
-            plugin.getDatabaseManager().freezePlayer(uuid, sender.getName());
+            freezeManager.freeze(target, sender, 0L);
             sender.sendMessage(getMessage("freeze-frozen-staff").replace("%player%", target.getName()));
-            target.sendMessage(getMessage("freeze-frozen"));
-            target.sendTitle(
-                    ChatColor.RED + "" + ChatColor.BOLD + "FROZEN",
-                    ChatColor.GRAY + "Do not log out!",
-                    0, 100, 20
-            );
-            plugin.getDatabaseManager().logAction(
-                    sender.getName(),
-                    sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE",
-                    "FREEZE", target.getName(), "");
         }
         return true;
     }

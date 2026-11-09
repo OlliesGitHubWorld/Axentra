@@ -19,9 +19,16 @@
 #    reason       - The reason shown to the player
 #    duration     - Required for tempban/tempmute (e.g. "1h", "7d", "30d")
 #    icon         - The Minecraft material used as the GUI icon
-#
-#  Escalation works automatically: the case system tracks all previous
-#  punishments. Use /history <player> to review before punishing.
+#    escalation   - (optional) A list of steps for repeat offenses, e.g.
+#                     escalation:
+#                       - "warn"
+#                       - "tempmute 1h"
+#                       - "tempban 1d"
+#                   The step is picked by counting the player's earlier cases with
+#                   the SAME reason: 1st offense = step 1, 2nd = step 2, and so on.
+#                   After the last step, the last step keeps being used.
+#                   When escalation is set, action/duration are ignored.
+#                   The GUI shows which step applies before you click.
 #
 # ══════════════════════════════════════════════════════════
 
@@ -33,12 +40,23 @@ templates:
     action: warn
     reason: "Spamming in chat"
     icon: PAPER
+    escalation:
+      - "warn"
+      - "warn"
+      - "tempmute 30m"
+      - "tempmute 2h"
+      - "tempmute 1d"
 
   caps:
     display-name: "&eCaps Abuse"
     action: warn
     reason: "Excessive use of caps"
     icon: PAPER
+    escalation:
+      - "warn"
+      - "warn"
+      - "tempmute 30m"
+      - "tempmute 2h"
 
   toxicity:
     display-name: "&6Toxicity"
@@ -46,6 +64,11 @@ templates:
     duration: "1h"
     reason: "Toxic behavior in chat"
     icon: ORANGE_DYE
+    escalation:
+      - "tempmute 1h"
+      - "tempmute 6h"
+      - "tempmute 1d"
+      - "tempban 3d"
 
   advertising:
     display-name: "&cAdvertising"
@@ -53,6 +76,10 @@ templates:
     duration: "7d"
     reason: "Advertising other servers"
     icon: RED_DYE
+    escalation:
+      - "tempban 7d"
+      - "tempban 30d"
+      - "ban"
 
   # ── Gameplay Offenses ──────────────────────────────────
   minor-grief:
@@ -60,6 +87,11 @@ templates:
     action: warn
     reason: "Minor griefing"
     icon: DIRT
+    escalation:
+      - "warn"
+      - "tempban 1d"
+      - "tempban 3d"
+      - "tempban 7d"
 
   major-grief:
     display-name: "&cMajor Grief"
@@ -67,6 +99,10 @@ templates:
     duration: "7d"
     reason: "Major griefing"
     icon: TNT
+    escalation:
+      - "tempban 7d"
+      - "tempban 30d"
+      - "ban"
 
   xray:
     display-name: "&cX-Ray"
@@ -74,6 +110,9 @@ templates:
     duration: "30d"
     reason: "Using X-Ray or similar mods"
     icon: DIAMOND_ORE
+    escalation:
+      - "tempban 30d"
+      - "ban"
 
   hacking:
     display-name: "&4Hacking"
@@ -106,6 +145,11 @@ templates:
     duration: "30m"
     reason: "Breaking chat rules"
     icon: IRON_BARS
+    escalation:
+      - "tempmute 30m"
+      - "tempmute 2h"
+      - "tempmute 1d"
+      - "tempmute 7d"
 
   general-tempban:
     display-name: "&cGeneral Temp Ban"
@@ -119,6 +163,33 @@ templates:
     action: ban
     reason: "Severe rule violation"
     icon: BEDROCK
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                 Server Health (v1.8.0)                 │
+# └─────────────────────────────────────────────────────────┘
+
+  lag-machine-warn:
+    display-name: "&eLag Machine Warning"
+    action: warn
+    reason: "Building a lag machine / excessive redstone"
+    icon: REDSTONE
+    escalation:
+      - "warn"
+      - "tempban 1d"
+      - "tempban 3d"
+
+  lag-machine-tempban:
+    display-name: "&cLag Machine Temp Ban"
+    action: tempban
+    duration: "3d"
+    reason: "Intentional lag machine — server performance impact"
+    icon: OBSERVER
+
+  lag-machine-ban:
+    display-name: "&4Lag Machine Ban"
+    action: ban
+    reason: "Repeated lag machine offenses"
+    icon: TNT
 
 # ══════════════════════════════════════════════════════════
 #                   End of Punishments

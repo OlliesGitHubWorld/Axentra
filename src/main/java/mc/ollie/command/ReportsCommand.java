@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.gui.MenuHolder;
 import mc.ollie.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,9 +50,17 @@ public class ReportsCommand implements CommandExecutor, TabCompleter {
 
         Player player = (Player) sender;
 
-        List<DatabaseManager.ReportInfo> openReports = plugin.getDatabaseManager().getOpenReports();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<DatabaseManager.ReportInfo> openReports = plugin.getDatabaseManager().getOpenReports();
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) openReportsGui(player, openReports);
+            });
+        });
+        return true;
+    }
 
-        Inventory gui = Bukkit.createInventory(null, 54,
+    private void openReportsGui(Player player, List<DatabaseManager.ReportInfo> openReports) {
+        Inventory gui = MenuHolder.create(54,
                 ChatColor.translateAlternateColorCodes('&', "&8&lOpen Reports"));
 
         int slot = 0;
@@ -81,7 +90,6 @@ public class ReportsCommand implements CommandExecutor, TabCompleter {
         }
 
         player.openInventory(gui);
-        return true;
     }
 
     @Override

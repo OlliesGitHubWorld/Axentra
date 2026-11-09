@@ -3,25 +3,15 @@ package mc.ollie;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import mc.ollie.command.*;
-import mc.ollie.listeners.BackListener;
-import mc.ollie.listeners.ChatListener;
-import mc.ollie.listeners.FreezeListener;
-import mc.ollie.listeners.GodListener;
-import mc.ollie.listeners.JoinLeaveListener;
-import mc.ollie.listeners.LoginListener;
-import mc.ollie.listeners.ModerationGUIListener;
-import mc.ollie.listeners.ProtectionListener;
-import mc.ollie.listeners.ReportsGUIListener;
-import mc.ollie.listeners.RespawnListener;
-import mc.ollie.listeners.StaffGUIListener;
-import mc.ollie.listeners.StaffmodeListener;
-import mc.ollie.listeners.UpdateListener;
-import mc.ollie.listeners.VanishListener;
+import mc.ollie.health.*;
+import mc.ollie.listeners.*;
 import org.bukkit.command.SimpleCommandMap;
 import org.bstats.bukkit.Metrics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +27,16 @@ public final class App extends JavaPlugin {
     private SnapshotManager snapshotManager;
     private TrustManager trustManager;
     private VpnCheckManager vpnCheckManager;
+    private TickProfiler tickProfiler;
+    private HealthScoreService healthScoreService;
+    private ChunkActivityTracker chunkActivityTracker;
+    private TpsAlertManager tpsAlertManager;
+    private CleanupManager cleanupManager;
+    private RestartManager restartManager;
+    private MaintenanceManager maintenanceManager;
+    private FreezeManager freezeManager;
     private final Map<UUID, Long> reportCooldowns = new HashMap<>();
+    private boolean verboseLogging = true;
 
     // Chat control state
     private boolean chatMuted = false;
@@ -66,6 +65,7 @@ public final class App extends JavaPlugin {
         Metrics metrics = new Metrics(this, pluginId);
 
         FileConfiguration settings = fileManager.getSettings();
+        this.verboseLogging = settings.getBoolean("verbose-logging", true);
 
         // ── Core (always enabled) ──
 
@@ -464,11 +464,16 @@ public final class App extends JavaPlugin {
         // ── Module: freeze ──
 
         if (settings.getBoolean("enabled-modules.freeze", true)) {
-            FreezeCommand freezeCommand = new FreezeCommand(this);
+            this.freezeManager = new FreezeManager(this);
+            freezeManager.start();
+
+            FreezeCommand freezeCommand = new FreezeCommand(this, freezeManager);
             getCommand("freeze").setExecutor(freezeCommand);
             getCommand("freeze").setTabCompleter(freezeCommand);
             getCommand("unfreeze").setExecutor(freezeCommand);
             getCommand("unfreeze").setTabCompleter(freezeCommand);
+            getCommand("tempfreeze").setExecutor(freezeCommand);
+            getCommand("tempfreeze").setTabCompleter(freezeCommand);
         }
 
         // ── Module: timeline ──
@@ -515,6 +520,81 @@ public final class App extends JavaPlugin {
             getCommand("top").setTabCompleter(tpCommand);
         }
 
+        // ── Module: lag / health (v1.8.0) ──
+
+        if (settings.getBoolean("enabled-modules.lag", true)) {
+            this.tickProfiler = new TickProfiler(this);
+            tickProfiler.start();
+
+            if (settings.getBoolean("enabled-modules.health-score", true)) {
+                this.healthScoreService = new HealthScoreService(this);
+            }
+
+            TpsHistoryRecorder recorder = new TpsHistoryRecorder(this);
+            recorder.start();
+
+            this.chunkActivityTracker = new ChunkActivityTracker(this);
+            chunkActivityTracker.start();
+
+            LagCommand lagCommand = new LagCommand(this);
+            getCommand("lag").setExecutor(lagCommand);
+            getCommand("lag").setTabCompleter(lagCommand);
+        }
+
+        if (settings.getBoolean("enabled-modules.alerts", true) && tickProfiler != null) {
+            this.tpsAlertManager = new TpsAlertManager(this);
+            tpsAlertManager.start();
+        }
+
+        if (settings.getBoolean("enabled-modules.cleanup", true)) {
+            this.cleanupManager = new CleanupManager(this);
+            cleanupManager.start();
+        }
+
+        if (settings.getBoolean("enabled-modules.restarts", true)) {
+            this.restartManager = new RestartManager(this);
+            restartManager.start();
+
+            RestartCommand restartCommand = new RestartCommand(this);
+            getCommand("restart").setExecutor(restartCommand);
+            getCommand("restart").setTabCompleter(restartCommand);
+        }
+
+        if (settings.getBoolean("enabled-modules.maintenance", true)) {
+            this.maintenanceManager = new MaintenanceManager(this);
+            maintenanceManager.load();
+
+            MaintenanceCommand maintenanceCommand = new MaintenanceCommand(this);
+            getCommand("maintenance").setExecutor(maintenanceCommand);
+            getCommand("maintenance").setTabCompleter(maintenanceCommand);
+        }
+
+        // ── Module: warps ──
+
+        if (settings.getBoolean("enabled-modules.warps", true)) {
+            WarpCommand warpCommand = new WarpCommand(this);
+            getCommand("setwarp").setExecutor(warpCommand);
+            getCommand("setwarp").setTabCompleter(warpCommand);
+            getCommand("delwarp").setExecutor(warpCommand);
+            getCommand("delwarp").setTabCompleter(warpCommand);
+            getCommand("warp").setExecutor(warpCommand);
+            getCommand("warp").setTabCompleter(warpCommand);
+            getCommand("editwarp").setExecutor(warpCommand);
+            getCommand("editwarp").setTabCompleter(warpCommand);
+
+            WarpsCommand warpsCommand = new WarpsCommand(this);
+            getCommand("warps").setExecutor(warpsCommand);
+            getCommand("warps").setTabCompleter(warpsCommand);
+        }
+
+        // ── Module: rtp ──
+
+        if (settings.getBoolean("enabled-modules.rtp", true)) {
+            RtpCommand rtpCommand = new RtpCommand(this);
+            getCommand("rtp").setExecutor(rtpCommand);
+            getCommand("rtp").setTabCompleter(rtpCommand);
+        }
+
         // ── /help override ──
 
         try {
@@ -542,6 +622,104 @@ public final class App extends JavaPlugin {
                     return helpCommand.onTabComplete(sender, this, alias, args);
                 }
             });
+
+            // ── /restart override ──
+            // Spigot registers its own /restart before plugins, so ours only gets axentra:restart.
+            // Point the plain label at ours; Spigot's stays reachable as /spigot:restart.
+            if (settings.getBoolean("enabled-modules.restarts", true)) {
+                knownCommands.put("restart", getCommand("restart"));
+            }
+
+            // ── Unregister commands for disabled modules ──
+            // Fully removes disabled commands from the server so no other plugin can see them
+            // and players get "Unknown command" instead of usage text.
+
+            List<String> toRemove = new ArrayList<>();
+
+            if (!settings.getBoolean("enabled-modules.tpa", true)) {
+                toRemove.addAll(java.util.Arrays.asList("tpa", "tpaccept", "tpdeny", "tpacancel", "tptoggle"));
+            }
+            if (!settings.getBoolean("enabled-modules.spawn", true)) {
+                toRemove.addAll(java.util.Arrays.asList("spawn", "setspawn"));
+            }
+            if (!settings.getBoolean("enabled-modules.back", true)) {
+                toRemove.addAll(java.util.Arrays.asList("back"));
+            }
+            if (!settings.getBoolean("enabled-modules.messaging", true)) {
+                toRemove.addAll(java.util.Arrays.asList("msg", "tell", "whisper", "w", "message", "pm", "reply", "r", "msgtoggle"));
+            }
+            if (!settings.getBoolean("enabled-modules.chat-management", true)) {
+                toRemove.addAll(java.util.Arrays.asList("clearchat", "cc", "mutechat", "mc", "slowchat", "slowmode", "staffchat", "sc"));
+            }
+            if (!settings.getBoolean("enabled-modules.nickname", true)) {
+                toRemove.addAll(java.util.Arrays.asList("me", "nick", "nickname", "realname"));
+            }
+            if (!settings.getBoolean("enabled-modules.social-commands", true)) {
+                toRemove.addAll(java.util.Arrays.asList("discord", "website", "store"));
+            }
+            if (!settings.getBoolean("enabled-modules.player-utilities", true)) {
+                toRemove.addAll(java.util.Arrays.asList("clear", "c", "repair", "fly", "heal", "feed", "god", "hat", "speed",
+                        "gamemode", "gm", "gms", "gmc", "gma", "gmsp", "ping", "suicide"));
+            }
+            if (!settings.getBoolean("enabled-modules.vanish", true)) {
+                toRemove.addAll(java.util.Arrays.asList("vanish", "v"));
+            }
+            if (!settings.getBoolean("enabled-modules.invsee", true)) {
+                toRemove.addAll(java.util.Arrays.asList("invsee", "enderchestsee", "ecsee", "echestsee"));
+            }
+            if (!settings.getBoolean("enabled-modules.workbench-commands", true)) {
+                toRemove.addAll(java.util.Arrays.asList("anvil", "workbench", "wb", "craft", "craftingtable",
+                        "cartography", "cartographytable", "carto", "grindstone", "grind", "loom",
+                        "smithingtable", "smithing", "smith", "stonecutter", "stone", "enderchest", "ec", "echest"));
+            }
+            if (!settings.getBoolean("enabled-modules.weather-time", true)) {
+                toRemove.addAll(java.util.Arrays.asList("weather", "sun", "sky", "rain", "storm", "time", "day", "night", "noon", "midnight"));
+            }
+            if (!settings.getBoolean("enabled-modules.staff-management", true)) {
+                toRemove.addAll(java.util.Arrays.asList("duty", "staffmode", "sm", "report", "reports", "staffstats", "stafflist"));
+            }
+            if (!settings.getBoolean("enabled-modules.snapshots", true)) {
+                toRemove.addAll(java.util.Arrays.asList("restoreinv"));
+            }
+            if (!settings.getBoolean("enabled-modules.trust", true)) {
+                toRemove.addAll(java.util.Arrays.asList("trust"));
+            }
+            if (!settings.getBoolean("enabled-modules.alts", true)) {
+                toRemove.addAll(java.util.Arrays.asList("alts"));
+            }
+            if (!settings.getBoolean("enabled-modules.freeze", true)) {
+                toRemove.addAll(java.util.Arrays.asList("freeze", "unfreeze", "tempfreeze"));
+            }
+            if (!settings.getBoolean("enabled-modules.timeline", true)) {
+                toRemove.addAll(java.util.Arrays.asList("timeline"));
+            }
+            if (!settings.getBoolean("enabled-modules.homes", true)) {
+                toRemove.addAll(java.util.Arrays.asList("sethome", "home", "delhome", "homes"));
+            }
+            if (!settings.getBoolean("enabled-modules.teleport", true)) {
+                toRemove.addAll(java.util.Arrays.asList("tp", "tphere", "tpall", "tpahere", "top"));
+            }
+            if (!settings.getBoolean("enabled-modules.lag", true)) {
+                toRemove.addAll(java.util.Arrays.asList("lag"));
+            }
+            if (!settings.getBoolean("enabled-modules.restarts", true)) {
+                toRemove.addAll(java.util.Arrays.asList("restart"));
+            }
+            if (!settings.getBoolean("enabled-modules.maintenance", true)) {
+                toRemove.addAll(java.util.Arrays.asList("maintenance"));
+            }
+            if (!settings.getBoolean("enabled-modules.warps", true)) {
+                toRemove.addAll(java.util.Arrays.asList("setwarp", "delwarp", "warp", "warps", "editwarp"));
+            }
+            if (!settings.getBoolean("enabled-modules.rtp", true)) {
+                toRemove.addAll(java.util.Arrays.asList("rtp", "wild"));
+            }
+
+            for (String cmd : toRemove) {
+                knownCommands.remove(cmd);
+                knownCommands.remove("axentra:" + cmd);
+            }
+
         } catch (Exception e) {
             getLogger().warning("Failed to register /help command: " + e.getMessage());
         }
@@ -567,6 +745,7 @@ public final class App extends JavaPlugin {
         if (settings.getBoolean("enabled-modules.vanish", true)) {
             getServer().getPluginManager().registerEvents(new VanishListener(this, vanishCommand), this);
         }
+        getServer().getPluginManager().registerEvents(new MenuProtectionListener(), this);
         getServer().getPluginManager().registerEvents(new ModerationGUIListener(this), this);
 
         if (staffmodeListener != null) {
@@ -578,38 +757,66 @@ public final class App extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ProtectionListener(this), this);
 
         // Freeze listener (DB-backed, replaces old in-memory freeze)
-        if (settings.getBoolean("enabled-modules.freeze", true)) {
-            getServer().getPluginManager().registerEvents(new FreezeListener(this), this);
+        if (freezeManager != null) {
+            getServer().getPluginManager().registerEvents(new FreezeListener(this, freezeManager), this);
+        }
+
+        // Chunk activity listener (v1.8.0)
+        if (chunkActivityTracker != null) {
+            getServer().getPluginManager().registerEvents(new ChunkActivityListener(this), this);
+        }
+
+        // Entity limit listener (v1.8.0)
+        if (settings.getBoolean("enabled-modules.entity-limits", true)) {
+            getServer().getPluginManager().registerEvents(new EntityLimitListener(this), this);
+        }
+
+        // Maintenance listener (v1.8.0)
+        if (maintenanceManager != null) {
+            getServer().getPluginManager().registerEvents(maintenanceManager, this);
+        }
+
+        // Warps GUI listener (v1.8.0)
+        if (settings.getBoolean("enabled-modules.warps", true)) {
+            getServer().getPluginManager().registerEvents(
+                    (WarpsCommand) getCommand("warps").getExecutor(), this);
         }
 
         // Close any open sessions from a previous unclean shutdown
         databaseManager.closeOpenSessions();
 
-        String CYAN = "\u001B[36m";
-        String GREEN = "\u001B[32m";
-        String RESET = "\u001B[0m";
+        if (verboseLogging) {
+            String CYAN = "\u001B[36m";
+            String GREEN = "\u001B[32m";
+            String RESET = "\u001B[0m";
 
-        getLogger().info(CYAN + "  ================================  " + RESET);
-        getLogger().info(CYAN + "       A  X  E  N  T  R  A         " + RESET);
-        getLogger().info(CYAN + "  ================================  " + RESET);
-        getLogger().info(CYAN + "  Version: " + RESET + getDescription().getVersion());
-        getLogger().info(CYAN + "  Author:  " + RESET + String.join(", ", getDescription().getAuthors()));
-        getLogger().info(GREEN + "  Status:  Successfully started!   " + RESET);
-        getLogger().info(CYAN + "  ================================  " + RESET);
+            getLogger().info(CYAN + "  ================================  " + RESET);
+            getLogger().info(CYAN + "       A  X  E  N  T  R  A         " + RESET);
+            getLogger().info(CYAN + "  ================================  " + RESET);
+            getLogger().info(CYAN + "  Version: " + RESET + getDescription().getVersion());
+            getLogger().info(CYAN + "  Author:  " + RESET + String.join(", ", getDescription().getAuthors()));
+            getLogger().info(GREEN + "  Status:  Successfully started!   " + RESET);
+            getLogger().info(CYAN + "  ================================  " + RESET);
+        }
     }
 
     @Override
     public void onDisable() {
         if (dutyManager != null) dutyManager.removeAll();
+        if (restartManager != null) restartManager.stop();
+        if (cleanupManager != null) cleanupManager.stop();
+        if (freezeManager != null) freezeManager.stop();
         databaseManager.close();
 
-        String CYAN = "\u001B[36m";
-        String RED = "\u001B[31m";
-        String RESET = "\u001B[0m";
+        if (verboseLogging) {
+            String CYAN = "\u001B[36m";
+            String RED = "\u001B[31m";
+            String RESET = "\u001B[0m";
 
-        getLogger().info(CYAN + "  ================================  " + RESET);
-        getLogger().info(RED +  "  Axentra has been stopped. Goodbye!" + RESET);
-        getLogger().info(CYAN + "  ================================  " + RESET);
+            getLogger().info(CYAN + "  ================================  " + RESET);
+            getLogger().info(RED +  "  Axentra has been stopped. Goodbye!" + RESET);
+            getLogger().info(CYAN + "  ================================  " + RESET);
+        }
     }
 
     public FileManager getFileManager() {
@@ -664,4 +871,24 @@ public final class App extends JavaPlugin {
     public SnapshotManager getSnapshotManager() { return snapshotManager; }
     public TrustManager getTrustManager() { return trustManager; }
     public VpnCheckManager getVpnCheckManager() { return vpnCheckManager; }
+
+    // Health managers (v1.8.0)
+    public TickProfiler getTickProfiler() { return tickProfiler; }
+    public HealthScoreService getHealthScoreService() { return healthScoreService; }
+    public ChunkActivityTracker getChunkActivityTracker() { return chunkActivityTracker; }
+    public TpsAlertManager getTpsAlertManager() { return tpsAlertManager; }
+    public CleanupManager getCleanupManager() { return cleanupManager; }
+    public RestartManager getRestartManager() { return restartManager; }
+    public MaintenanceManager getMaintenanceManager() { return maintenanceManager; }
+
+    // Freeze
+    public FreezeManager getFreezeManager() { return freezeManager; }
+
+    // Logging
+    public boolean isVerboseLogging() { return verboseLogging; }
+
+    /** Logs an info message only if verbose-logging is enabled in config. */
+    public void logInfo(String message) {
+        if (verboseLogging) getLogger().info(message);
+    }
 }
