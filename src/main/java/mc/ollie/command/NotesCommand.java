@@ -66,11 +66,17 @@ public class NotesCommand implements CommandExecutor, TabCompleter {
         }
 
         String playerName = args[0];
-        List<DatabaseManager.NoteInfo> notes = plugin.getDatabaseManager().getNotesByPlayer(playerName);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<DatabaseManager.NoteInfo> notes = plugin.getDatabaseManager().getNotesByPlayer(playerName);
+            Bukkit.getScheduler().runTask(plugin, () -> showNotes(sender, playerName, notes));
+        });
+        return true;
+    }
 
+    private void showNotes(CommandSender sender, String playerName, List<DatabaseManager.NoteInfo> notes) {
         if (notes.isEmpty()) {
             sender.sendMessage(getMessage("notes-empty").replace("%player%", playerName));
-            return true;
+            return;
         }
 
         sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
@@ -109,7 +115,6 @@ public class NotesCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "                                                ");
-        return true;
     }
 
     private String formatDate(String timestamp) {

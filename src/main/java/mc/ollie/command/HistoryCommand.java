@@ -63,21 +63,27 @@ public class HistoryCommand implements CommandExecutor, TabCompleter {
         }
 
         String playerName = args[0];
-        List<DatabaseManager.CaseInfo> cases = plugin.getDatabaseManager().getCasesByPlayer(playerName);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<DatabaseManager.CaseInfo> cases = plugin.getDatabaseManager().getCasesByPlayer(playerName);
+            Bukkit.getScheduler().runTask(plugin, () -> showHistory(sender, playerName, cases));
+        });
+        return true;
+    }
 
+    private void showHistory(CommandSender sender, String playerName, List<DatabaseManager.CaseInfo> cases) {
         if (!(sender instanceof Player)) {
             // Console output
             showConsoleHistory(sender, playerName, cases);
-            return true;
+            return;
         }
 
         if (cases.isEmpty()) {
             sender.sendMessage(getMessage("history-empty").replace("%player%", playerName));
-            return true;
+            return;
         }
 
+        if (!((Player) sender).isOnline()) return;
         new HistoryGUI(plugin, playerName, cases).open((Player) sender, 0);
-        return true;
     }
 
     private void showConsoleHistory(CommandSender sender, String playerName, List<DatabaseManager.CaseInfo> cases) {

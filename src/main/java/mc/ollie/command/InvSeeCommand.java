@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.gui.MenuHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,6 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -93,9 +96,18 @@ public class InvSeeCommand implements CommandExecutor, TabCompleter, Listener {
         Player player = (Player) sender;
 
         if (isReadOnly()) {
-            Inventory copy = Bukkit.createInventory(null, 36,
+            // Layout: rows 1-3 main inventory, row 4 hotbar, row 5 armor + offhand
+            PlayerInventory inv = target.getInventory();
+            Inventory copy = MenuHolder.create(45,
                     ChatColor.stripColor(target.getName() + "'s Inventory"));
-            copy.setContents(target.getInventory().getContents());
+            ItemStack[] storage = inv.getStorageContents();
+            for (int i = 9; i < storage.length; i++) copy.setItem(i - 9, storage[i]);
+            for (int i = 0; i < 9 && i < storage.length; i++) copy.setItem(27 + i, storage[i]);
+            copy.setItem(36, inv.getHelmet());
+            copy.setItem(37, inv.getChestplate());
+            copy.setItem(38, inv.getLeggings());
+            copy.setItem(39, inv.getBoots());
+            copy.setItem(41, inv.getItemInOffHand());
             player.openInventory(copy);
             readOnlyViewers.add(player.getUniqueId());
         } else {

@@ -2,7 +2,6 @@ package mc.ollie.command;
 
 import mc.ollie.App;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
@@ -115,6 +114,7 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
         add(entries, sender, "Axentra.trust.set",    "Protection", "/trust set <player> <level>",      "Set player trust level");
         add(entries, sender, "Axentra.alts",         "Protection", "/alts <player>",                   "View alt accounts");
         add(entries, sender, "Axentra.freeze",       "Protection", "/freeze <player>",                 "Freeze/unfreeze a player");
+        add(entries, sender, "Axentra.freeze",       "Protection", "/tempfreeze <player> <time>",      "Freeze a player for a set time");
         add(entries, sender, "Axentra.timeline",     "Protection", "/timeline <player> [filter]",      "View player timeline");
 
         // Homes & Teleport
@@ -131,6 +131,24 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
         add(entries, sender, "Axentra.time",     "World", "/time <set|add> <value>",    "Set or add world time");
         add(entries, sender, "Axentra.weather",  "World", "/weather <clear|rain|storm>", "Set the weather");
         add(entries, sender, "Axentra.setspawn", "World", "/setspawn",                   "Set the world spawn");
+
+        // Server Health
+        add(entries, sender, "Axentra.lag",         "Server Health", "/lag",                              "Server performance overview");
+        add(entries, sender, "Axentra.lag",         "Server Health", "/lag chunks",                       "View heaviest chunks");
+        add(entries, sender, "Axentra.lag",         "Server Health", "/lag entities",                     "Entity breakdown by type");
+        add(entries, sender, "Axentra.lag",         "Server Health", "/lag history [hours]",              "TPS history graph");
+        add(entries, sender, "Axentra.lag.clear",   "Server Health", "/lag clear [items|mobs|all]",      "Clear ground items or mobs");
+        add(entries, sender, "Axentra.lag",         "Server Health", "/lag player <name>",               "View player lag activity");
+        add(entries, sender, "Axentra.restart",     "Server Health", "/restart [now|schedule|cancel]",   "Manage server restarts");
+        add(entries, sender, "Axentra.maintenance", "Server Health", "/maintenance <on|off|status>",     "Toggle maintenance mode");
+
+        // Warps & RTP
+        add(entries, sender, "Axentra.setwarp",  "Warps & RTP", "/setwarp <name>",                    "Set a warp point");
+        add(entries, sender, "Axentra.delwarp",  "Warps & RTP", "/delwarp <name>",                    "Delete a warp point");
+        add(entries, sender, "Axentra.warp",     "Warps & RTP", "/warp <name>",                       "Teleport to a warp");
+        add(entries, sender, "Axentra.warps",    "Warps & RTP", "/warps",                             "Open warps GUI");
+        add(entries, sender, "Axentra.editwarp", "Warps & RTP", "/editwarp <name> <icon|perm> <val>", "Edit warp properties");
+        add(entries, sender, "Axentra.rtp",      "Warps & RTP", "/rtp [world]",                       "Random teleport");
 
         return entries;
     }
@@ -348,8 +366,10 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
             case "Utility":    return "\u2692";  // hammer/pick
             case "Protection": return "\u2726";  // sparkle
             case "Homes & Teleport": return "\u2302"; // house
-            case "World":      return "\u2600";  // sun
-            default:           return "\u25CF";  // bullet
+            case "World":          return "\u2600";  // sun
+            case "Server Health":  return "\u2764";  // heart
+            case "Warps & RTP":    return "\u2708";  // airplane
+            default:               return "\u25CF";  // bullet
         }
     }
 }

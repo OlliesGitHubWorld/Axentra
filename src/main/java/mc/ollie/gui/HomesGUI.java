@@ -51,7 +51,7 @@ public class HomesGUI {
 
         String title = ChatColor.DARK_GRAY + "\u2726 " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "Homes"
                 + ChatColor.DARK_GRAY + " \u2726 " + ChatColor.RESET + playerName;
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = MenuHolder.create(54, title);
 
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
         for (int i = 0; i < 54; i++) inv.setItem(i, bg);

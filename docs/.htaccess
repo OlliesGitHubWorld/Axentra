@@ -1,1 +1,16 @@
 DirectoryIndex index.html
+AddDefaultCharset UTF-8
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.axentramc\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteRule ^(.*)$ https://axentramc.com/$1 [R=301,L]
+
+<IfModule mod_headers.c>
+<FilesMatch "\.(png|webp|svg)$">
+Header set Cache-Control "public, max-age=2592000"
+</FilesMatch>
+<FilesMatch "\.(css|js)$">
+Header set Cache-Control "public, max-age=86400"
+</FilesMatch>
+</IfModule>

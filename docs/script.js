@@ -95,6 +95,23 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ═══════════════════════════════════════════
+// Demo tabs (See it in action)
+// ═══════════════════════════════════════════
+
+document.querySelectorAll('.demo-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.demo-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        document.getElementById('demo-' + btn.dataset.demo).classList.add('active');
+    });
+});
+
+// ═══════════════════════════════════════════
 // Command tabs with slide animation
 // ═══════════════════════════════════════════
 
@@ -134,7 +151,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 window.addEventListener('scroll', () => {
     const nav = document.querySelector('.nav');
     nav.classList.toggle('nav-scrolled', window.scrollY > 50);
-});
+}, { passive: true });
 
 // ═══════════════════════════════════════════
 // Scroll reveal animations (staggered)
@@ -189,7 +206,7 @@ window.addEventListener('DOMContentLoaded', () => {
             el.style.transition = 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
             el.style.opacity = '1';
             el.style.transform = 'translateY(0)';
-        }, 150 + i * 100);
+        }, i * 60);
     });
 });
 
@@ -266,7 +283,7 @@ tiltCards.forEach(card => {
 
 function createParticles() {
     const hero = document.querySelector('.hero');
-    if (!hero) return;
+    if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const canvas = document.createElement('canvas');
     canvas.className = 'hero-particles';
@@ -276,6 +293,7 @@ function createParticles() {
     const ctx = canvas.getContext('2d');
     let particles = [];
     let animId;
+    let visible = true;
 
     function resize() {
         canvas.width = hero.offsetWidth;
@@ -296,7 +314,7 @@ function createParticles() {
 
     function init() {
         resize();
-        const count = Math.min(Math.floor(canvas.width * canvas.height / 15000), 60);
+        const count = Math.min(Math.floor(canvas.width * canvas.height / 15000), window.innerWidth < 768 ? 25 : 60);
         particles = Array.from({ length: count }, createParticle);
     }
 
@@ -348,13 +366,22 @@ function createParticles() {
             }
         }
 
-        animId = requestAnimationFrame(draw);
+        if (visible) animId = requestAnimationFrame(draw);
     }
 
     init();
     draw();
 
+    // Stop animating while the hero is off screen
+    new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting === visible) return;
+        visible = entry.isIntersecting;
+        if (visible) draw();
+    }).observe(hero);
+
     window.addEventListener('resize', () => {
+        // Mobile browsers fire resize when the address bar collapses
+        if (hero.offsetWidth === canvas.width) return;
         cancelAnimationFrame(animId);
         init();
         draw();

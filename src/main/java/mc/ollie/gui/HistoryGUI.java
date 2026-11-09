@@ -63,7 +63,7 @@ public class HistoryGUI {
 
         String title = ChatColor.DARK_GRAY + "✦ " + ChatColor.DARK_AQUA + ChatColor.BOLD + "History"
                 + ChatColor.DARK_GRAY + " ✦ " + ChatColor.RESET + playerName;
-        Inventory inv = Bukkit.createInventory(null, 54, title);
+        Inventory inv = MenuHolder.create(54, title);
 
         // Fill everything with dark background
         ItemStack bg = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");

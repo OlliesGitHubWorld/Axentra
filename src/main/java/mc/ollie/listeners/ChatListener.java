@@ -42,7 +42,8 @@ public class ChatListener implements Listener {
         }
     }
 
-    @EventHandler
+    // ignoreCancelled: chat input captured by a prompt (e.g. warp rename) must not reach staffchat
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();

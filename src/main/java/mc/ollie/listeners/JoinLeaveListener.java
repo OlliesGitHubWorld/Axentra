@@ -91,6 +91,7 @@ public class JoinLeaveListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         int count = Bukkit.getOnlinePlayers().size() - 1; // exclude the leaving player
         event.setQuitMessage(getMessage("quit", event.getPlayer(), DEFAULT_QUIT, count));
+        plugin.getDatabaseManager().forgetMute(event.getPlayer().getUniqueId().toString());
     }
 
     private void notifyStaffNotes(Player joiningPlayer) {

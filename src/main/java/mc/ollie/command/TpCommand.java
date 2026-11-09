@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,14 +34,23 @@ public class TpCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         String cmd = label.toLowerCase();
-        if (cmd.equals("tp") || cmd.equals("tphere") || cmd.equals("tpahere")) {
+        if (cmd.equals("tp")) {
+            String current = args[args.length - 1];
+            List<String> options = new ArrayList<>();
+            // Arg 1 and 2 can be a player name or a coordinate; arg 3 and 4 are coordinates
+            if (args.length <= 2) {
+                Bukkit.getOnlinePlayers().forEach(p -> options.add(p.getName()));
+            }
+            if (args.length <= 4) {
+                options.add("~");
+            }
+            return options.stream()
+                    .filter(s -> s.toLowerCase().startsWith(current.toLowerCase())).collect(Collectors.toList());
+        }
+        if (cmd.equals("tphere") || cmd.equals("tpahere")) {
             if (args.length == 1) {
                 return Bukkit.getOnlinePlayers().stream().map(Player::getName)
                         .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
-            }
-            if (cmd.equals("tp") && args.length == 2) {
-                return Bukkit.getOnlinePlayers().stream().map(Player::getName)
-                        .filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
             }
         }
         return Collections.emptyList();
@@ -71,6 +79,41 @@ public class TpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        // /tp <x> <y> <z> - teleport self to coordinates
+        if (args.length == 3) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(getMessage("no-player"));
+                return true;
+            }
+            Player player = (Player) sender;
+            Location dest = parseCoords(player.getLocation(), args[0], args[1], args[2]);
+            if (dest == null) {
+                sender.sendMessage(getMessage("tp-invalid-coords"));
+                return true;
+            }
+            player.teleport(dest);
+            player.sendMessage(formatCoords(getMessage("tp-to-coords"), dest));
+            return true;
+        }
+
+        // /tp <player> <x> <y> <z> - teleport a player to coordinates
+        if (args.length == 4) {
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target == null) {
+                sender.sendMessage(getMessage("player-not-found").replace("%player%", args[0]));
+                return true;
+            }
+            Location dest = parseCoords(target.getLocation(), args[1], args[2], args[3]);
+            if (dest == null) {
+                sender.sendMessage(getMessage("tp-invalid-coords"));
+                return true;
+            }
+            target.teleport(dest);
+            sender.sendMessage(formatCoords(getMessage("tp-other-to-coords"), dest)
+                    .replace("%player%", target.getName()));
+            return true;
+        }
+
         // /tp <player> - teleport self to player
         if (args.length == 1) {
             if (!(sender instanceof Player)) {
@@ -89,7 +132,7 @@ public class TpCommand implements CommandExecutor, TabCompleter {
         }
 
         // /tp <player1> <player2> - teleport player1 to player2
-        if (args.length >= 2) {
+        if (args.length == 2) {
             Player target1 = Bukkit.getPlayer(args[0]);
             Player target2 = Bukkit.getPlayer(args[1]);
             if (target1 == null) {
@@ -107,7 +150,44 @@ public class TpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        sender.sendMessage(getMessage("tp-usage"));
         return true;
+    }
+
+    /**
+     * Parses x/y/z like vanilla: plain numbers are absolute, "~" and "~5" are relative to base.
+     * Whole absolute x/z values are centered on the block. Returns null if a value is invalid.
+     */
+    private Location parseCoords(Location base, String xs, String ys, String zs) {
+        try {
+            double x = parseAxis(xs, base.getX(), true);
+            double y = parseAxis(ys, base.getY(), false);
+            double z = parseAxis(zs, base.getZ(), true);
+            return new Location(base.getWorld(), x, y, z, base.getYaw(), base.getPitch());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private double parseAxis(String input, double base, boolean center) {
+        if (input.startsWith("~")) {
+            String offset = input.substring(1);
+            double delta = offset.isEmpty() ? 0 : Double.parseDouble(offset);
+            if (!Double.isFinite(delta) || Math.abs(delta) > 30_000_000) throw new NumberFormatException(input);
+            return base + delta;
+        }
+        double value = Double.parseDouble(input);
+        // Rejects NaN/Infinity, which would break the player's position
+        if (!Double.isFinite(value) || Math.abs(value) > 30_000_000) throw new NumberFormatException(input);
+        if (center && !input.contains(".")) value += 0.5;
+        return value;
+    }
+
+    private String formatCoords(String message, Location loc) {
+        return message
+                .replace("%x%", String.valueOf(loc.getBlockX()))
+                .replace("%y%", String.valueOf(loc.getBlockY()))
+                .replace("%z%", String.valueOf(loc.getBlockZ()));
     }
 
     private boolean handleTpHere(CommandSender sender, String[] args) {

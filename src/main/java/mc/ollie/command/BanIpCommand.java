@@ -86,8 +86,12 @@ public class BanIpCommand implements CommandExecutor, TabCompleter {
             reason = plugin.getFileManager().getMessages().getString("banip-default-reason", "Your IP has been banned!");
         }
 
+        // Only show the resolved IP to staff allowed to see IPs; a typed-in IP is already known to the sender
+        String shownIp = target == null || sender.hasPermission("Axentra.alts.ip")
+                ? ip : getMessage("ip-hidden").replace("%player%", displayName);
+
         if (plugin.getDatabaseManager().isIpBanned(ip)) {
-            sender.sendMessage(getMessage("banip-already-banned").replace("%ip%", ip));
+            sender.sendMessage(getMessage("banip-already-banned").replace("%ip%", shownIp));
             return true;
         }
 
@@ -113,7 +117,7 @@ public class BanIpCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        sender.sendMessage(getMessage("banip-success").replace("%ip%", ip).replace("%reason%", reason));
+        sender.sendMessage(getMessage("banip-success").replace("%ip%", shownIp).replace("%reason%", reason));
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-banip")) {
             String announceMsg = getMessage("banip-announce")

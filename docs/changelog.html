@@ -152,11 +152,143 @@
         <h1>Changelog</h1>
         <p class="changelog-lead">Everything that's changed in Axentra.</p>
 
+        <!-- v1.8.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.8.0</h2>
+                <span class="tag">Latest</span>
+            </div>
+            <p class="changelog-date">November 2026 &mdash; Server Health Update</p>
+
+            <div class="changelog-section">
+                <h3>Server Health</h3>
+                <ul>
+                    <li><strong>TPS &amp; MSPT Monitoring</strong> &mdash; Built-in tick profiler that uses the Paper API when available, with a Spigot fallback. Tracks TPS over 1m, 5m and 15m, MSPT (average and peak over the last 100 ticks) and memory usage. TPS history is saved every minute and kept for 30 days by default</li>
+                    <li><strong><code>/lag</code></strong> &mdash; Overview of TPS, MSPT, memory, uptime, players, per-world stats and the health score, with clickable [Chunks], [Entities] and [History] buttons</li>
+                    <li><strong><code>/lag chunks</code></strong> &mdash; The 10 heaviest chunks, colored by score, with hover details, the player in each chunk and a clickable [TP] button. Only tile entities that actually do work count (hopper 5, spawner 3, furnace 2, &hellip;), players don't count, and chunks below score 10 are hidden</li>
+                    <li><strong><code>/lag entities</code></strong> &mdash; Entities per type with bars and categories, and a Normal / Elevated / High status based on the average per chunk and the busiest chunk</li>
+                    <li><strong><code>/lag history [hours]</code></strong> &mdash; TPS history GUI with 28 time blocks, hover details, a summary and period buttons (1h, 6h, 12h, 1d, 3d)</li>
+                    <li><strong><code>/lag player &lt;name&gt;</code></strong> &mdash; A player's lag-relevant activity over the last 7 days: placed hoppers, pistons and redstone, entity spawns and time per chunk</li>
+                    <li><strong>Health Score</strong> &mdash; A 0&ndash;100 score from TPS (40%), MSPT (20%), memory (15%), entities per chunk (15%) and reports + staff (10%), labeled Excellent, Good, Fair or Poor</li>
+                    <li><strong>TPS Alerts</strong> &mdash; Staff are alerted when TPS stays low, with the heaviest chunk, the biggest cause and clickable [Teleport] and [Lag] buttons, followed by a recovery message</li>
+                    <li><strong>Auto-Cleanup</strong> &mdash; Clears ground items every 10 minutes or only during a TPS alert, with warnings at 60s, 30s and 10s. Valuable and named items are never cleared. Manual cleanup with <code>/lag clear [items|mobs|all]</code></li>
+                    <li><strong>Entity Limits</strong> &mdash; Per-chunk limits by type or group (<code>ANIMALS</code>, <code>VILLAGER</code>, <code>ITEM_FRAME</code>, &hellip;) that block new spawns and can optionally remove excess entities</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Restarts &amp; Maintenance</h3>
+                <ul>
+                    <li><strong>Scheduled Restarts</strong> &mdash; <code>/restart now</code>, <code>/restart schedule &lt;time&gt;</code> (with time suggestions), <code>/restart cancel</code> and <code>/restart status</code>, plus daily restart times with a timezone. Countdown with a bossbar, sounds, a title and warnings from 30 minutes down to 1 second. Supports pre-commands like <code>save-all</code> and Spigot's restart script</li>
+                    <li><code>/restart</code> now always runs Axentra's command. Spigot's built-in restart is available as <code>/spigot:restart</code></li>
+                    <li><strong>Maintenance Mode</strong> &mdash; <code>/maintenance on [duration] [-c countdown] [reason]</code>, <code>off</code>, <code>status</code> and <code>add|remove &lt;player&gt;</code>. Countdown with a bossbar, title and rising tick sounds, a custom MOTD and kick messages with placeholders (<code>%reason%</code>, <code>%remaining%</code>, <code>%ends%</code>, <code>%discord%</code>, &hellip;) and a hidden player count. Survives restarts and ends automatically after the given duration</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Warps &amp; Random Teleport</h3>
+                <ul>
+                    <li><strong>Warps</strong> &mdash; <code>/setwarp</code>, <code>/delwarp</code>, <code>/warp</code> and a paginated <code>/warps</code> GUI, with an optional permission per warp, a teleport delay that cancels when you move, and <code>/back</code> support</li>
+                    <li><strong>Edit warps in the GUI</strong> &mdash; Shift-click a warp to select it and click another warp to put it there (also across pages), press 1&ndash;9 to use that hotbar item as its icon, or press Q to rename it in chat</li>
+                    <li><code>/editwarp &lt;name&gt; &lt;icon|permission|order|rename&gt; &lt;value&gt;</code> &mdash; <code>icon hand</code> uses the item in your hand, material names tab-complete and invalid ones are rejected</li>
+                    <li><strong>Random Teleport</strong> &mdash; <code>/rtp [world]</code> (alias <code>/wild</code>) with per-world radius and center, Nether support below the bedrock roof, a safety check against lava, fire, cactus and void, and a 5-minute cooldown</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Freeze &amp; Punishments</h3>
+                <ul>
+                    <li><strong><code>/tempfreeze &lt;player&gt; &lt;duration&gt;</code></strong> &mdash; Players are unfrozen automatically when time runs out, even while offline</li>
+                    <li>Frozen players can move within 1 block (<code>movement-radius</code>), and ender pearls and chorus fruit are blocked</li>
+                    <li>Configurable <code>[Frozen]</code> tag above the head, in the tab list and in chat, plus snowflake particles and an action bar with the time left</li>
+                    <li><code>logout-ban-reason</code> and <code>logout-ban-duration</code> are now actually used (it used to always be a permanent ban)</li>
+                    <li><strong>Escalation</strong> &mdash; Punishment templates can escalate on repeat offenses (e.g. warn &rarr; warn &rarr; mute 30m). The GUI shows the next step in advance, and default ladders are included</li>
+                    <li>New templates: Lag Machine Warning, Temp Ban (3d) and Permanent Ban</li>
+                    <li>Warn punishments support a <code>freeze</code> action and ranges such as <code>"1-10"</code> or <code>"10+"</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Privacy &amp; Performance</h3>
+                <ul>
+                    <li>Fixed an IP leak: <code>/banip &lt;player&gt;</code> and <code>/tempbanip &lt;player&gt;</code> showed the player's IP to everyone with ban permissions. <code>Axentra.alts.ip</code> now controls IP visibility everywhere</li>
+                    <li>Database runs in WAL mode with <code>busy_timeout</code>, so there are no more "database is locked" errors</li>
+                    <li>Mute and freeze checks are cached, so chat and movement no longer hit the database</li>
+                    <li><code>/history</code>, <code>/warns</code>, <code>/notes</code>, <code>/auditlog</code>, <code>/staffstats</code> and <code>/reports</code> load their data asynchronously</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Bug Fixes</h3>
+                <ul>
+                    <li>Spigot's built-in restart took over <code>/restart</code>, so <code>/restart schedule 60</code> restarted the server immediately</li>
+                    <li>Error messages from <code>/setwarp</code>, <code>/delwarp</code>, <code>/editwarp</code> and <code>/restart</code> showed a literal <code>&amp;c</code> instead of red text</li>
+                    <li><code>/setwarp</code> on an existing warp reset its icon and permission</li>
+                    <li>The warps GUI could teleport you to the wrong warp when two players had it open</li>
+                    <li>The [TP] button in <code>/lag chunks</code> used the wrong <code>/tp</code> command</li>
+                    <li>Freeze reminders only started after the player rejoined, and <code>message-interval-seconds</code> was ignored</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Upgrading</h3>
+                <ul>
+                    <li>Fully restart the server &mdash; <code>/reload</code> is not enough. The new <code>health.yml</code> is created and existing configs get the new settings automatically</li>
+                    <li>9 new modules (30 in total) and 7 new database tables, upgraded automatically</li>
+                    <li><code>data.db-wal</code> and <code>data.db-shm</code> appear next to <code>data.db</code>. This is normal &mdash; don't delete them</li>
+                    <li>If a staff group has <code>Axentra.*</code>, explicitly set <code>Axentra.alts.ip</code> to <code>false</code> where staff shouldn't see IPs</li>
+                    <li>New permissions: <code>Axentra.lag</code>, <code>Axentra.lag.clear</code>, <code>Axentra.lag.alerts</code>, <code>Axentra.restart</code>, <code>Axentra.maintenance</code>, <code>Axentra.maintenance.bypass</code>, <code>Axentra.setwarp</code>, <code>Axentra.delwarp</code>, <code>Axentra.warp</code>, <code>Axentra.warps</code>, <code>Axentra.editwarp</code>, <code>Axentra.rtp</code>, <code>Axentra.rtp.bypass</code>, <code>Axentra.entitylimit.bypass</code>, <code>Axentra.cleanup.bypass</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.7.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.7.0</h2>
+            </div>
+            <p class="changelog-date">October 2026 &mdash; Player Protection Update</p>
+
+            <div class="changelog-section">
+                <h3>Player Protection</h3>
+                <ul>
+                    <li><strong>Inventory Snapshots</strong> &mdash; Automatic snapshots on death, join, quit, world change and <code>/clear</code>. Browse them per player in a paginated GUI, preview the contents and restore a full inventory with <code>/restoreinv &lt;player&gt;</code></li>
+                    <li><strong>Trust System</strong> &mdash; NEW &rarr; MEMBER &rarr; TRUSTED based on playtime and a clean record, with configurable thresholds, restrictions for new players (links, caps, slowmode, msg) and automatic downgrades on punishments. View with <code>/trust &lt;player&gt;</code> or override with <code>/trust set &lt;player&gt; &lt;level&gt;</code></li>
+                    <li><strong>Alt Detection</strong> &mdash; Accounts sharing an IP are detected automatically on join, with a risk score based on VPN status, trust level, banned alts and active cases. View them with <code>/alts &lt;player&gt;</code></li>
+                    <li><strong>VPN Detection</strong> &mdash; Optional proxycheck.io check on join with ALERT or KICK action and result caching. The API key is set in <code>protection.yml</code></li>
+                    <li><strong>Freeze</strong> &mdash; <code>/freeze</code> and <code>/unfreeze</code> block movement, block break/place, interaction, inventory, item drops, damage and commands, restrict chat to staff and repeat a reminder message. Stored in the database so it survives restarts, with frozen players re-frozen on rejoin and a configurable logout action (NONE/ALERT/BAN)</li>
+                    <li><strong>Player Timeline</strong> &mdash; <code>/timeline &lt;player&gt; [filter]</code> shows joins, quits, cases, deaths, name and IP changes</li>
+                    <li><strong>Smart Join Alerts</strong> &mdash; Staff see alts, VPN, trust level and open cases when a player joins, with clickable [Alts], [History] and [Timeline] buttons</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Homes &amp; Teleport</h3>
+                <ul>
+                    <li><strong>Homes</strong> &mdash; <code>/sethome [name]</code>, <code>/home [name]</code>, <code>/delhome &lt;name&gt;</code> and a paginated <code>/homes [player]</code> GUI with click-to-teleport, shift-click-to-delete and world-specific icons. Includes limits via <code>Axentra.homes.&lt;n&gt;</code>, teleport delay and world blacklist, and staff can view other players' homes</li>
+                    <li><strong>Teleport Commands</strong> &mdash; <code>/tp &lt;player&gt; [player]</code> to or between players, <code>/tphere &lt;player&gt;</code>, <code>/tpall</code>, <code>/tpahere &lt;player&gt;</code> to request a teleport to you, and <code>/top</code> to reach the highest block at your location</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Moderation &amp; Config</h3>
+                <ul>
+                    <li><code>/case resolve &lt;id&gt;</code> marks a case as resolved with an audit log, and <code>/case delete &lt;id&gt;</code> deletes it permanently</li>
+                    <li>Clickable [History], [Resolve] and [Delete] buttons in case details</li>
+                    <li>Kicks and warns now auto-resolve instead of staying active, and existing KICK/WARN cases are migrated on startup</li>
+                    <li>New <code>protection.yml</code> for the VPN API key, freeze settings, snapshot triggers, trust thresholds and alt detection, plus 8 new modules (21 in total)</li>
+                    <li>Config auto-updater rebuilt with template-based merging: new keys appear in the correct position with their comments, user values are preserved, and headers are no longer duplicated</li>
+                    <li>Disabled modules now fully unregister their commands</li>
+                    <li>New permissions: <code>Axentra.restoreinv</code>, <code>Axentra.trust</code>, <code>Axentra.trust.admin</code>, <code>Axentra.alts</code>, <code>Axentra.alts.ip</code>, <code>Axentra.freeze</code>, <code>Axentra.freeze.exempt</code>, <code>Axentra.timeline</code>, <code>Axentra.case.delete</code>, <code>Axentra.sethome</code>, <code>Axentra.home</code>, <code>Axentra.home.others</code>, <code>Axentra.home.bypass</code>, <code>Axentra.delhome</code>, <code>Axentra.homes</code>, <code>Axentra.homes.others</code>, <code>Axentra.homes.unlimited</code>, <code>Axentra.tp</code>, <code>Axentra.tphere</code>, <code>Axentra.tpall</code>, <code>Axentra.tpahere</code>, <code>Axentra.top</code></li>
+                    <li>After updating, delete your old <code>messages.yml</code> to regenerate it with the new protection and home messages</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.6.0 -->
         <div class="changelog-entry">
             <div class="changelog-version">
                 <h2>v1.6.0</h2>
-                <span class="tag">Latest</span>
             </div>
             <p class="changelog-date">October 2026 &mdash; Staff Management &amp; Website Overhaul</p>
 
@@ -308,17 +440,17 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h3>Axentra</h3>
+                    <div class="footer-brand-name">Axentra</div>
                     <p>Made with love by <a href="https://github.com/OlliesGitHubWorld" target="_blank">OlliesWorld</a></p>
                 </div>
                 <div class="footer-links">
-                    <h4>Resources</h4>
+                    <div class="footer-links-title">Resources</div>
                     <a href="wiki.html">Wiki</a>
                     <a href="wiki.html#commands">Commands</a>
                     <a href="wiki.html#permissions">Permissions</a>
                 </div>
                 <div class="footer-links">
-                    <h4>Community</h4>
+                    <div class="footer-links-title">Community</div>
                     <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>

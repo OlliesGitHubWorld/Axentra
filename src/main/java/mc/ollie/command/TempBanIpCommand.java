@@ -125,8 +125,12 @@ public class TempBanIpCommand implements CommandExecutor, TabCompleter {
             reason = plugin.getFileManager().getMessages().getString("tempbanip-default-reason", "Your IP has been temporarily banned!");
         }
 
+        // Only show the resolved IP to staff allowed to see IPs; a typed-in IP is already known to the sender
+        String shownIp = target == null || sender.hasPermission("Axentra.alts.ip")
+                ? ip : getMessage("ip-hidden").replace("%player%", displayName);
+
         if (plugin.getDatabaseManager().isIpBanned(ip)) {
-            sender.sendMessage(getMessage("banip-already-banned").replace("%ip%", ip));
+            sender.sendMessage(getMessage("banip-already-banned").replace("%ip%", shownIp));
             return true;
         }
 
@@ -159,7 +163,7 @@ public class TempBanIpCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage(getMessage("tempbanip-success")
-                .replace("%ip%", ip)
+                .replace("%ip%", shownIp)
                 .replace("%duration%", formattedDuration)
                 .replace("%reason%", reason));
 

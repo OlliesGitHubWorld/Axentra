@@ -1,8 +1,10 @@
 package mc.ollie.listeners;
 
 import mc.ollie.App;
+import mc.ollie.FreezeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,20 +16,19 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.scheduler.BukkitTask;
 
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class FreezeListener implements Listener {
 
     private final App plugin;
-    private final Map<UUID, BukkitTask> messageTasks = new ConcurrentHashMap<>();
+    private final FreezeManager freezeManager;
 
-    public FreezeListener(App plugin) {
+    public FreezeListener(App plugin, FreezeManager freezeManager) {
         this.plugin = plugin;
+        this.freezeManager = freezeManager;
     }
 
     private String getMessage(String path) {
@@ -38,44 +39,67 @@ public class FreezeListener implements Listener {
     }
 
     private boolean isFrozen(UUID uuid) {
-        return plugin.getDatabaseManager().isPlayerFrozen(uuid.toString());
-    }
-
-    public void startFreezeMessages(Player player) {
-        UUID uuid = player.getUniqueId();
-        stopFreezeMessages(uuid);
-
-        FileConfiguration protection = plugin.getFileManager().getProtection();
-        int interval = protection.getInt("freeze.message-interval", 5);
-
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (!player.isOnline() || !isFrozen(uuid)) {
-                stopFreezeMessages(uuid);
-                return;
-            }
-            player.sendMessage(getMessage("freeze-reminder"));
-            player.sendTitle(
-                    ChatColor.RED + "" + ChatColor.BOLD + "FROZEN",
-                    ChatColor.GRAY + "Do not log out!",
-                    0, 40, 10
-            );
-        }, interval * 20L, interval * 20L);
-
-        messageTasks.put(uuid, task);
-    }
-
-    public void stopFreezeMessages(UUID uuid) {
-        BukkitTask task = messageTasks.remove(uuid);
-        if (task != null) task.cancel();
+        return freezeManager.isFrozen(uuid);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (!isFrozen(player.getUniqueId())) return;
+
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        if (to == null) return;
+
+        double radius = plugin.getFileManager().getProtection().getDouble("freeze.movement-radius", 1.0);
+        Location anchor = freezeManager.getAnchor(player.getUniqueId());
+
+        if (radius <= 0 || anchor == null || !anchor.getWorld().equals(to.getWorld())) {
+            // Fully locked: only allow looking around inside the current block
+            if (from.getBlockX() != to.getBlockX() ||
+                from.getBlockY() != to.getBlockY() ||
+                from.getBlockZ() != to.getBlockZ()) {
+                event.setTo(withRotation(from, to));
+            }
+            return;
+        }
+
+        if (!withinRadius(anchor, to, radius)) {
+            Location back = withinRadius(anchor, from, radius) ? from : anchor;
+            event.setTo(withRotation(back, to));
+        }
+    }
+
+    /** Horizontal distance from the anchor, plus a cap on how far up the player can go. */
+    private boolean withinRadius(Location anchor, Location loc, double radius) {
+        double dx = loc.getX() - anchor.getX();
+        double dz = loc.getZ() - anchor.getZ();
+        if (dx * dx + dz * dz > radius * radius) return false;
+        return loc.getY() <= anchor.getY() + radius + 1.5;
+    }
+
+    private Location withRotation(Location position, Location rotation) {
+        Location loc = position.clone();
+        loc.setYaw(rotation.getYaw());
+        loc.setPitch(rotation.getPitch());
+        return loc;
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
         if (!isFrozen(event.getPlayer().getUniqueId())) return;
-        if (event.getFrom().getBlockX() != event.getTo().getBlockX() ||
-            event.getFrom().getBlockY() != event.getTo().getBlockY() ||
-            event.getFrom().getBlockZ() != event.getTo().getBlockZ()) {
-            event.setTo(event.getFrom());
+        // Plugins/staff can still move a frozen player; re-centre the movement area on the new spot
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+                || event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
+            event.setCancelled(true);
+            return;
+        }
+        Location anchor = freezeManager.getAnchor(event.getPlayer().getUniqueId());
+        if (anchor != null && event.getTo() != null) {
+            anchor.setWorld(event.getTo().getWorld());
+            anchor.setX(event.getTo().getX());
+            anchor.setY(event.getTo().getY());
+            anchor.setZ(event.getTo().getZ());
         }
     }
 
@@ -144,17 +168,21 @@ public class FreezeListener implements Listener {
         event.getPlayer().sendMessage(getMessage("freeze-command-blocked"));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (!isFrozen(event.getPlayer().getUniqueId())) return;
 
         FileConfiguration protection = plugin.getFileManager().getProtection();
         if (protection.getBoolean("freeze.chat-only-with-staff", true)) {
             event.setCancelled(true);
-            String msg = ChatColor.GRAY + "[Frozen] " + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage();
+            String format = protection.getString("freeze.chat-format", "%tag%&7%player%: &f%message%");
+            String msg = ChatColor.translateAlternateColorCodes('&', format
+                    .replace("%tag%", protection.getString("freeze.tag", "&b&l[Frozen] &r"))
+                    .replace("%player%", event.getPlayer().getName()))
+                    .replace("%message%", event.getMessage());
             event.getPlayer().sendMessage(msg);
             for (Player staff : Bukkit.getOnlinePlayers()) {
-                if (staff.hasPermission("Axentra.freeze")) {
+                if (staff.hasPermission("Axentra.freeze") && !staff.equals(event.getPlayer())) {
                     staff.sendMessage(msg);
                 }
             }
@@ -163,41 +191,45 @@ public class FreezeListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        stopFreezeMessages(uuid);
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
 
         if (!isFrozen(uuid)) return;
+        freezeManager.handleQuit(player);
 
         FileConfiguration protection = plugin.getFileManager().getProtection();
         String logoutAction = protection.getString("freeze.logout-action", "ALERT");
 
         switch (logoutAction.toUpperCase()) {
             case "BAN":
-                String reason = getMessage("freeze-logout-ban-reason");
+                String reason = protection.getString("freeze.logout-ban-reason", getMessage("freeze-logout-ban-reason"));
+                long duration = FreezeManager.parseDuration(protection.getString("freeze.logout-ban-duration", ""));
+                Timestamp expiresAt = duration > 0 ? new Timestamp(System.currentTimeMillis() + duration) : null;
+                freezeManager.forget(uuid);
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    plugin.getDatabaseManager().banPlayer(event.getPlayer().getName(), uuid.toString(), reason, "CONSOLE", null);
+                    plugin.getDatabaseManager().banPlayer(player.getName(), uuid.toString(), reason, "CONSOLE", expiresAt);
                     plugin.getDatabaseManager().unfreezePlayer(uuid.toString());
-                    plugin.getDatabaseManager().logAction("CONSOLE", "CONSOLE", "BAN",
-                            event.getPlayer().getName(), "Logged out while frozen");
+                    plugin.getDatabaseManager().logAction("CONSOLE", "CONSOLE", expiresAt != null ? "TEMPBAN" : "BAN",
+                            player.getName(), "Logged out while frozen");
                 });
                 // Alert staff
                 for (Player staff : Bukkit.getOnlinePlayers()) {
                     if (staff.hasPermission("Axentra.freeze")) {
                         staff.sendMessage(getMessage("freeze-logout-banned")
-                                .replace("%player%", event.getPlayer().getName()));
+                                .replace("%player%", player.getName()));
                     }
                 }
+                break;
+            case "NONE":
                 break;
             case "ALERT":
             default:
                 for (Player staff : Bukkit.getOnlinePlayers()) {
                     if (staff.hasPermission("Axentra.freeze")) {
                         staff.sendMessage(getMessage("freeze-logout-alert")
-                                .replace("%player%", event.getPlayer().getName()));
+                                .replace("%player%", player.getName()));
                     }
                 }
-                break;
-            case "NONE":
                 break;
         }
     }
@@ -207,15 +239,7 @@ public class FreezeListener implements Listener {
         Player player = event.getPlayer();
         if (isFrozen(player.getUniqueId())) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (player.isOnline()) {
-                    player.sendMessage(getMessage("freeze-still-frozen"));
-                    player.sendTitle(
-                            ChatColor.RED + "" + ChatColor.BOLD + "FROZEN",
-                            ChatColor.GRAY + "Do not log out!",
-                            0, 100, 20
-                    );
-                    startFreezeMessages(player);
-                }
+                if (player.isOnline()) freezeManager.handleJoin(player);
             }, 5L);
         }
     }

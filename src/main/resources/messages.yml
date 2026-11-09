@@ -146,6 +146,8 @@ banip-announce: "%prefix%&e%player%'s &cIP has been banned for: &7%reason%"
 #  Variables:
 #    %ip% - The unbanned IP address
 
+# Shown instead of an IP address to staff without Axentra.alts.ip
+ip-hidden: "the IP of %player%"
 unbanip-usage: "%prefix%&cUsage: /unbanip <ip>"
 unbanip-success: "%prefix%&aSuccessfully unbanned IP &e%ip%&a!"
 unbanip-not-banned: "%prefix%&eIP %ip% &cis not banned!"
@@ -759,6 +761,15 @@ freeze-still-frozen: "%prefix%&c&lYou are still frozen from your previous sessio
 freeze-logout-alert: "%prefix%&c&l[!] &e%player% &clogged out while frozen!"
 freeze-logout-banned: "%prefix%&c&l[!] &e%player% &cwas banned for logging out while frozen."
 freeze-logout-ban-reason: "Logged out while frozen"
+freeze-title: "&b&l❄ FROZEN ❄"
+freeze-subtitle: "&7Do not log out!"
+freeze-actionbar: "&b❄ &fYou are frozen &7- wait for staff &b❄"
+freeze-actionbar-temp: "&b❄ &fFrozen &7- &e%time% &7left &b❄"
+freeze-tempfrozen: "%prefix%&cYou have been &e&lfrozen &cfor &e%duration%&c! Do not log out."
+freeze-tempfrozen-staff: "%prefix%&cFroze &e%player% &cfor &e%duration%&c."
+tempfreeze-usage: "%prefix%&cUsage: /tempfreeze <player> <duration> &7(e.g. 30s, 10m, 1h)"
+tempfreeze-invalid-duration: "%prefix%&cInvalid duration. Use e.g. &e30s&c, &e10m&c, &e1h30m&c."
+warn-punishment-freeze-message: "%prefix%&cYou have been frozen: &e%reason%"
 
 # Timeline Command
 timeline-usage: "%prefix%&cUsage: /timeline <player> [filter]"
@@ -787,9 +798,12 @@ delhome-success: "%prefix%&aHome &e%home% &ahas been deleted."
 homes-empty: "%prefix%&c%player% has no homes."
 
 # TP Commands
-tp-usage: "%prefix%&cUsage: /tp <player> [player]"
+tp-usage: "%prefix%&cUsage: /tp <player> [player] &7or &c/tp [player] <x> <y> <z>"
 tp-to-player: "%prefix%&aTeleported to &e%player%&a."
 tp-other: "%prefix%&aTeleported &e%player1% &ato &e%player2%&a."
+tp-to-coords: "%prefix%&aTeleported to &e%x%, %y%, %z%&a."
+tp-other-to-coords: "%prefix%&aTeleported &e%player% &ato &e%x%, %y%, %z%&a."
+tp-invalid-coords: "%prefix%&cInvalid coordinates. Use numbers or ~ for relative positions."
 tphere-usage: "%prefix%&cUsage: /tphere <player>"
 tphere-success: "%prefix%&aTeleported &e%player% &ato you."
 tphere-received: "%prefix%&aYou have been teleported to &e%player%&a."
@@ -800,6 +814,92 @@ tpahere-sent: "%prefix%&aTeleport request sent to &e%player%&a."
 tpahere-received: "%prefix%&e%player% &7has requested you teleport to them."
 top-success: "%prefix%&aTeleported to the highest block."
 top-no-block: "%prefix%&cNo block found above you."
+
+# ┌─────────────────────────────────────────────────────────┐
+# │               Server Health Messages (v1.8.0)          │
+# └─────────────────────────────────────────────────────────┘
+
+lag-disabled: "%prefix%&cThe lag module is not enabled."
+lag-player-usage: "%prefix%&cUsage: /lag player <player>"
+lag-clear-usage: "%prefix%&cUsage: /lag clear [items|mobs|all]"
+lag-clear-items: "%prefix%&aCleared &e%count% &aground items."
+lag-clear-mobs: "%prefix%&aCleared &e%count% &ahostile mobs."
+lag-clear-all: "%prefix%&aCleared &e%items% &aitems and &e%mobs% &amobs."
+
+# TPS Alerts
+lag-alert: "%prefix%&c&lLag Alert! &7TPS: &c%tps% &7for &e%duration%s &7| Health: %health_color%%health%/100"
+lag-alert-chunk: "&7  Heaviest chunk: &e%world% (%x%, %z%) &7| Score: &c%score%"
+lag-alert-contributor: "&7  Top contributor: &e%player%"
+lag-alert-recovery: "%prefix%&a&lTPS recovered! &7Now at &a%tps%"
+
+# Cleanup
+cleanup-warning: "%prefix%&eGround items will be cleared in &c%seconds% &eseconds."
+cleanup-done: "%prefix%&aCleared &e%count% &aground items."
+
+# Entity limits
+entity-limit-reached: "%prefix%&cEntity limit reached for &e%type% &cin this chunk (&e%count%&c/&e%limit%&c)."
+
+# Restart
+restart-scheduled: "%prefix%&eServer restart scheduled in &c%time%&e."
+restart-warning: "%prefix%&c&lServer restarting in %time%!"
+restart-cancelled: "%prefix%&aScheduled restart has been cancelled."
+restart-status: "%prefix%&7Next restart: &e%time%"
+restart-no-scheduled: "%prefix%&7No restart is currently scheduled."
+restart-kick: "&cServer is restarting! Please reconnect in a moment."
+restart-now: "%prefix%&c&lServer is restarting NOW!"
+
+# Maintenance
+maintenance-on: "%prefix%&eMaintenance mode &aenabled&e."
+maintenance-off: "%prefix%&eMaintenance mode &cdisabled&e."
+maintenance-already-on: "%prefix%&cMaintenance mode is already enabled."
+maintenance-already-off: "%prefix%&cMaintenance mode is already disabled."
+maintenance-countdown: "%prefix%&c&lMaintenance starting in %seconds%s! &7Reason: &f%reason% &7| Expected duration: &f%duration%"
+maintenance-cancelled: "%prefix%&aScheduled maintenance has been cancelled."
+maintenance-kick: "&cThe server is currently under maintenance.\n&7Please try again later."
+maintenance-join-denied: "&cThe server is currently under maintenance.\n&7You are not on the whitelist."
+maintenance-status-on: "%prefix%&eMaintenance is &aACTIVE &e| Since: &f%since% &e| By: &f%by%\n%prefix%&eReason: &f%reason% &e| Remaining: &f%remaining% &7(ends %ends%)"
+maintenance-status-off: "%prefix%&eMaintenance is &cINACTIVE&e."
+maintenance-added: "%prefix%&aAdded &e%player% &ato the maintenance whitelist."
+maintenance-removed: "%prefix%&aRemoved &e%player% &afrom the maintenance whitelist."
+maintenance-usage: "%prefix%&cUsage: /maintenance <on [duration] [-c countdown] [reason]|off|status|add|remove> [player]\n%prefix%&7Example: &f/maintenance on 1h30m -c 2m Updating plugins"
+maintenance-invalid-time: "%prefix%&cInvalid time: &e%input%&c. Use e.g. 30s, 5m, 1h or 1h30m."
+maintenance-bossbar: "&c&lMaintenance in %seconds%s &8| &7%reason%"
+maintenance-countdown-title: "&c&lMAINTENANCE"
+maintenance-countdown-subtitle: "&7Starting in &f%seconds%s"
+maintenance-start-title: "&4&lMAINTENANCE"
+maintenance-start-subtitle: "&7%reason% &8| &7Back in: &f%duration%"
+
+# Warps
+warp-set: "%prefix%&aWarp &e%name% &ahas been set."
+warp-deleted: "%prefix%&aWarp &e%name% &ahas been deleted."
+warp-not-found: "%prefix%&cWarp &e%name% &cnot found."
+warp-teleporting: "%prefix%&aTeleporting to &e%name%&a..."
+warp-countdown: "%prefix%&eTeleporting to &b%name% &ein &c%seconds%s&e. Don't move!"
+warp-cancelled: "%prefix%&cTeleport cancelled — you moved!"
+warp-no-warps: "%prefix%&7No warps have been set yet."
+warp-list-header: "%prefix%&b&lWarps"
+warp-no-permission: "%prefix%&cYou don't have permission to use this warp."
+warp-icon-set: "%prefix%&aIcon for &e%name% &aset to &e%icon%&a."
+warp-permission-set: "%prefix%&aPermission for &e%name% &aset to &e%permission%&a."
+warp-permission-removed: "%prefix%&aPermission requirement removed from &e%name%&a."
+warp-invalid-icon: "%prefix%&c'%icon%' is not a valid item. Hold an item and use &ehand&c, or use a name like &egrass_block&c."
+warp-order-set: "%prefix%&e%name% &ais now at position &e%position%&a."
+warp-moved: "%prefix%&e%name% &amoved to position &e%position%&a."
+warp-renamed: "%prefix%&aRenamed warp &e%old% &ato &e%name%&a."
+warp-name-taken: "%prefix%&cA warp named &e%name% &calready exists."
+warp-invalid-name: "%prefix%&c'%name%' is not a valid name. Use letters, numbers, _ or - (max 32)."
+warp-rename-prompt: "%prefix%&aType the new name for &e%name% &ain chat, or &ecancel &ato stop."
+warp-rename-cancelled: "%prefix%&7Rename cancelled."
+
+# RTP
+rtp-searching: "%prefix%&eSearching for a safe location..."
+rtp-teleporting: "%prefix%&aTeleporting to &e%x%&a, &e%y%&a, &e%z% &ain &e%world%&a."
+rtp-countdown: "%prefix%&eTeleporting in &c%seconds%s&e. Don't move!"
+rtp-cancelled: "%prefix%&cTeleport cancelled — you moved!"
+rtp-failed: "%prefix%&cCould not find a safe location. Try again."
+rtp-cooldown: "%prefix%&cYou must wait &e%time% &cbefore using /rtp again."
+rtp-disabled-world: "%prefix%&cRTP is disabled in this world."
+rtp-player-only: "%prefix%&cOnly players can use this command."
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.FreezeManager;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -145,15 +146,45 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
         }
 
         // Check for punishment at this warn count
-        ConfigurationSection punishments = plugin.getFileManager().getSettings().getConfigurationSection("warn-punishments");
-        if (punishments != null && punishments.contains(String.valueOf(warnCount))) {
-            ConfigurationSection entry = punishments.getConfigurationSection(String.valueOf(warnCount));
-            if (entry != null) {
-                applyPunishment(target, entry, warnCount, sender);
-            }
+        ConfigurationSection entry = findPunishment(warnCount);
+        if (entry != null) {
+            applyPunishment(target, entry, warnCount, sender);
         }
 
         return true;
+    }
+
+    /**
+     * Finds the warn-punishments entry for a warn count. An exact key ("5") wins;
+     * otherwise the first matching range ("1-10") or open range ("10+") is used.
+     */
+    private ConfigurationSection findPunishment(int warnCount) {
+        ConfigurationSection punishments = plugin.getFileManager().getSettings().getConfigurationSection("warn-punishments");
+        if (punishments == null) return null;
+
+        ConfigurationSection exact = punishments.getConfigurationSection(String.valueOf(warnCount));
+        if (exact != null) return exact;
+
+        for (String key : punishments.getKeys(false)) {
+            String k = key.trim();
+            try {
+                if (k.endsWith("+")) {
+                    if (warnCount >= Integer.parseInt(k.substring(0, k.length() - 1).trim())) {
+                        return punishments.getConfigurationSection(key);
+                    }
+                } else if (k.contains("-")) {
+                    String[] parts = k.split("-", 2);
+                    int min = Integer.parseInt(parts[0].trim());
+                    int max = Integer.parseInt(parts[1].trim());
+                    if (warnCount >= min && warnCount <= max) {
+                        return punishments.getConfigurationSection(key);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                plugin.getLogger().warning("Invalid warn-punishments key '" + key + "' (use 5, 1-10 or 10+)");
+            }
+        }
+        return null;
     }
 
     private void broadcastToStaff(String message) {
@@ -258,6 +289,31 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 broadcastToStaff(getMessage("warn-punishment-announce")
                         .replace("%player%", target.getName())
                         .replace("%action%", "banned")
+                        .replace("%count%", String.valueOf(warnCount)));
+                break;
+            }
+            case "freeze":
+            case "tempfreeze": {
+                FreezeManager freezeManager = plugin.getFreezeManager();
+                if (freezeManager == null) {
+                    plugin.getLogger().warning("Warn punishment '" + action + "' needs the freeze module enabled");
+                    break;
+                }
+                if (target.hasPermission("Axentra.freeze.exempt")) break;
+
+                long durationMillis = 0L;
+                String durationStr = entry.getString("duration", "");
+                if (!durationStr.isEmpty()) {
+                    durationMillis = FreezeManager.parseDuration(durationStr);
+                    if (durationMillis == -1) durationMillis = 0L;
+                }
+                freezeManager.freeze(target, issuer, durationMillis);
+                target.sendMessage(getMessage("warn-punishment-freeze-message").replace("%reason%", punishReason));
+
+                broadcastToStaff(getMessage("warn-punishment-announce")
+                        .replace("%player%", target.getName())
+                        .replace("%action%", durationMillis > 0
+                                ? "frozen (" + FreezeManager.formatDuration(durationMillis) + ")" : "frozen")
                         .replace("%count%", String.valueOf(warnCount)));
                 break;
             }
