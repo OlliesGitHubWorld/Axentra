@@ -1,12 +1,15 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.DatabaseManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,15 +47,44 @@ public class UnbanIpCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String ip = args[0];
+        String input = args[0];
 
-        if (!plugin.getDatabaseManager().isIpBanned(ip)) {
-            sender.sendMessage(getMessage("unbanip-not-banned").replace("%ip%", ip));
+        if (IpBanTarget.looksLikeIp(input)) {
+            if (!plugin.getDatabaseManager().isIpBanned(input)) {
+                sender.sendMessage(getMessage("unbanip-not-banned").replace("%ip%", input));
+                return true;
+            }
+            plugin.getDatabaseManager().unbanIp(input);
+            sender.sendMessage(getMessage("unbanip-success").replace("%ip%", input));
             return true;
         }
 
-        plugin.getDatabaseManager().unbanIp(ip);
-        sender.sendMessage(getMessage("unbanip-success").replace("%ip%", ip));
+        // Player name: lift the account ban and every banned IP the player has used
+        String playerName = input;
+        String uuid = Bukkit.getOfflinePlayer(input).getUniqueId().toString();
+        boolean accountBanned = plugin.getDatabaseManager().isBannedByName(playerName);
+        List<String> bannedIps = new ArrayList<>();
+        for (DatabaseManager.IpHistoryEntry entry : plugin.getDatabaseManager().getIpHistory(uuid)) {
+            if (!bannedIps.contains(entry.ip) && plugin.getDatabaseManager().isIpBanned(entry.ip)) {
+                bannedIps.add(entry.ip);
+            }
+        }
+
+        if (!accountBanned && bannedIps.isEmpty()) {
+            sender.sendMessage(getMessage("unbanip-not-banned").replace("%ip%", playerName));
+            return true;
+        }
+
+        boolean showIp = sender.hasPermission("Axentra.alts.ip");
+        for (String ip : bannedIps) {
+            plugin.getDatabaseManager().unbanIp(ip);
+            sender.sendMessage(getMessage("unbanip-success").replace("%ip%",
+                    showIp ? ip : getMessage("ip-hidden").replace("%player%", playerName)));
+        }
+        if (accountBanned) {
+            plugin.getDatabaseManager().unbanPlayer(playerName);
+            sender.sendMessage(getMessage("unbanip-account").replace("%player%", playerName));
+        }
         return true;
     }
 }

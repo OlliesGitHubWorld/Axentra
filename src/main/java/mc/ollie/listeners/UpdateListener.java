@@ -20,15 +20,17 @@ public class UpdateListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (!event.getPlayer().hasPermission("Axentra.admin")) return;
+        if (!axentraCommand.isUpdateCheckerEnabled()) return;
+        if (!plugin.getFileManager().getSettings().getBoolean("update-checker.notify-ops-on-join", true)) return;
 
-        String currentVersion = plugin.getDescription().getVersion();
+        String currentVersion = AxentraCommand.normalizeVersion(plugin.getDescription().getVersion());
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             String latestVersion = axentraCommand.getLatestVersion();
 
             plugin.getServer().getScheduler().runTask(plugin, () -> {
-                if (latestVersion == null) return;
-                if (!latestVersion.equalsIgnoreCase(currentVersion)) {
+                if (latestVersion == null || !event.getPlayer().isOnline()) return;
+                if (AxentraCommand.isNewerVersion(latestVersion, currentVersion)) {
                     String prefix = ChatColor.translateAlternateColorCodes('&',
                             plugin.getFileManager().getMessages().getString("prefix", ""));
                     event.getPlayer().sendMessage(prefix + ChatColor.YELLOW + "New update available! " +

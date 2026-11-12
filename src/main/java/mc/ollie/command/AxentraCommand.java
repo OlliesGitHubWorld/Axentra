@@ -54,12 +54,21 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
         return secs + "s";
     }
 
+    public boolean isUpdateCheckerEnabled() {
+        return plugin.getFileManager().getSettings().getBoolean("update-checker.enabled", true);
+    }
+
+    /** Fetches the latest release version from GitHub, or null on failure or when the checker is disabled. */
     public String getLatestVersion() {
+        if (!isUpdateCheckerEnabled()) return null;
         try {
-            URL url = new URL("https://api.github.com/repos/OlliesGitHubWorld/Axentra/releases");
+            // releases/latest skips drafts and pre-releases
+            URL url = new URL("https://api.github.com/repos/OlliesGitHubWorld/Axentra/releases/latest");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -69,11 +78,45 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
             }
             reader.close();
 
-            String json = response.toString();
-            String tag = json.split("\"tag_name\":\"")[1].split("\"")[0];
-            return tag.startsWith("v") ? tag.substring(1) : tag;
+            java.util.regex.Matcher matcher = java.util.regex.Pattern
+                    .compile("\"tag_name\"\\s*:\\s*\"([^\"]*)\"").matcher(response);
+            if (!matcher.find()) return null;
+            String version = normalizeVersion(matcher.group(1));
+            return version.isEmpty() ? null : version;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /** Strips "v", whitespace/newlines and suffixes like "-SNAPSHOT": " v1.8.0-beta\n" → "1.8.0". */
+    public static String normalizeVersion(String version) {
+        if (version == null) return "";
+        String v = version.trim();
+        if (v.startsWith("v") || v.startsWith("V")) v = v.substring(1).trim();
+        int end = 0;
+        while (end < v.length() && (Character.isDigit(v.charAt(end)) || v.charAt(end) == '.')) end++;
+        v = v.substring(0, end);
+        while (v.endsWith(".")) v = v.substring(0, v.length() - 1);
+        return v;
+    }
+
+    /** True only when {@code remote} is numerically higher than {@code current} (1.10.0 > 1.9.0, 1.8 == 1.8.0). */
+    public static boolean isNewerVersion(String remote, String current) {
+        String[] r = normalizeVersion(remote).split("\\.");
+        String[] c = normalizeVersion(current).split("\\.");
+        for (int i = 0; i < Math.max(r.length, c.length); i++) {
+            long rp = i < r.length ? parsePart(r[i]) : 0;
+            long cp = i < c.length ? parsePart(c[i]) : 0;
+            if (rp != cp) return rp > cp;
+        }
+        return false;
+    }
+
+    private static long parsePart(String part) {
+        try {
+            return part.isEmpty() ? 0 : Long.parseLong(part);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 
@@ -116,8 +159,12 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(getMessage("no-permission"));
                     return true;
                 }
+                if (!isUpdateCheckerEnabled()) {
+                    sender.sendMessage(getMessage("upgrade-disabled"));
+                    return true;
+                }
                 sender.sendMessage(getMessage("upgrade-checking"));
-                String currentVersion = plugin.getDescription().getVersion();
+                String currentVersion = normalizeVersion(plugin.getDescription().getVersion());
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                     String latestVersion = getLatestVersion();
                     Bukkit.getScheduler().runTask(plugin, () -> {
@@ -125,7 +172,7 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                             sender.sendMessage(getMessage("upgrade-failed"));
                             return;
                         }
-                        if (latestVersion.equalsIgnoreCase(currentVersion)) {
+                        if (!isNewerVersion(latestVersion, currentVersion)) {
                             sender.sendMessage(getMessage("upgrade-up-to-date")
                                     .replace("%version%", currentVersion));
                         } else {

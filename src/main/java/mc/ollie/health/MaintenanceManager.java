@@ -90,6 +90,13 @@ public class MaintenanceManager implements Listener {
      * to online players. countdownSeconds < 0 uses maintenance.countdown-seconds; 0 enables immediately.
      */
     public void start(String activatedBy, int durationMinutes, String reason, int countdownSeconds) {
+        // Replace a running countdown instead of running two side by side (double broadcasts, stuck bossbar)
+        if (countdownTask != null) {
+            countdownTask.cancel();
+            countdownTask = null;
+            removeBossBar();
+        }
+
         FileConfiguration health = plugin.getFileManager().getHealth();
         int seconds = countdownSeconds >= 0 ? countdownSeconds : health.getInt("maintenance.countdown-seconds", 0);
         if (seconds <= 0) {

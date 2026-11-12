@@ -502,6 +502,15 @@ public final class App extends JavaPlugin {
             HomesCommand homesCommand = new HomesCommand(this);
             getCommand("homes").setExecutor(homesCommand);
             getCommand("homes").setTabCompleter(homesCommand);
+
+            // Register the Axentra.homes.<n> limit nodes checked by /sethome so permission plugins can suggest them
+            for (int i = 1; i <= 100; i++) {
+                String node = "Axentra.homes." + i;
+                if (getServer().getPluginManager().getPermission(node) == null) {
+                    getServer().getPluginManager().addPermission(new org.bukkit.permissions.Permission(node,
+                            "Allows setting up to " + i + " homes", org.bukkit.permissions.PermissionDefault.FALSE));
+                }
+            }
         }
 
         // ── Module: teleport ──

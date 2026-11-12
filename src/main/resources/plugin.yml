@@ -1,5 +1,5 @@
 name: Axentra
-version: 1.8.0
+version: 1.8.1
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
@@ -643,6 +643,18 @@ permissions:
     default: op
   Axentra.notify.mute:
     description: Allows the player to see mute/unmute announcements
+    default: op
+  Axentra.notify.ban:
+    description: Allows the player to see ban/tempban/IP ban/unban announcements
+    default: op
+  Axentra.notify.kick:
+    description: Allows the player to see kick announcements
+    default: op
+  Axentra.staff:
+    description: Counts the player as online staff for the /lag health score
+    default: op
+  Axentra.trust.admin:
+    description: Allows /trust set and /trust reset
     default: op
   Axentra.anvil:
     description: Allows the player to use /anvil

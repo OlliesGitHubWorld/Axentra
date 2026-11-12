@@ -53,6 +53,12 @@ player-not-found: "%prefix%&cPlayer &e%player% &cwas not found!"
 
 clear-inventory: "%prefix%&aYour inventory has been cleared!"
 clear-other: "%prefix%&aCleared the inventory of &e%player%&a!"
+clear-confirm: "%prefix%&eAre you sure you want to clear your inventory? &cThis cannot be undone."
+clear-confirm-other: "%prefix%&eAre you sure you want to clear the inventory of &c%player%&e?"
+clear-confirm-button: "&a&l[Confirm]"
+clear-confirm-hover: "&7Click to clear the inventory"
+clear-confirm-hint: "&7or type &f/clear confirm &7within &f%seconds% &7seconds."
+clear-confirm-expired: "%prefix%&cNothing to confirm, or the confirmation expired. Run /clear again."
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                   Repair Command                        │
@@ -137,6 +143,7 @@ banip-no-address: "%prefix%&cCould not retrieve the address of &e%player%&c!"
 banip-already-banned: "%prefix%&e%ip% &cis already banned!"
 banip-message: "&cYour IP has been banned!\n&7Reason: &f%reason%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%"
 banip-success: "%prefix%&aSuccessfully banned IP &e%ip% &afor: &7%reason%"
+banip-account: "%prefix%&aThe account of &e%player% &ahas been banned as well."
 banip-announce: "%prefix%&e%player%'s &cIP has been banned for: &7%reason%"
 
 # ┌─────────────────────────────────────────────────────────┐
@@ -148,8 +155,9 @@ banip-announce: "%prefix%&e%player%'s &cIP has been banned for: &7%reason%"
 
 # Shown instead of an IP address to staff without Axentra.alts.ip
 ip-hidden: "the IP of %player%"
-unbanip-usage: "%prefix%&cUsage: /unbanip <ip>"
+unbanip-usage: "%prefix%&cUsage: /unbanip <player|ip>"
 unbanip-success: "%prefix%&aSuccessfully unbanned IP &e%ip%&a!"
+unbanip-account: "%prefix%&aThe account of &e%player% &ahas been unbanned as well."
 unbanip-not-banned: "%prefix%&eIP %ip% &cis not banned!"
 
 # ┌─────────────────────────────────────────────────────────┐
@@ -525,6 +533,7 @@ upgrade-checking: "%prefix%&eChecking for updates..."
 upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
 upgrade-available: "%prefix% &aNew update available! &7%current% &f→ &a%latest%"
 upgrade-failed: "%prefix%&cFailed to check for updates, please try again later."
+upgrade-disabled: "%prefix%&cThe update checker is disabled in config.yml (update-checker.enabled)."
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                 Broadcast Command                      │
