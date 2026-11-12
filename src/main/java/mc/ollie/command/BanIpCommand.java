@@ -54,24 +54,15 @@ public class BanIpCommand implements CommandExecutor, TabCompleter {
         }
 
         String input = args[0];
-        String ip;
 
-        // Try to resolve as a player name first
-        String displayName;
-        Player target = Bukkit.getPlayer(input);
-        if (target != null) {
-            InetSocketAddress address = target.getAddress();
-            if (address == null) {
-                sender.sendMessage(getMessage("banip-no-address").replace("%player%", input));
-                return true;
-            }
-            ip = address.getAddress().getHostAddress();
-            displayName = target.getName();
-        } else {
-            // Treat input as a raw IP
-            ip = input;
-            displayName = "Unknown";
+        // A player name (online or offline) bans their IP and their account; anything else is a raw IP
+        IpBanTarget target = IpBanTarget.resolve(plugin, input);
+        if (target == null) {
+            sender.sendMessage(getMessage("banip-no-address").replace("%player%", input));
+            return true;
         }
+        String ip = target.ip;
+        String displayName = target.isPlayer() ? target.playerName : "Unknown";
 
         // Build reason
         String reason;
@@ -87,15 +78,35 @@ public class BanIpCommand implements CommandExecutor, TabCompleter {
         }
 
         // Only show the resolved IP to staff allowed to see IPs; a typed-in IP is already known to the sender
-        String shownIp = target == null || sender.hasPermission("Axentra.alts.ip")
+        String shownIp = !target.isPlayer() || sender.hasPermission("Axentra.alts.ip")
                 ? ip : getMessage("ip-hidden").replace("%player%", displayName);
 
-        if (plugin.getDatabaseManager().isIpBanned(ip)) {
+        boolean ipBanned = plugin.getDatabaseManager().isIpBanned(ip);
+        boolean accountBanned = target.isPlayer() && plugin.getDatabaseManager().isBannedByName(target.playerName);
+        if (ipBanned && (!target.isPlayer() || accountBanned)) {
             sender.sendMessage(getMessage("banip-already-banned").replace("%ip%", shownIp));
             return true;
         }
 
-        plugin.getDatabaseManager().banIp(ip, reason, sender.getName(), null);
+        if (!ipBanned) {
+            plugin.getDatabaseManager().banIp(ip, reason, sender.getName(), null);
+        }
+
+        // Ban the account too, with one case covering both
+        int caseId = -1;
+        if (target.isPlayer()) {
+            if (!accountBanned) {
+                plugin.getDatabaseManager().banPlayer(target.playerName, target.playerUuid, reason, sender.getName(), null);
+            }
+            String chatLog = null;
+            if (target.online != null && plugin.getChatListener() != null) {
+                chatLog = plugin.getChatListener().getChatSnapshot(target.online.getUniqueId());
+            }
+            caseId = plugin.getDatabaseManager().createCase("BAN", target.playerName, target.playerUuid,
+                    "[IP] " + reason, sender.getName(), null, chatLog);
+            String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
+            plugin.getDatabaseManager().logAction(sender.getName(), staffUuid, "BANIP", target.playerName, reason);
+        }
 
         // Kick all online players with this IP
         final String bannedIp = ip;
@@ -118,6 +129,10 @@ public class BanIpCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage(getMessage("banip-success").replace("%ip%", shownIp).replace("%reason%", reason));
+        if (target.isPlayer()) {
+            sender.sendMessage(getMessage("banip-account").replace("%player%", target.playerName)
+                    + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
+        }
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-banip")) {
             String announceMsg = getMessage("banip-announce")

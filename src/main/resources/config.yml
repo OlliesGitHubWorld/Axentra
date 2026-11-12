@@ -179,6 +179,15 @@ tpa-countdown-seconds: 3
 invsee-read-only: true
 
 # ┌─────────────────────────────────────────────────────────┐
+# │                    Clear Settings                       │
+# └─────────────────────────────────────────────────────────┘
+
+clear:
+  # Ask for confirmation before /clear (and /clear <player>) wipes an inventory.
+  # Click [Confirm] or type /clear confirm within 10 seconds.
+  require-confirm: true
+
+# ┌─────────────────────────────────────────────────────────┐
 # │                   Vanish Settings                       │
 # └─────────────────────────────────────────────────────────┘
 
@@ -221,6 +230,13 @@ report-cooldown-seconds: 60
 # Error messages are always shown regardless of this setting.
 # Set to false to reduce console spam and disk writes.
 verbose-logging: true
+
+# Checks GitHub for a newer Axentra release.
+update-checker:
+  # When false, no update request is ever made (also disables /axentra upgrade).
+  enabled: true
+  # Tell players with Axentra.admin about a new version when they join.
+  notify-ops-on-join: true
 
 # ┌─────────────────────────────────────────────────────────┐
 # │                  Module Toggles                         │
