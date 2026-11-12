@@ -70,6 +70,7 @@ public class RestartManager {
     public void scheduleRestart(int seconds) {
         if (restarting) return;
         this.secondsRemaining = seconds;
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.RestartScheduledEvent(seconds));
 
         FileConfiguration health = plugin.getFileManager().getHealth();
         List<Integer> warnings = health.getIntegerList("restarts.warnings");

@@ -351,6 +351,26 @@ enabled-modules:
   # /rtp — random teleport to a safe location in the wild.
   rtp: true
 
+  # ── Discord (v1.9.0) ──
+
+  # Discord bot: account linking, role sync, case/report/alert channels, slash commands,
+  # ban appeals and the weekly report. The bot itself is off until you set enabled: true
+  # and a token in discord.yml.
+  discord: true
+
+  # ── Player Info (v1.9.0) ──
+
+  # /afk and automatic AFK. AFK time doesn't count as playtime or for trust.
+  afk: true
+  # /seen — when a player was last online
+  seen: true
+  # /whois — everything about a player
+  whois: true
+  # /near — players near you
+  near: true
+  # /list — online players by group (replaces the vanilla /list while on)
+  list: true
+
 # ┌─────────────────────────────────────────────────────────┐
 # │                    Homes Settings                       │
 # └─────────────────────────────────────────────────────────┘
@@ -399,6 +419,46 @@ rtp:
       max-y: 120
     world_the_end:
       enabled: false
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                     AFK Settings                        │
+# └─────────────────────────────────────────────────────────┘
+
+afk:
+  # Minutes without moving, chatting or interacting before a player is AFK (0 = never automatic).
+  auto-afk-minutes: 3
+  # Kick players who are AFK this long (0 = never). Bypass: Axentra.afk.kickbypass
+  kick-minutes: 5
+  # Tell everyone when someone goes AFK or comes back. When false, only the player sees it.
+  broadcast: true
+  # Tag in front of the name in the tab list. Empty = no tag.
+  tag-format: "&7[AFK] "
+  # Moving while in water or in a vehicle doesn't count as activity (stops AFK pools and minecart loops).
+  ignore-water-movement: true
+  ignore-vehicle-movement: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                     Near & List                         │
+# └─────────────────────────────────────────────────────────┘
+
+near:
+  # Radius when none is given.
+  default-radius: 100
+  # Largest radius. Players with Axentra.near.radius.<n> may use up to <n> instead.
+  max-radius: 500
+
+list:
+  # Groups in /list and the Discord /online, top to bottom. A player is in the first group whose
+  # permission Axentra.list.group.<name> they have. Values are the display names.
+  # Note: ops have every permission, so they show up in the first group.
+  groups:
+    owner: "&4Owner"
+    admin: "&cAdmin"
+    moderator: "&2Moderator"
+    helper: "&aHelper"
+    vip: "&6VIP"
+  # Group for everyone else.
+  default-group: "&7Players"
 
 # ══════════════════════════════════════════════════════════
 #                     End of Config

@@ -87,10 +87,31 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                 tabs.add("reload");
                 tabs.add("upgrade");
                 tabs.add("settings");
+                tabs.add("discord");
             }
+            tabs.removeIf(t -> !t.startsWith(args[0].toLowerCase()));
+            return tabs;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("discord") && sender.hasPermission("Axentra.admin")) {
+            List<String> tabs = new java.util.ArrayList<>(java.util.Arrays.asList("status", "report"));
+            tabs.removeIf(t -> !t.startsWith(args[1].toLowerCase()));
             return tabs;
         }
         return Collections.emptyList();
+    }
+
+    private void handleDiscord(CommandSender sender, String[] args) {
+        mc.ollie.discord.DiscordManager discord = plugin.getDiscordManager();
+        if (discord == null) {
+            sender.sendMessage(getMessage("discord-module-off"));
+            return;
+        }
+        String sub = args.length >= 2 ? args[1].toLowerCase() : "status";
+        switch (sub) {
+            case "status" -> discord.sendStatus(sender);
+            case "report" -> discord.sendWeeklyReportNow(sender);
+            default -> sender.sendMessage(getMessage("discord-usage"));
+        }
     }
 
     @Override
@@ -108,7 +129,16 @@ public class AxentraCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 plugin.getFileManager().reload();
+                if (plugin.getDiscordManager() != null) plugin.getDiscordManager().reload();
                 sender.sendMessage(getMessage("reload-success"));
+                break;
+
+            case "discord":
+                if (!sender.hasPermission("Axentra.admin")) {
+                    sender.sendMessage(getMessage("no-permission"));
+                    return true;
+                }
+                handleDiscord(sender, args);
                 break;
 
             case "upgrade":

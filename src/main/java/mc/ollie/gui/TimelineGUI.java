@@ -188,6 +188,8 @@ public class TimelineGUI {
             case "UNFREEZE": return Material.BLUE_ICE;
             case "NOTE": return Material.WRITABLE_BOOK;
             case "REPORT": return Material.BELL;
+            case "DISCORD_LINK": return Material.LIGHT_BLUE_DYE;
+            case "APPEAL": return Material.GOLDEN_APPLE;
             default: return Material.PAPER;
         }
     }

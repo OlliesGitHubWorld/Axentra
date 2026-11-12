@@ -35,6 +35,19 @@ public final class App extends JavaPlugin {
     private RestartManager restartManager;
     private MaintenanceManager maintenanceManager;
     private FreezeManager freezeManager;
+    private mc.ollie.discord.DiscordManager discordManager;
+    private mc.ollie.discord.SlashCommandManager slashCommandManager;
+    private mc.ollie.discord.LinkService linkService;
+    private mc.ollie.discord.ChannelRelay channelRelay;
+    private mc.ollie.discord.EmbedFactory embedFactory;
+    private mc.ollie.discord.DiscordCommands discordCommands;
+    private mc.ollie.discord.AppealService appealService;
+    private mc.ollie.discord.ConsoleBridge consoleBridge;
+    private mc.ollie.gui.AppealsGUI appealsGUI;
+    private VanishCommand vanishCommand;
+    private GodCommand godCommand;
+    private AfkManager afkManager;
+    private mc.ollie.punish.PunishmentService punishmentService;
     private final Map<UUID, Long> reportCooldowns = new HashMap<>();
     private boolean verboseLogging = true;
 
@@ -60,6 +73,7 @@ public final class App extends JavaPlugin {
 
         this.dutyManager = new DutyManager(this);
         this.staffmodeManager = new StaffmodeManager();
+        this.punishmentService = new mc.ollie.punish.PunishmentService(this);
 
         int pluginId = 30019;
         Metrics metrics = new Metrics(this, pluginId);
@@ -190,7 +204,7 @@ public final class App extends JavaPlugin {
 
         // ── Module: player-utilities ──
 
-        GodCommand godCommand = new GodCommand(this);
+        this.godCommand = new GodCommand(this);
         if (settings.getBoolean("enabled-modules.player-utilities", true)) {
             ClearCommand clearCommand = new ClearCommand(this);
             getCommand("clear").setExecutor(clearCommand);
@@ -246,7 +260,7 @@ public final class App extends JavaPlugin {
 
         // ── Module: vanish ──
 
-        VanishCommand vanishCommand = new VanishCommand(this);
+        this.vanishCommand = new VanishCommand(this);
         if (settings.getBoolean("enabled-modules.vanish", true)) {
             getCommand("vanish").setExecutor(vanishCommand);
             getCommand("vanish").setTabCompleter(vanishCommand);
@@ -595,6 +609,37 @@ public final class App extends JavaPlugin {
             getCommand("rtp").setTabCompleter(rtpCommand);
         }
 
+        // ── Player info (v1.9.0) ──
+
+        if (settings.getBoolean("enabled-modules.afk", true)) {
+            this.afkManager = new AfkManager(this);
+            getServer().getPluginManager().registerEvents(afkManager, this);
+            afkManager.start();
+            AfkCommand afkCommand = new AfkCommand(this);
+            getCommand("afk").setExecutor(afkCommand);
+            getCommand("afk").setTabCompleter(afkCommand);
+        }
+        if (settings.getBoolean("enabled-modules.seen", true)) {
+            SeenCommand seenCommand = new SeenCommand(this);
+            getCommand("seen").setExecutor(seenCommand);
+            getCommand("seen").setTabCompleter(seenCommand);
+        }
+        if (settings.getBoolean("enabled-modules.whois", true)) {
+            WhoisCommand whoisCommand = new WhoisCommand(this);
+            getCommand("whois").setExecutor(whoisCommand);
+            getCommand("whois").setTabCompleter(whoisCommand);
+        }
+        if (settings.getBoolean("enabled-modules.near", true)) {
+            NearCommand nearCommand = new NearCommand(this);
+            getCommand("near").setExecutor(nearCommand);
+            getCommand("near").setTabCompleter(nearCommand);
+        }
+        if (settings.getBoolean("enabled-modules.list", true)) {
+            ListCommand listCommand = new ListCommand(this);
+            getCommand("list").setExecutor(listCommand);
+            getCommand("list").setTabCompleter(listCommand);
+        }
+
         // ── /help override ──
 
         try {
@@ -628,6 +673,10 @@ public final class App extends JavaPlugin {
             // Point the plain label at ours; Spigot's stays reachable as /spigot:restart.
             if (settings.getBoolean("enabled-modules.restarts", true)) {
                 knownCommands.put("restart", getCommand("restart"));
+            }
+            // ── /list override (v1.9.0) — vanilla's /list stays reachable as /minecraft:list ──
+            if (settings.getBoolean("enabled-modules.list", true)) {
+                knownCommands.put("list", getCommand("list"));
             }
 
             // ── Unregister commands for disabled modules ──
@@ -714,6 +763,22 @@ public final class App extends JavaPlugin {
             if (!settings.getBoolean("enabled-modules.rtp", true)) {
                 toRemove.addAll(java.util.Arrays.asList("rtp", "wild"));
             }
+            if (!settings.getBoolean("enabled-modules.discord", true)) {
+                toRemove.addAll(java.util.Arrays.asList("link", "unlink", "appeals"));
+            }
+            if (!settings.getBoolean("enabled-modules.afk", true)) toRemove.add("afk");
+            if (!settings.getBoolean("enabled-modules.seen", true)) toRemove.add("seen");
+            if (!settings.getBoolean("enabled-modules.whois", true)) toRemove.add("whois");
+            if (!settings.getBoolean("enabled-modules.near", true)) toRemove.add("near");
+            if (!settings.getBoolean("enabled-modules.list", true)) {
+                // Only remove our own entries, so vanilla /list keeps working
+                knownCommands.remove("axentra:list");
+                knownCommands.remove("axentra:online");
+                knownCommands.remove("axentra:who");
+                if (knownCommands.get("list") == getCommand("list")) knownCommands.remove("list");
+                if (knownCommands.get("online") == getCommand("list")) knownCommands.remove("online");
+                if (knownCommands.get("who") == getCommand("list")) knownCommands.remove("who");
+            }
 
             for (String cmd : toRemove) {
                 knownCommands.remove(cmd);
@@ -785,6 +850,53 @@ public final class App extends JavaPlugin {
         // Close any open sessions from a previous unclean shutdown
         databaseManager.closeOpenSessions();
 
+        // Discord (v1.9.0) — connects async, the server never waits for it.
+        // Features register their listeners and slash commands before the bot starts.
+        if (settings.getBoolean("enabled-modules.discord", true)) {
+            LinkCommand linkCommand = new LinkCommand(this);
+            getCommand("link").setExecutor(linkCommand);
+            getCommand("link").setTabCompleter(linkCommand);
+            getCommand("unlink").setExecutor(linkCommand);
+            getCommand("unlink").setTabCompleter(linkCommand);
+            AppealsCommand appealsCommand = new AppealsCommand(this);
+            getCommand("appeals").setExecutor(appealsCommand);
+            getCommand("appeals").setTabCompleter(appealsCommand);
+            try {
+                this.discordManager = new mc.ollie.discord.DiscordManager(this);
+                this.slashCommandManager = new mc.ollie.discord.SlashCommandManager(this, discordManager);
+                this.linkService = new mc.ollie.discord.LinkService(this, discordManager, slashCommandManager);
+                getServer().getPluginManager().registerEvents(linkService, this);
+                mc.ollie.discord.RoleSyncService roleSync = new mc.ollie.discord.RoleSyncService(this, discordManager, linkService);
+                getServer().getPluginManager().registerEvents(roleSync, this);
+                this.embedFactory = new mc.ollie.discord.EmbedFactory(this, discordManager);
+                this.channelRelay = new mc.ollie.discord.ChannelRelay(this, discordManager, embedFactory);
+                getServer().getPluginManager().registerEvents(channelRelay, this);
+                getServer().getPluginManager().registerEvents(
+                        new mc.ollie.discord.ChatBridge(this, discordManager, channelRelay), this);
+                this.consoleBridge = new mc.ollie.discord.ConsoleBridge(this, discordManager);
+                this.discordCommands = new mc.ollie.discord.DiscordCommands(this, discordManager, embedFactory,
+                        channelRelay, slashCommandManager);
+                new mc.ollie.discord.DiscordModeration(this, discordManager, channelRelay, discordCommands);
+                new mc.ollie.discord.WeeklyReportService(this, discordManager, embedFactory);
+                this.appealService = new mc.ollie.discord.AppealService(this, discordManager, embedFactory, slashCommandManager);
+                this.appealsGUI = new mc.ollie.gui.AppealsGUI(this, appealService);
+                getServer().getPluginManager().registerEvents(appealsGUI, this);
+                discordManager.start();
+            } catch (LinkageError e) {
+                // JDA is downloaded through plugin.yml libraries; this only fails without internet on first start
+                discordManager = null;
+                slashCommandManager = null;
+                linkService = null;
+                channelRelay = null;
+                embedFactory = null;
+                discordCommands = null;
+                appealService = null;
+                appealsGUI = null;
+                getLogger().warning("The Discord library (JDA) could not be loaded, so Discord features are off. "
+                        + "Make sure the server can reach Maven Central on its first start.");
+            }
+        }
+
         if (verboseLogging) {
             String CYAN = "\u001B[36m";
             String GREEN = "\u001B[32m";
@@ -806,6 +918,12 @@ public final class App extends JavaPlugin {
         if (restartManager != null) restartManager.stop();
         if (cleanupManager != null) cleanupManager.stop();
         if (freezeManager != null) freezeManager.stop();
+        if (afkManager != null) afkManager.stop();
+        if (consoleBridge != null) consoleBridge.stop();
+        if (discordManager != null) {
+            discordManager.stop();
+            discordManager.webhooks().shutdown();
+        }
         databaseManager.close();
 
         if (verboseLogging) {
@@ -883,6 +1001,60 @@ public final class App extends JavaPlugin {
 
     // Freeze
     public FreezeManager getFreezeManager() { return freezeManager; }
+
+    // Discord (v1.9.0) — null when the module is off or JDA couldn't be loaded
+    public mc.ollie.discord.DiscordManager getDiscordManager() { return discordManager; }
+    public mc.ollie.discord.SlashCommandManager getSlashCommandManager() { return slashCommandManager; }
+    public mc.ollie.discord.LinkService getLinkService() { return linkService; }
+    public mc.ollie.discord.ChannelRelay getChannelRelay() { return channelRelay; }
+    public mc.ollie.discord.EmbedFactory getEmbedFactory() { return embedFactory; }
+
+    /**
+     * The "appeal with /appeal <case> in Discord" line for ban screens, or "" when Discord appeals
+     * are off. The ban-appeal-link from config.yml keeps working either way.
+     */
+    public String appealHint(int caseId) {
+        if (caseId <= 0 || discordManager == null) return "";
+        FileConfiguration discord = fileManager.getDiscord();
+        if (!discord.getBoolean("enabled", false) || !discord.getBoolean("appeals.enabled", true)) return "";
+        String hint = fileManager.getMessages().getString("ban-appeal-discord", "");
+        return org.bukkit.ChatColor.translateAlternateColorCodes('&', hint.replace("%case%", String.valueOf(caseId)));
+    }
+
+    /** Opens the /appeals GUI. Returns false when Discord (and so appeals) is unavailable. */
+    public boolean openAppealsGui(org.bukkit.entity.Player player, boolean onlyOpen) {
+        if (appealsGUI == null) return false;
+        appealsGUI.open(player, onlyOpen, 0);
+        return true;
+    }
+
+    /** Sends in-game staff chat to the Discord staffchat channel, if the bot is running. */
+    public void relayStaffChat(String senderName, String message) {
+        if (channelRelay != null) channelRelay.relayStaffChat(senderName, message);
+    }
+
+    public mc.ollie.punish.PunishmentService getPunishmentService() { return punishmentService; }
+
+    public boolean isGod(org.bukkit.entity.Player player) {
+        return godCommand != null && godCommand.isGod(player);
+    }
+
+    /** "X is AFK" for someone messaging the target, or null when the target isn't AFK. */
+    public String afkNotice(org.bukkit.entity.Player target) {
+        if (afkManager == null || !afkManager.isAfk(target)) return null;
+        String reason = afkManager.getReason(target);
+        String key = reason != null && !reason.isBlank() ? "msg-target-afk-reason" : "msg-target-afk";
+        return messageManager.getMessage(key).replace("%player%", target.getName())
+                .replace("%reason%", reason != null ? reason : "");
+    }
+
+    /** AFK manager (v1.9.0), null when the afk module is off. */
+    public AfkManager getAfkManager() { return afkManager; }
+
+    /** Whether a player is vanished with /vanish (false when the vanish module is off). */
+    public boolean isVanished(org.bukkit.entity.Player player) {
+        return vanishCommand != null && vanishCommand.isVanished(player);
+    }
 
     // Logging
     public boolean isVerboseLogging() { return verboseLogging; }

@@ -150,6 +150,27 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
         add(entries, sender, "Axentra.editwarp", "Warps & RTP", "/editwarp <name> <icon|perm> <val>", "Edit warp properties");
         add(entries, sender, "Axentra.rtp",      "Warps & RTP", "/rtp [world]",                       "Random teleport");
 
+        // Discord (v1.9.0)
+        if (plugin.getFileManager().getSettings().getBoolean("enabled-modules.discord", true)) {
+            add(entries, sender, "Axentra.link",     "Discord", "/link",                  "Get a code to link your Discord");
+            add(entries, sender, "Axentra.link",     "Discord", "/unlink",                "Unlink your Discord");
+            add(entries, sender, "Axentra.appeals",  "Discord", "/appeals [open|all]",    "Handle ban and mute appeals");
+            add(entries, sender, "Axentra.admin",    "Discord", "/axentra discord status", "Bot connection and channels");
+            add(entries, sender, "Axentra.admin",    "Discord", "/axentra discord report", "Send the weekly report now");
+        }
+
+        // Player Info (v1.9.0)
+        if (plugin.getFileManager().getSettings().getBoolean("enabled-modules.afk", true))
+            add(entries, sender, "Axentra.afk",   "Player Info", "/afk [reason]",   "Toggle AFK");
+        if (plugin.getFileManager().getSettings().getBoolean("enabled-modules.seen", true))
+            add(entries, sender, "Axentra.seen",  "Player Info", "/seen <player>",  "When a player was last online");
+        if (plugin.getFileManager().getSettings().getBoolean("enabled-modules.whois", true))
+            add(entries, sender, "Axentra.whois", "Player Info", "/whois <player>", "Everything about a player");
+        if (plugin.getFileManager().getSettings().getBoolean("enabled-modules.near", true))
+            add(entries, sender, "Axentra.near",  "Player Info", "/near [radius]",  "Players near you");
+        if (plugin.getFileManager().getSettings().getBoolean("enabled-modules.list", true))
+            add(entries, sender, "Axentra.list",  "Player Info", "/list",           "Online players by group");
+
         return entries;
     }
 
@@ -369,6 +390,8 @@ public class HelpCommand implements CommandExecutor, TabCompleter {
             case "World":          return "\u2600";  // sun
             case "Server Health":  return "\u2764";  // heart
             case "Warps & RTP":    return "\u2708";  // airplane
+            case "Discord":        return "\u2709";  // envelope
+            case "Player Info":    return "\u2139";  // info
             default:               return "\u25CF";  // bullet
         }
     }

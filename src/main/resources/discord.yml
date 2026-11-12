@@ -1,0 +1,518 @@
+#       _____                        __            _____
+#      /  _  \ ___  ___ ____   _____/  |________  /  _  \
+#     /  /_\  \\  \/  // __ \ /    \   __\_  __ \/  /_\  \
+#    /    |    \>    <\  ___/|   |  \  |  |  | \/    |    \
+#    \____|__  /__/\_ \\___  >___|  /__|  |__|  \____|__  /
+#            \/      \/    \/     \/                    \/
+#
+# ┌─────────────────────────────────────────────────────────┐
+# │                Axentra Discord Config                   │
+# │                  Made by OlliesWorld                    │
+# └─────────────────────────────────────────────────────────┘
+#
+#  This file configures the Discord integration (v1.9.0).
+#  Axentra works fine without Discord: the bot is off by default.
+#  After making changes, use /axentra reload to apply them.
+#
+#  Quick setup:
+#   1. Go to https://discord.com/developers/applications and create an application.
+#   2. Open "Bot", click "Reset Token" and paste the token below. Never share it.
+#   3. On the same "Bot" page, turn on these Privileged Gateway Intents:
+#        - SERVER MEMBERS INTENT   (instant role updates from Discord to Minecraft)
+#        - MESSAGE CONTENT INTENT  (staff chat from Discord to Minecraft)
+#      Without them Axentra still starts: Discord staff chat is off, and role changes made
+#      in Discord are only picked up by the periodic role sync.
+#   4. Open "OAuth2" > "URL Generator", tick the scopes "bot" and "applications.commands",
+#      and give the bot: View Channels, Send Messages, Embed Links, Attach Files,
+#      Read Message History, Manage Messages, Create Public Threads, Manage Webhooks,
+#      Manage Roles and Manage Nicknames. Open the URL and invite the bot.
+#   5. In Discord, turn on Developer Mode (User Settings > Advanced), then right-click
+#      your server and channels and use "Copy ID" to fill in the IDs below.
+#
+# ══════════════════════════════════════════════════════════
+
+# Turn the bot on or off. Also needs "discord: true" under enabled-modules in config.yml.
+enabled: false
+
+# Your bot token from the Developer Portal. Never share this — anyone with it controls your bot.
+token: ""
+
+# The ID of your Discord server (right-click the server icon > Copy ID).
+guild-id: ""
+
+# Your server's name, shown in embed footers and DMs ({server}).
+server-name: "Minecraft"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Bot Status                         │
+# └─────────────────────────────────────────────────────────┘
+
+status:
+  # PLAYING, WATCHING or LISTENING
+  type: WATCHING
+  # Placeholders: {online}, {max}. Updated every minute.
+  text: "{online}/{max} players"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                       Channels                          │
+# └─────────────────────────────────────────────────────────┘
+
+# Channel IDs (right-click a channel > Copy ID). Leave an ID empty to turn that channel off.
+#
+# Webhooks: channels without buttons (alerts, join-leave, weekly-report, chat, staffchat, console)
+# can post through a webhook instead of the bot. Create one in Discord under Channel settings >
+# Integrations > Webhooks, copy its URL and paste it at "webhook". Webhook messages:
+#   - also work when the bot is off (enabled: false) — only the discord module must be on
+#   - keep coming while the bot reconnects, and don't count towards the bot's rate limits
+#   - use the name and picture you give the webhook in Discord (chat shows each player's head)
+# Messages from Discord to Minecraft (chat, staffchat, console commands) still need the bot and
+# the channel ID. Keep webhook URLs secret: anyone with the URL can post in that channel.
+channels:
+  cases:
+    enabled: true
+    id: ""
+  reports:
+    enabled: true
+    id: ""
+  staffchat:
+    enabled: true
+    id: ""
+    webhook: ""
+  alerts:
+    enabled: true
+    id: ""
+    webhook: ""
+  join-leave:
+    enabled: false
+    id: ""
+    webhook: ""
+  appeals:
+    enabled: true
+    id: ""
+  weekly-report:
+    enabled: true
+    id: ""
+    webhook: ""
+  # Public chat between Minecraft and Discord (see the chat section below).
+  chat:
+    enabled: false
+    id: ""
+    webhook: ""
+  # Server console in Discord. Only give admins access to this channel (see the console section below).
+  console:
+    enabled: false
+    id: ""
+    webhook: ""
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Staff Roles                        │
+# └─────────────────────────────────────────────────────────┘
+
+# Discord role IDs that may use the staff slash commands (/case, /history, /lookup, /health)
+# and see staff buttons. /link, /unlink, /online and /appeal are available to everyone.
+staff-roles: []
+#  - "123456789012345678"
+
+# Show staff command replies only to the user who ran them.
+ephemeral-replies: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                    Account Linking                      │
+# └─────────────────────────────────────────────────────────┘
+
+linking:
+  # Kick players who haven't linked their Discord yet. They get their link code in the kick screen.
+  # Bypass permission: Axentra.link.bypass
+  require-link: false
+  # Only allow one Discord account per Minecraft account, and the other way around.
+  one-to-one: true
+  # How long a /link code stays valid.
+  code-minutes: 5
+  # Remind players who haven't linked yet when they join, with a clickable button.
+  join-reminder: true
+  # Set the Discord nickname to the Minecraft name. The bot's role must be above the
+  # member's highest role, and the server owner's nickname can never be changed.
+  sync-nickname: false
+  # Optional role ID that every linked member gets. Empty = none.
+  linked-role: ""
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Role Sync                          │
+# └─────────────────────────────────────────────────────────┘
+
+role-sync:
+  enabled: false
+  # MINECRAFT_TO_DISCORD - Minecraft permissions give Discord roles (recommended)
+  # DISCORD_TO_MINECRAFT - Discord roles give Minecraft permissions
+  # BOTH                 - both directions; roles are then only added from Minecraft, never removed
+  # Note: Discord -> Minecraft can only grant permissions that Axentra itself adds while the
+  # player is online. It cannot change groups in LuckPerms or other permission plugins.
+  direction: MINECRAFT_TO_DISCORD
+  # How often online players are synced (they are also synced on join and when linking).
+  interval-minutes: 10
+  # Remove synced roles when a player unlinks.
+  remove-on-unlink: true
+  # Map a name to a Discord role ID. A player with permission Axentra.discord.role.<name>
+  # gets that role. Roles that are not listed here are never touched.
+  roles: {}
+  #  vip: "123456789012345678"
+  #  staff: "234567890123456789"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Staff Chat                         │
+# └─────────────────────────────────────────────────────────┘
+
+staffchat:
+  # Send in-game staff chat to Discord through a webhook with the player's head as avatar.
+  # When false, the bot posts a normal message. Needs the "Manage Webhooks" permission.
+  # Not used when channels.staffchat.webhook is set: that webhook is always used.
+  use-webhook: true
+  # Format for normal (non-webhook) messages sent to Discord. Placeholders: {player}, {message}
+  to-discord-format: "**{player}**: {message}"
+  # Format for Discord messages shown in-game. Only linked members with a staff role are relayed,
+  # and the bot needs the MESSAGE CONTENT intent to read them.
+  # Placeholders: {name} (Minecraft name), {discord} (Discord name), {message}
+  to-minecraft-format: "&8[&9Discord&8] &e{name} &8» &f{message}"
+  # React with ✅ on Discord messages that were shown in-game.
+  confirm-reaction: false
+  # Minecraft can't show images, so attachments from Discord become clickable links that open
+  # in the browser. Placeholder for the hover text: {name} (file name)
+  image-label: "&b[Image]"
+  file-label: "&b[File]"
+  attachment-hover: "&7Click to open &f{name}"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Public Chat                        │
+# └─────────────────────────────────────────────────────────┘
+
+# Minecraft chat <-> the "chat" channel. Muted players and staff chat are never sent to Discord.
+# Discord -> Minecraft needs the MESSAGE CONTENT intent.
+chat:
+  # Post Minecraft chat through a webhook with each player's name and head.
+  # Not used when channels.chat.webhook is set: that webhook is always used.
+  use-webhook: true
+  # Format without a webhook. Placeholders: {player}, {message}
+  to-discord-format: "**{player}**: {message}"
+  # Format in Minecraft. Placeholders: {name} (linked Minecraft name, else Discord name), {discord}, {message}
+  to-minecraft-format: "&9[Discord] &f{name}&7: &f{message}"
+  # Only relay Discord messages from members who linked their account.
+  require-link: false
+  # Allow bold, italics and links from Minecraft chat. Off = shown as typed, and nobody can post masked links.
+  allow-markdown: false
+  # Don't send chat of vanished staff to Discord.
+  skip-vanished: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                       Console                           │
+# └─────────────────────────────────────────────────────────┘
+
+# The server console in the "console" channel. Only admins should be able to see that channel:
+# the console shows player names, plugin errors and everything else the server logs.
+console:
+  # Hide IP addresses in the console output.
+  hide-ips: true
+  # Send collected lines every this many seconds.
+  flush-seconds: 3
+  # Run console commands by typing them in the channel. Off by default — this gives full control
+  # over the server, so only enable it if you trust everyone with a role below.
+  allow-commands: false
+  # Role IDs that may run commands. Separate from staff-roles on purpose.
+  roles: []
+  # Commands that can never be run from Discord, also with a prefix like minecraft:stop.
+  blocked-commands:
+    - stop
+    - restart
+    - reload
+    - op
+    - deop
+    - lp
+    - luckperms
+    - pex
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                        Reports                          │
+# └─────────────────────────────────────────────────────────┘
+
+reports:
+  # Open a discussion thread under every report message. Needs "Create Public Threads".
+  create-thread: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                        Alerts                           │
+# └─────────────────────────────────────────────────────────┘
+
+# Which events are posted to the alerts channel.
+alerts:
+  alts: true
+  vpn: true
+  lag: true
+  lag-recovered: true
+  maintenance: true
+  restarts: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Join / Leave                       │
+# └─────────────────────────────────────────────────────────┘
+
+join-leave:
+  # Joins and leaves within this many seconds are sent as one message.
+  batch-seconds: 10
+  # Show first joins separately.
+  first-join: true
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                      Ban Appeals                        │
+# └─────────────────────────────────────────────────────────┘
+
+appeals:
+  enabled: true
+  # Days before a player can appeal the same case again after a denial.
+  cooldown-days: 7
+  # Send the player a DM with the decision (ignored if their DMs are closed).
+  dm-result: true
+  # Role ID to ping in the appeals channel when a new appeal comes in. Empty = no ping.
+  ping-role: ""
+  # Questions in the appeal form (max 4). Each answer can be up to 1000 characters.
+  questions:
+    - "Why should you be unbanned?"
+    - "What went wrong?"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                     Weekly Report                       │
+# └─────────────────────────────────────────────────────────┘
+
+weekly-report:
+  enabled: true
+  # MONDAY, TUESDAY, ... SUNDAY
+  day: MONDAY
+  # 24h time
+  time: "09:00"
+  # Timezone, e.g. Europe/Amsterdam or UTC
+  timezone: "UTC"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                        Embeds                           │
+# └─────────────────────────────────────────────────────────┘
+
+embeds:
+  # Colors in hex.
+  colors:
+    ban: "#E53935"
+    tempban: "#E53935"
+    mute: "#FB8C00"
+    tempmute: "#FB8C00"
+    warn: "#FDD835"
+    kick: "#8E24AA"
+    freeze: "#29B6F6"
+    report: "#00BCD4"
+    alert: "#FF7043"
+    success: "#43A047"
+    info: "#00BCD4"
+    appeal: "#5C6BC0"
+  # Footer on every embed. Placeholders: {server}
+  footer: "Axentra • {server}"
+  # Show player heads as thumbnails.
+  thumbnails: true
+  # Avatar service for player heads. Placeholders: {uuid}, {name}
+  avatar-url: "https://mc-heads.net/avatar/{uuid}/64"
+  # Link on player names. Placeholders: {uuid}, {name}. Empty = no link.
+  profile-url: "https://namemc.com/profile/{uuid}"
+
+# ┌─────────────────────────────────────────────────────────┐
+# │                       Messages                          │
+# └─────────────────────────────────────────────────────────┘
+
+# Everything the bot writes in Discord. Placeholders are shown per message.
+messages:
+  # ── Cases ──
+  case-title: "Case #{id} – {type}"
+  case-field-player: "Player"
+  case-field-reason: "Reason"
+  case-field-duration: "Duration"
+  case-field-expires: "Expires"
+  case-field-staff: "Staff"
+  case-field-source: "Source"
+  case-field-trust: "Trust level"
+  case-field-previous: "Previous cases"
+  case-field-status: "Status"
+  case-field-chatlog: "Chat log"
+  case-chatlog-attached: "Too long to show here — see the attached file."
+  case-permanent: "Permanent"
+  case-status-active: "Active"
+  case-status-resolved: "Resolved"
+  case-status-appealed: "Lifted after appeal"
+  case-status-unbanned: "Unbanned"
+  case-status-unmuted: "Unmuted"
+  case-status-reduced: "Reduced after appeal"
+  case-status-deleted: "Deleted"
+  case-status-expired: "Expired"
+  case-status-by: "{status} by {staff}"
+  case-not-found: "Case #{id} was not found."
+  source-ingame: "In-game"
+  source-discord: "Discord"
+  source-console: "Console"
+  source-auto: "Automatic"
+
+  # ── Reports ──
+  report-title: "Report #{id} – {target}"
+  report-field-reporter: "Reported by"
+  report-field-target: "Player"
+  report-field-reason: "Reason"
+  report-field-location: "Location"
+  report-field-status: "Status"
+  report-field-chatlog: "Chat log"
+  report-status-open: "Open"
+  report-status-claimed: "Claimed by {staff}"
+  report-status-closed: "Closed by {staff}"
+  report-status-closed-case: "Closed by {staff} • Case #{case}"
+  report-button-claim: "Claim"
+  report-button-close: "Close"
+  report-claimed: "You claimed report #{id}."
+  report-closed: "You closed report #{id}."
+  report-already-closed: "Report #{id} is already closed."
+  report-thread-name: "Report #{id} – {target}"
+
+  # ── Alerts ──
+  alert-alt-title: "Alt account detected"
+  alert-alt-description: "**{player}** joined with **{alts}** alt account(s), **{banned}** of them banned."
+  alert-vpn-title: "VPN detected"
+  alert-vpn-description: "**{player}** joined using a VPN or proxy."
+  alert-lag-title: "Low TPS"
+  alert-lag-description: "TPS dropped to **{tps}** for {seconds}s. Heaviest chunk: {chunk}"
+  alert-lag-recovered-title: "TPS recovered"
+  alert-lag-recovered-description: "TPS is back to **{tps}**."
+  alert-maintenance-on-title: "Maintenance started"
+  alert-maintenance-on-description: "Started by **{by}**. Reason: {reason}. Duration: {duration}"
+  alert-maintenance-off-title: "Maintenance ended"
+  alert-maintenance-off-description: "The server is open again."
+  alert-restart-title: "Restart scheduled"
+  alert-restart-description: "The server restarts in **{time}**."
+
+  # ── Join / leave ──
+  join-title: "Player activity"
+  join-line: "➕ **{player}** joined"
+  first-join-line: "✨ **{player}** joined for the first time"
+  leave-line: "➖ **{player}** left"
+  join-footer: "{online} online"
+
+  # ── Linking ──
+  link-success: "Linked to **{player}**."
+  link-invalid-code: "That code is invalid or expired.\nTo get a new code: join the Minecraft server, type **/link** in the chat, and use the 6-digit code here with `/link <code>`."
+  link-already-linked: "Your Discord is already linked to **{player}**. Use /unlink first."
+  link-player-taken: "**{player}** is already linked to another Discord account."
+  unlink-success: "Your Discord is no longer linked to **{player}**."
+  unlink-not-linked: "Your Discord isn't linked to a Minecraft account."
+  console-commands-off: "Running commands from Discord is turned off (console.allow-commands in discord.yml)."
+  console-no-permission: "You need a role from console.roles to run console commands."
+  console-blocked: "`{command}` can't be run from Discord."
+  console-skipped: "… {lines} console lines were skipped because the console was too busy."
+  chat-not-linked: "Only linked members can talk to Minecraft from here. Type **/link** in Minecraft to get a code."
+  chat-muted: "You're muted or banned in Minecraft, so this message wasn't sent to the server."
+  staffchat-not-linked: "This message wasn't sent to Minecraft because your Discord isn't linked. Type **/link** in Minecraft and use the code here with `/link <code>`."
+
+  # ── Slash commands ──
+  command-no-permission: "You need a staff role to use this command."
+  command-not-ready: "The server isn't ready yet. Try again in a moment."
+  player-not-found: "No player named **{player}** has joined this server."
+  history-title: "History of {player}"
+  history-field-totals: "Totals"
+  history-field-latest: "Latest cases"
+  history-none: "No cases."
+  lookup-title: "Lookup: {player}"
+  lookup-field-trust: "Trust"
+  lookup-field-risk: "Risk score"
+  lookup-field-alts: "Alts"
+  lookup-alts-value: "{alts} ({banned} banned)"
+  lookup-field-playtime: "Playtime"
+  lookup-field-first-join: "First join"
+  lookup-field-last-seen: "Last seen"
+  lookup-field-discord: "Discord"
+  lookup-field-notes: "Staff notes"
+  lookup-online-now: "Online now"
+  lookup-never: "Never"
+  lookup-not-linked: "Not linked"
+  online-title: "Online players ({online}/{max})"
+  online-none: "Nobody is online."
+  online-field-staff: "Staff on duty"
+  online-field-players: "Players"
+  health-title: "Server health"
+  health-field-score: "Health score"
+  health-field-tps: "TPS (1m / 5m / 15m)"
+  health-field-mspt: "MSPT (avg / max)"
+  health-field-players: "Players"
+  health-field-memory: "Memory"
+  health-unavailable: "Server health is turned off on this server."
+
+  # ── Appeals ──
+  appeal-modal-title: "Appeal case #{id}"
+  appeal-modal-name: "Your Minecraft name"
+  appeal-need-case: "Add your case number, e.g. `/appeal 42` (it's on your ban screen). Or link your account first with /link, then just type /appeal."
+  appeal-no-active: "Your linked account has no active ban or mute to appeal."
+  appeal-pick: "You have more than one active punishment. Which one do you want to appeal?"
+  appeal-pick-placeholder: "Choose a case…"
+  appeal-not-found: "Case #{id} doesn't exist."
+  appeal-not-appealable: "Only active bans and mutes can be appealed."
+  appeal-not-yours: "This case doesn't belong to your linked Minecraft account."
+  appeal-link-required: "Link your Minecraft account first: join the server, run /link and use /link <code> here."
+  appeal-name-mismatch: "That Minecraft name doesn't match case #{id}."
+  appeal-already-open: "There's already an open appeal for case #{id}."
+  appeal-cooldown: "Your last appeal for case #{id} was denied. You can appeal again in {days} day(s)."
+  appeal-submitted: "Your appeal for case #{id} was sent to the staff team. You'll hear back here or by DM."
+  appeal-disabled: "Appeals are turned off on this server."
+  appeal-title: "Appeal for case #{id} – {player}"
+  appeal-field-case: "Case"
+  appeal-field-chatlog: "Chat log"
+  appeal-field-previous: "Previous cases"
+  appeal-field-notes: "Staff notes"
+  appeal-field-profile: "Profile"
+  appeal-profile-value: "Trust: {trust} • Risk: {risk} • Alts: {alts} • Playtime: {playtime} • First join: {first}"
+  appeal-field-status: "Status"
+  appeal-status-open: "Waiting for a decision"
+  appeal-status-accepted: "Accepted by {staff}"
+  appeal-status-denied: "Denied by {staff}"
+  appeal-status-denied-reason: "Denied by {staff}: {reason}"
+  appeal-status-reduced: "Reduced to {duration} by {staff}"
+  appeal-button-accept: "Accept"
+  appeal-button-deny: "Deny"
+  appeal-button-reduce: "Reduce"
+  appeal-button-thread: "Discuss"
+  appeal-thread-name: "Appeal #{id} – {player}"
+  appeal-deny-modal-title: "Deny appeal"
+  appeal-deny-modal-reason: "Reason (optional)"
+  appeal-reduce-modal-title: "Reduce punishment"
+  appeal-reduce-modal-duration: "New duration from now (e.g. 3d, 12h)"
+  appeal-reduce-invalid: "That duration is invalid. Use a format like 3d, 12h or 1d12h."
+  appeal-not-allowed: "You need to link your Minecraft account and have the right in-game permission to decide on appeals."
+  appeal-already-decided: "This appeal was already handled."
+  appeal-decided: "Done."
+  appeal-dm-accepted: "Your appeal for case #{id} on **{server}** was accepted. You can join again!"
+  appeal-dm-denied: "Your appeal for case #{id} on **{server}** was denied."
+  appeal-dm-denied-reason: "Your appeal for case #{id} on **{server}** was denied: {reason}"
+  appeal-dm-reduced: "Your appeal for case #{id} on **{server}** was partly accepted. Your punishment now ends in {duration}."
+
+  # ── Moderation from Discord ──
+  punish-placeholder: "Punish {player}…"
+  punish-confirm: "Apply **{template}** to **{player}**?"
+  punish-button-confirm: "Confirm"
+  punish-button-cancel: "Cancel"
+  punish-cancelled: "Cancelled."
+  punish-done: "Applied **{type}** to **{player}** (Case #{id})."
+  punish-failed: "Couldn't apply the punishment: {reason}"
+  punish-not-allowed: "You need to link your Minecraft account and have the in-game permission for this punishment."
+
+  # ── Weekly report ──
+  weekly-title: "Weekly report"
+  weekly-description: "{from} – {to}"
+  weekly-field-players: "Players"
+  weekly-players-value: "{new} new • {unique} unique\nPeak: {peak} on {peak_time}"
+  weekly-field-playtime: "Playtime"
+  weekly-playtime-value: "{total} total • {avg} avg. session"
+  weekly-field-cases: "Cases"
+  weekly-field-templates: "Top punishments"
+  weekly-field-staff: "Top staff"
+  weekly-staff-line: "{rank}. **{name}** – {cases} cases, {reports} reports, {duty} on duty"
+  weekly-field-appeals: "Appeals"
+  weekly-appeals-value: "{submitted} submitted • {accepted} accepted • {denied} denied"
+  weekly-field-performance: "Performance"
+  weekly-performance-value: "{tps} avg. TPS • {alerts} lag alerts • {health} avg. health"
+  weekly-none: "None"

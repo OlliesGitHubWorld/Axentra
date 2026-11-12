@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>mc.ollie</groupId>
   <artifactId>axentra</artifactId>
-  <version>1.8.0</version>
+  <version>1.9.0</version>
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
@@ -32,6 +32,22 @@
       <groupId>org.jetbrains</groupId>
       <artifactId>annotations</artifactId>
       <version>24.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- JDA (Discord). Provided: the server downloads it at startup via the
+         libraries: list in plugin.yml, so it is not shaded into the jar. -->
+    <dependency>
+      <groupId>net.dv8tion</groupId>
+      <artifactId>JDA</artifactId>
+      <version>5.6.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Log4j core, only to read the server console for the Discord console channel.
+         Spigot and Paper already ship it, so it is never put in the jar. -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.22.1</version>
       <scope>provided</scope>
     </dependency>
     <!-- bStats -->

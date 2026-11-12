@@ -65,12 +65,18 @@ public class HistoryCommand implements CommandExecutor, TabCompleter {
         String playerName = args[0];
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             List<DatabaseManager.CaseInfo> cases = plugin.getDatabaseManager().getCasesByPlayer(playerName);
-            Bukkit.getScheduler().runTask(plugin, () -> showHistory(sender, playerName, cases));
+            String discordName = null;
+            if (!cases.isEmpty()) {
+                DatabaseManager.DiscordLink link = plugin.getDatabaseManager().getLinkByUuid(cases.get(0).playerUuid);
+                if (link != null) discordName = link.discordName;
+            }
+            String finalDiscord = discordName;
+            Bukkit.getScheduler().runTask(plugin, () -> showHistory(sender, playerName, cases, finalDiscord));
         });
         return true;
     }
 
-    private void showHistory(CommandSender sender, String playerName, List<DatabaseManager.CaseInfo> cases) {
+    private void showHistory(CommandSender sender, String playerName, List<DatabaseManager.CaseInfo> cases, String discordName) {
         if (!(sender instanceof Player)) {
             // Console output
             showConsoleHistory(sender, playerName, cases);
@@ -83,7 +89,7 @@ public class HistoryCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!((Player) sender).isOnline()) return;
-        new HistoryGUI(plugin, playerName, cases).open((Player) sender, 0);
+        new HistoryGUI(plugin, playerName, cases).setDiscordName(discordName).open((Player) sender, 0);
     }
 
     private void showConsoleHistory(CommandSender sender, String playerName, List<DatabaseManager.CaseInfo> cases) {

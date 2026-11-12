@@ -37,7 +37,8 @@ public class TimelineCommand implements CommandExecutor, TabCompleter {
                     .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
         if (args.length == 2) {
-            return Arrays.asList("JOIN", "QUIT", "CASE", "DEATH", "NAME_CHANGE", "TRUST_CHANGE", "FREEZE", "NOTE", "REPORT")
+            return Arrays.asList("JOIN", "QUIT", "CASE", "DEATH", "NAME_CHANGE", "TRUST_CHANGE", "FREEZE", "NOTE", "REPORT",
+                            "DISCORD_LINK", "APPEAL")
                     .stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
         return Collections.emptyList();
@@ -187,9 +188,49 @@ public class TimelineCommand implements CommandExecutor, TabCompleter {
             } catch (Exception ignored) {}
         }
 
+        // Discord links and appeals from the audit log (v1.9.0)
+        boolean wantLink = filter == null || filter.equals("DISCORD_LINK");
+        boolean wantAppeal = filter == null || filter.equals("APPEAL");
+        if (wantLink || wantAppeal) {
+            try (java.sql.PreparedStatement stmt = plugin.getDatabaseManager().getConnection().prepareStatement(
+                    "SELECT action, details, timestamp FROM audit_log WHERE target = ? AND action IN "
+                            + "('DISCORD_LINK','DISCORD_UNLINK','APPEAL_SUBMITTED','APPEAL_ACCEPTED','APPEAL_DENIED','APPEAL_REDUCED') "
+                            + "ORDER BY timestamp DESC LIMIT 100")) {
+                stmt.setString(1, playerName);
+                try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        String action = rs.getString("action");
+                        String details = rs.getString("details");
+                        long time = parseAuditTime(rs.getString("timestamp"));
+                        if (action.startsWith("DISCORD_") && wantLink) {
+                            boolean link = action.equals("DISCORD_LINK");
+                            entries.add(new TimelineGUI.TimelineEntry("DISCORD_LINK", time,
+                                    (link ? "Linked Discord " : "Unlinked Discord ") + (details != null ? details : ""),
+                                    link ? ChatColor.BLUE : ChatColor.GRAY));
+                        } else if (action.startsWith("APPEAL_") && wantAppeal) {
+                            entries.add(new TimelineGUI.TimelineEntry("APPEAL", time,
+                                    action.substring(7).toLowerCase() + (details != null ? ": " + details : ""),
+                                    ChatColor.GOLD));
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
         // Sort by time descending
         entries.sort((a, b) -> Long.compare(b.time, a.time));
         return entries;
+    }
+
+    /** audit_log stores CURRENT_TIMESTAMP (UTC text); older rows may hold epoch millis. */
+    private long parseAuditTime(String value) {
+        if (value == null) return System.currentTimeMillis();
+        try { return Long.parseLong(value); } catch (NumberFormatException ignored) { }
+        try {
+            return java.time.LocalDateTime.parse(value.replace(' ', 'T')).toInstant(java.time.ZoneOffset.UTC).toEpochMilli();
+        } catch (Exception e) {
+            return System.currentTimeMillis();
+        }
     }
 
     private String formatDuration(long millis) {

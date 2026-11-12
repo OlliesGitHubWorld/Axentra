@@ -81,10 +81,22 @@ public class DatabaseManager {
         public final String expiresAt;
         public final boolean active;
         public final String chatLog;
+        /** INGAME, DISCORD, CONSOLE or AUTO (v1.9.0). */
+        public final String source;
+        /** Outcome after the case ended: UNBANNED, UNMUTED, APPEALED, REDUCED, or null (v1.9.0). */
+        public final String status;
 
         public CaseInfo(int id, String type, String playerName, String playerUuid,
                         String reason, String issuedBy, String issuedAt, String expiresAt,
                         boolean active, String chatLog) {
+            this(id, type, playerName, playerUuid, reason, issuedBy, issuedAt, expiresAt, active, chatLog, "INGAME", null);
+        }
+
+        public CaseInfo(int id, String type, String playerName, String playerUuid,
+                        String reason, String issuedBy, String issuedAt, String expiresAt,
+                        boolean active, String chatLog, String source, String status) {
+            this.source = source != null ? source : "INGAME";
+            this.status = status;
             this.id = id;
             this.type = type;
             this.playerName = playerName;
@@ -675,6 +687,14 @@ public class DatabaseManager {
                                 ")"
                 );
 
+                // v1.9.0: where a case came from (INGAME/DISCORD/CONSOLE/AUTO) and its outcome (UNBANNED, APPEALED, ...)
+                try {
+                    statement.executeUpdate("ALTER TABLE cases ADD COLUMN source TEXT DEFAULT 'INGAME'");
+                } catch (SQLException ignored) { }
+                try {
+                    statement.executeUpdate("ALTER TABLE cases ADD COLUMN status TEXT");
+                } catch (SQLException ignored) { }
+
                 statement.executeUpdate(
                         "CREATE TABLE IF NOT EXISTS staff_notes (" +
                                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -978,6 +998,67 @@ public class DatabaseManager {
                 try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chunk_activity_chunk ON chunk_activity(world, chunk_x, chunk_z)"); } catch (SQLException ignored) {}
                 try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chunk_activity_player ON chunk_activity(player_uuid)"); } catch (SQLException ignored) {}
                 try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_chunk_activity_time ON chunk_activity(time)"); } catch (SQLException ignored) {}
+
+                // ── Discord tables (v1.9.0) ──
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS discord_links (" +
+                                "player_uuid TEXT NOT NULL," +
+                                "player_name TEXT," +
+                                "discord_id TEXT NOT NULL," +
+                                "discord_name TEXT," +
+                                "linked_at INTEGER NOT NULL," +
+                                // Comma-separated Axentra permissions the player had on their last join,
+                                // used to check offline staff that act from Discord
+                                "perm_snapshot TEXT," +
+                                "PRIMARY KEY (player_uuid, discord_id)" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS link_codes (" +
+                                "code TEXT PRIMARY KEY," +
+                                "player_uuid TEXT NOT NULL," +
+                                "player_name TEXT," +
+                                "expires_at INTEGER NOT NULL" +
+                                ")"
+                );
+
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS appeals (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "case_id INTEGER NOT NULL," +
+                                "player_uuid TEXT," +
+                                "player_name TEXT," +
+                                "discord_id TEXT NOT NULL," +
+                                "answers TEXT," +
+                                "status TEXT NOT NULL DEFAULT 'OPEN'," +
+                                "decided_by TEXT," +
+                                "decision TEXT," +
+                                "created_at INTEGER NOT NULL," +
+                                "decided_at INTEGER" +
+                                ")"
+                );
+
+                // Which Discord message shows a case, report or appeal, so it can be edited later
+                statement.executeUpdate(
+                        "CREATE TABLE IF NOT EXISTS discord_messages (" +
+                                "kind TEXT NOT NULL," +
+                                "ref_id INTEGER NOT NULL," +
+                                "channel_id TEXT NOT NULL," +
+                                "message_id TEXT NOT NULL," +
+                                "PRIMARY KEY (kind, ref_id)" +
+                                ")"
+                );
+
+                // AFK time per session, excluded from playtime and trust progression
+                try {
+                    statement.executeUpdate("ALTER TABLE player_sessions ADD COLUMN afk_seconds INTEGER DEFAULT 0");
+                } catch (SQLException ignored) { }
+
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_discord_links_discord ON discord_links(discord_id)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_appeals_case ON appeals(case_id)"); } catch (SQLException ignored) {}
+                try { statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_cases_issued ON cases(issued_at)"); } catch (SQLException ignored) {}
             }
 
             plugin.logInfo("Database connected!");
@@ -1013,12 +1094,24 @@ public class DatabaseManager {
     }
 
     public void unbanPlayer(String playerName) {
+        unbanPlayer(playerName, "UNBANNED", null);
+    }
+
+    /**
+     * Lifts a ban and closes the player's active ban cases with the given status
+     * (UNBANNED, or APPEALED for an accepted appeal).
+     */
+    public void unbanPlayer(String playerName, String caseStatus, String actor) {
         try (PreparedStatement stmt = connection.prepareStatement(
                 "UPDATE bans SET active = 0 WHERE LOWER(player_name) = LOWER(?) AND active = 1")) {
             stmt.setString(1, playerName);
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to unban player: " + e.getMessage());
+            return;
+        }
+        for (int caseId : getActiveCaseIds(playerName, "BAN", "TEMPBAN")) {
+            setCaseStatus(caseId, caseStatus, false, actor);
         }
     }
 
@@ -1197,6 +1290,11 @@ public class DatabaseManager {
     }
 
     public void unmutePlayer(String playerName) {
+        unmutePlayer(playerName, "UNMUTED", null);
+    }
+
+    /** Lifts a mute and closes the player's active mute cases with the given status. */
+    public void unmutePlayer(String playerName, String caseStatus, String actor) {
         try (PreparedStatement stmt = connection.prepareStatement(
                 "UPDATE mutes SET active = 0 WHERE LOWER(player_name) = LOWER(?) AND active = 1")) {
             stmt.setString(1, playerName);
@@ -1206,6 +1304,9 @@ public class DatabaseManager {
         }
         // Unmute goes by name, so we can't map it to one UUID; unmutes are rare, just reload everyone
         muteCache.clear();
+        for (int caseId : getActiveCaseIds(playerName, "MUTE", "TEMPMUTE")) {
+            setCaseStatus(caseId, caseStatus, false, actor);
+        }
     }
 
     /**
@@ -1369,10 +1470,22 @@ public class DatabaseManager {
 
     public int createCase(String type, String playerName, String playerUuid,
                           String reason, String issuedBy, Timestamp expiresAt, String chatLog) {
+        String source = "CONSOLE".equalsIgnoreCase(issuedBy) ? "CONSOLE" : "INGAME";
+        return createCase(type, playerName, playerUuid, reason, issuedBy, expiresAt, chatLog, source);
+    }
+
+    /**
+     * Saves a case and fires {@link mc.ollie.event.CaseCreatedEvent}.
+     *
+     * @param source INGAME, DISCORD, CONSOLE or AUTO
+     */
+    public int createCase(String type, String playerName, String playerUuid,
+                          String reason, String issuedBy, Timestamp expiresAt, String chatLog, String source) {
         // Kicks and warns are instant actions — mark them inactive immediately
         boolean instant = type.equals("KICK") || type.equals("WARN");
+        int caseId = -1;
         try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO cases (type, player_name, player_uuid, reason, issued_by, expires_at, chat_log, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO cases (type, player_name, player_uuid, reason, issued_by, expires_at, chat_log, active, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, type);
             stmt.setString(2, playerName);
@@ -1382,14 +1495,87 @@ public class DatabaseManager {
             stmt.setTimestamp(6, expiresAt);
             stmt.setString(7, chatLog);
             stmt.setInt(8, instant ? 0 : 1);
+            stmt.setString(9, source);
             stmt.executeUpdate();
             try (ResultSet keys = stmt.getGeneratedKeys()) {
-                if (keys.next()) return keys.getInt(1);
+                if (keys.next()) caseId = keys.getInt(1);
             }
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to create case: " + e.getMessage());
         }
+        if (caseId > 0) {
+            mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.CaseCreatedEvent(caseId, type, playerName, playerUuid,
+                    reason, issuedBy, expiresAt != null ? expiresAt.getTime() : 0, source, chatLog));
+        }
+        return caseId;
+    }
+
+    /** Ends a case with an outcome (UNBANNED, APPEALED, ...) and fires CaseUpdatedEvent. */
+    public void setCaseStatus(int caseId, String status, boolean active, String actor) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE cases SET status = ?, active = ? WHERE id = ?")) {
+            stmt.setString(1, status);
+            stmt.setInt(2, active ? 1 : 0);
+            stmt.setInt(3, caseId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to update case status: " + e.getMessage());
+            return;
+        }
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.CaseUpdatedEvent(caseId, status, actor));
+    }
+
+    /** Changes the end time of a case (and the matching ban or mute) and fires CaseUpdatedEvent REDUCED. */
+    public void setCaseExpiry(int caseId, Timestamp expiresAt, String actor) {
+        CaseInfo info = getCase(caseId);
+        if (info == null) return;
+        String table = info.type.contains("BAN") ? "bans" : "mutes";
+        try (PreparedStatement stmt = connection.prepareStatement("UPDATE cases SET expires_at = ?, status = 'REDUCED' WHERE id = ?");
+             PreparedStatement pun = connection.prepareStatement(
+                     "UPDATE " + table + " SET expires_at = ? WHERE player_uuid = ? AND active = 1")) {
+            stmt.setTimestamp(1, expiresAt);
+            stmt.setInt(2, caseId);
+            stmt.executeUpdate();
+            pun.setTimestamp(1, expiresAt);
+            pun.setString(2, info.playerUuid);
+            pun.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to change case expiry: " + e.getMessage());
+            return;
+        }
+        if (table.equals("mutes")) muteCache.remove(info.playerUuid);
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.CaseUpdatedEvent(caseId, "REDUCED", actor));
+    }
+
+    /** Newest active ban case of a player (for the appeal hint on the ban screen), or -1. */
+    public int getActiveBanCaseId(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT id FROM cases WHERE player_uuid = ? AND type IN ('BAN','TEMPBAN') AND active = 1 ORDER BY id DESC LIMIT 1")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get active ban case: " + e.getMessage());
+        }
         return -1;
+    }
+
+    /** Active ban or mute cases of a player, by name. Used to close them when the punishment is lifted. */
+    private List<Integer> getActiveCaseIds(String playerName, String typeA, String typeB) {
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT id FROM cases WHERE LOWER(player_name) = LOWER(?) AND type IN (?, ?) AND active = 1")) {
+            stmt.setString(1, playerName);
+            stmt.setString(2, typeA);
+            stmt.setString(3, typeB);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) ids.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to look up active cases: " + e.getMessage());
+        }
+        return ids;
     }
 
     public CaseInfo getCase(int caseId) {
@@ -1408,7 +1594,8 @@ public class DatabaseManager {
                             rs.getString("issued_at"),
                             rs.getString("expires_at"),
                             rs.getInt("active") == 1,
-                            rs.getString("chat_log")
+                            rs.getString("chat_log"),
+                            rs.getString("source"), rs.getString("status")
                     );
                 }
             }
@@ -1435,7 +1622,8 @@ public class DatabaseManager {
                             rs.getString("issued_at"),
                             rs.getString("expires_at"),
                             rs.getInt("active") == 1,
-                            rs.getString("chat_log")
+                            rs.getString("chat_log"),
+                            rs.getString("source"), rs.getString("status")
                     ));
                 }
             }
@@ -1462,7 +1650,8 @@ public class DatabaseManager {
                             rs.getString("issued_at"),
                             rs.getString("expires_at"),
                             rs.getInt("active") == 1,
-                            rs.getString("chat_log")
+                            rs.getString("chat_log"),
+                            rs.getString("source"), rs.getString("status")
                     ));
                 }
             }
@@ -1524,7 +1713,9 @@ public class DatabaseManager {
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to resolve case: " + e.getMessage());
+            return;
         }
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.CaseUpdatedEvent(caseId, "RESOLVED", null));
     }
 
     public void deleteCase(int caseId) {
@@ -1534,7 +1725,9 @@ public class DatabaseManager {
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to delete case: " + e.getMessage());
+            return;
         }
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.CaseUpdatedEvent(caseId, "DELETED", null));
     }
 
     public int getActiveCaseCountByType(String playerUuid, String type) {
@@ -1775,7 +1968,9 @@ public class DatabaseManager {
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to claim report: " + e.getMessage());
+            return;
         }
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.ReportUpdatedEvent(reportId, "CLAIMED", staffName, 0));
     }
 
     public void closeReport(int reportId, String staffName, Integer linkedCaseId) {
@@ -1788,7 +1983,10 @@ public class DatabaseManager {
             stmt.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to close report: " + e.getMessage());
+            return;
         }
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.ReportUpdatedEvent(reportId, "CLOSED", staffName,
+                linkedCaseId != null ? linkedCaseId : 0));
     }
 
     // ── Staff Sessions (v1.6.0) ─────────────────────────────
@@ -1888,6 +2086,23 @@ public class DatabaseManager {
         return null;
     }
 
+    /**
+     * Finds a player's UUID by their (latest) name: name history first (every player who joined
+     * since v1.7.0), then cases. Returns null for players who never joined.
+     */
+    public String findUuidByName(String playerName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT player_uuid FROM name_history WHERE LOWER(name) = LOWER(?) ORDER BY changed_at DESC LIMIT 1")) {
+            stmt.setString(1, playerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getString(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to find UUID by name: " + e.getMessage());
+        }
+        return getUuidByName(playerName);
+    }
+
     public List<LeaderboardEntry> getStaffLeaderboard(int limit) {
         List<LeaderboardEntry> entries = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(
@@ -1959,9 +2174,11 @@ public class DatabaseManager {
         }
     }
 
+    /** Playtime without AFK time (v1.9.0), used for trust progression and statistics. */
     public long getPlaytimeMinutes(String playerUuid) {
         try (PreparedStatement stmt = connection.prepareStatement(
-                "SELECT SUM(COALESCE(quit_time, ?) - join_time) as total FROM player_sessions WHERE player_uuid = ?")) {
+                "SELECT SUM(COALESCE(quit_time, ?) - join_time) - SUM(COALESCE(afk_seconds, 0)) * 1000 as total "
+                        + "FROM player_sessions WHERE player_uuid = ?")) {
             stmt.setLong(1, System.currentTimeMillis());
             stmt.setString(2, playerUuid);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -2626,6 +2843,51 @@ public class DatabaseManager {
         return altUuids;
     }
 
+    /**
+     * Adds AFK time to the player's latest session (v1.9.0). Targets the newest session by ID, so
+     * it works whether or not the session was already closed on quit.
+     */
+    public void addAfkSeconds(String playerUuid, long seconds) {
+        if (seconds <= 0) return;
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE player_sessions SET afk_seconds = COALESCE(afk_seconds, 0) + ? WHERE id = "
+                        + "(SELECT id FROM player_sessions WHERE player_uuid = ? ORDER BY join_time DESC LIMIT 1)")) {
+            stmt.setLong(1, seconds);
+            stmt.setString(2, playerUuid);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to save AFK time: " + e.getMessage());
+        }
+    }
+
+    /** Start of the player's open session, or 0. */
+    public long getCurrentSessionStart(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT MAX(join_time) FROM player_sessions WHERE player_uuid = ? AND quit_time IS NULL")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get session start: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    /** First recorded session start (sessions exist since v1.7.0), or 0. */
+    public long getFirstSessionTime(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT MIN(join_time) FROM player_sessions WHERE player_uuid = ?")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get first session time: " + e.getMessage());
+        }
+        return 0;
+    }
+
     public long getLastSessionTime(String playerUuid) {
         try (PreparedStatement stmt = connection.prepareStatement(
                 "SELECT MAX(COALESCE(quit_time, join_time)) FROM player_sessions WHERE player_uuid = ?")) {
@@ -3198,6 +3460,476 @@ public class DatabaseManager {
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to clear maintenance: " + e.getMessage());
         }
+    }
+
+    // ── Discord links (v1.9.0) ──────────────────────────────
+
+    public static class DiscordLink {
+        public final String playerUuid;
+        public final String playerName;
+        public final String discordId;
+        public final String discordName;
+        public final long linkedAt;
+        public final String permSnapshot;
+
+        public DiscordLink(String playerUuid, String playerName, String discordId, String discordName,
+                           long linkedAt, String permSnapshot) {
+            this.playerUuid = playerUuid;
+            this.playerName = playerName;
+            this.discordId = discordId;
+            this.discordName = discordName;
+            this.linkedAt = linkedAt;
+            this.permSnapshot = permSnapshot;
+        }
+
+        /** Whether the player had this permission on their last join (for offline staff checks). */
+        public boolean hadPermission(String permission) {
+            if (permSnapshot == null || permSnapshot.isEmpty()) return false;
+            for (String p : permSnapshot.split(",")) {
+                if (p.equalsIgnoreCase(permission)) return true;
+            }
+            return false;
+        }
+    }
+
+    private DiscordLink readLink(ResultSet rs) throws SQLException {
+        return new DiscordLink(rs.getString("player_uuid"), rs.getString("player_name"), rs.getString("discord_id"),
+                rs.getString("discord_name"), rs.getLong("linked_at"), rs.getString("perm_snapshot"));
+    }
+
+    public DiscordLink getLinkByUuid(String playerUuid) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM discord_links WHERE player_uuid = ? ORDER BY linked_at DESC LIMIT 1")) {
+            stmt.setString(1, playerUuid);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return readLink(rs);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get Discord link: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public DiscordLink getLinkByDiscord(String discordId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM discord_links WHERE discord_id = ? ORDER BY linked_at DESC LIMIT 1")) {
+            stmt.setString(1, discordId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return readLink(rs);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get Discord link: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<DiscordLink> getAllLinks() {
+        List<DiscordLink> links = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT * FROM discord_links");
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) links.add(readLink(rs));
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get Discord links: " + e.getMessage());
+        }
+        return links;
+    }
+
+    public void addLink(String playerUuid, String playerName, String discordId, String discordName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT OR REPLACE INTO discord_links (player_uuid, player_name, discord_id, discord_name, linked_at) VALUES (?, ?, ?, ?, ?)")) {
+            stmt.setString(1, playerUuid);
+            stmt.setString(2, playerName);
+            stmt.setString(3, discordId);
+            stmt.setString(4, discordName);
+            stmt.setLong(5, System.currentTimeMillis());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to save Discord link: " + e.getMessage());
+        }
+    }
+
+    /** Removes all links of a player. Returns the removed links. */
+    public List<DiscordLink> removeLinksByUuid(String playerUuid) {
+        return removeLinks("player_uuid", playerUuid);
+    }
+
+    /** Removes all links of a Discord account. Returns the removed links. */
+    public List<DiscordLink> removeLinksByDiscord(String discordId) {
+        return removeLinks("discord_id", discordId);
+    }
+
+    private List<DiscordLink> removeLinks(String column, String value) {
+        List<DiscordLink> removed = new ArrayList<>();
+        try (PreparedStatement select = connection.prepareStatement("SELECT * FROM discord_links WHERE " + column + " = ?");
+             PreparedStatement delete = connection.prepareStatement("DELETE FROM discord_links WHERE " + column + " = ?")) {
+            select.setString(1, value);
+            try (ResultSet rs = select.executeQuery()) {
+                while (rs.next()) removed.add(readLink(rs));
+            }
+            delete.setString(1, value);
+            delete.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to remove Discord link: " + e.getMessage());
+        }
+        return removed;
+    }
+
+    public void updateLinkProfile(String playerUuid, String playerName, String permSnapshot) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE discord_links SET player_name = ?, perm_snapshot = ? WHERE player_uuid = ?")) {
+            stmt.setString(1, playerName);
+            stmt.setString(2, permSnapshot);
+            stmt.setString(3, playerUuid);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to update Discord link: " + e.getMessage());
+        }
+    }
+
+    /** Creates a new 6-digit code for a player, replacing their previous one. */
+    public String createLinkCode(String playerUuid, String playerName, int minutes) {
+        long now = System.currentTimeMillis();
+        try (PreparedStatement clean = connection.prepareStatement(
+                "DELETE FROM link_codes WHERE player_uuid = ? OR expires_at < ?")) {
+            clean.setString(1, playerUuid);
+            clean.setLong(2, now);
+            clean.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to clean link codes: " + e.getMessage());
+        }
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        for (int attempt = 0; attempt < 10; attempt++) {
+            String code = String.format("%06d", random.nextInt(1_000_000));
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO link_codes (code, player_uuid, player_name, expires_at) VALUES (?, ?, ?, ?)")) {
+                stmt.setString(1, code);
+                stmt.setString(2, playerUuid);
+                stmt.setString(3, playerName);
+                stmt.setLong(4, now + minutes * 60_000L);
+                stmt.executeUpdate();
+                return code;
+            } catch (SQLException ignored) {
+                // Code already in use by someone else, try another
+            }
+        }
+        return null;
+    }
+
+    /** Uses up a valid code. Returns {uuid, name}, or null when it's unknown or expired. */
+    public String[] takeLinkCode(String code) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT player_uuid, player_name, expires_at FROM link_codes WHERE code = ?")) {
+            stmt.setString(1, code);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) return null;
+                String[] result = { rs.getString(1), rs.getString(2) };
+                boolean valid = rs.getLong(3) >= System.currentTimeMillis();
+                try (PreparedStatement del = connection.prepareStatement("DELETE FROM link_codes WHERE code = ?")) {
+                    del.setString(1, code);
+                    del.executeUpdate();
+                }
+                return valid ? result : null;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to use link code: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // ── Appeals (v1.9.0) ────────────────────────────────────
+
+    public static class AppealInfo {
+        public final int id;
+        public final int caseId;
+        public final String playerUuid;
+        public final String playerName;
+        public final String discordId;
+        /** question \u001F answer, entries separated by \u001E */
+        public final String answers;
+        /** OPEN, ACCEPTED, DENIED or REDUCED */
+        public final String status;
+        public final String decidedBy;
+        public final String decision;
+        public final long createdAt;
+        public final long decidedAt;
+
+        public AppealInfo(int id, int caseId, String playerUuid, String playerName, String discordId, String answers,
+                          String status, String decidedBy, String decision, long createdAt, long decidedAt) {
+            this.id = id;
+            this.caseId = caseId;
+            this.playerUuid = playerUuid;
+            this.playerName = playerName;
+            this.discordId = discordId;
+            this.answers = answers;
+            this.status = status;
+            this.decidedBy = decidedBy;
+            this.decision = decision;
+            this.createdAt = createdAt;
+            this.decidedAt = decidedAt;
+        }
+
+        /** Question/answer pairs in order. */
+        public List<String[]> answerPairs() {
+            List<String[]> pairs = new ArrayList<>();
+            if (answers == null || answers.isEmpty()) return pairs;
+            for (String entry : answers.split("\u001E")) {
+                String[] qa = entry.split("\u001F", 2);
+                pairs.add(new String[]{ qa[0], qa.length > 1 ? qa[1] : "" });
+            }
+            return pairs;
+        }
+    }
+
+    private AppealInfo readAppeal(ResultSet rs) throws SQLException {
+        return new AppealInfo(rs.getInt("id"), rs.getInt("case_id"), rs.getString("player_uuid"),
+                rs.getString("player_name"), rs.getString("discord_id"), rs.getString("answers"),
+                rs.getString("status"), rs.getString("decided_by"), rs.getString("decision"),
+                rs.getLong("created_at"), rs.getLong("decided_at"));
+    }
+
+    public int createAppeal(int caseId, String playerUuid, String playerName, String discordId, String answers) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO appeals (case_id, player_uuid, player_name, discord_id, answers, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, caseId);
+            stmt.setString(2, playerUuid);
+            stmt.setString(3, playerName);
+            stmt.setString(4, discordId);
+            stmt.setString(5, answers);
+            stmt.setLong(6, System.currentTimeMillis());
+            stmt.executeUpdate();
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to create appeal: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    public AppealInfo getAppeal(int appealId) {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT * FROM appeals WHERE id = ?")) {
+            stmt.setInt(1, appealId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return readAppeal(rs);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get appeal: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /** The newest appeal for a case, or null. */
+    public AppealInfo getLatestAppealForCase(int caseId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM appeals WHERE case_id = ? ORDER BY created_at DESC LIMIT 1")) {
+            stmt.setInt(1, caseId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return readAppeal(rs);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get appeal: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /** Appeals, newest first. onlyOpen = status OPEN only. */
+    public List<AppealInfo> getAppeals(boolean onlyOpen, int limit) {
+        List<AppealInfo> list = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM appeals" + (onlyOpen ? " WHERE status = 'OPEN'" : "") + " ORDER BY created_at DESC LIMIT ?")) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(readAppeal(rs));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get appeals: " + e.getMessage());
+        }
+        return list;
+    }
+
+    /**
+     * Marks an open appeal as decided. Returns false when it was already decided (two staff
+     * clicking at the same time), so only one decision is ever applied.
+     */
+    public boolean decideAppeal(int appealId, String status, String decidedBy, String decision) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "UPDATE appeals SET status = ?, decided_by = ?, decision = ?, decided_at = ? WHERE id = ? AND status = 'OPEN'")) {
+            stmt.setString(1, status);
+            stmt.setString(2, decidedBy);
+            stmt.setString(3, decision);
+            stmt.setLong(4, System.currentTimeMillis());
+            stmt.setInt(5, appealId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to decide appeal: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /** Counts appeals in a time range: {submitted, accepted (incl. reduced), denied}. */
+    public int[] countAppeals(long from, long to) {
+        int[] counts = new int[3];
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT status, COUNT(*) FROM appeals WHERE created_at >= ? AND created_at < ? GROUP BY status")) {
+            stmt.setLong(1, from);
+            stmt.setLong(2, to);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int n = rs.getInt(2);
+                    counts[0] += n;
+                    String status = rs.getString(1);
+                    if ("ACCEPTED".equals(status) || "REDUCED".equals(status)) counts[1] += n;
+                    else if ("DENIED".equals(status)) counts[2] += n;
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to count appeals: " + e.getMessage());
+        }
+        return counts;
+    }
+
+    // ── Weekly report (v1.9.0) ──────────────────────────────
+
+    /** Numbers for the weekly Discord report, all read from existing tables. */
+    public static class WeeklyStats {
+        public int newPlayers, uniquePlayers, peakPlayers, sessions, lagAlerts;
+        public long peakTime, playtimeMillis;
+        public double avgTps, avgHealth;
+        public final Map<String, Integer> casesByType = new java.util.TreeMap<>();
+        public final Map<String, Integer> casesByReason = new HashMap<>();
+        /** staff name -> {cases, reports closed, duty minutes} */
+        public final Map<String, long[]> staff = new HashMap<>();
+        public int[] appeals = new int[3];
+    }
+
+    /** Collects the weekly report numbers for [from, to). Call off the main thread. */
+    public WeeklyStats getWeeklyStats(long from, long to) {
+        WeeklyStats s = new WeeklyStats();
+        // cases.issued_at, staff_sessions and reports use CURRENT_TIMESTAMP (UTC text)
+        java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(java.time.ZoneOffset.UTC);
+        String fromText = fmt.format(java.time.Instant.ofEpochMilli(from));
+        String toText = fmt.format(java.time.Instant.ofEpochMilli(to));
+
+        try {
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM (SELECT player_uuid, MIN(join_time) AS first FROM player_sessions GROUP BY player_uuid) "
+                            + "WHERE first >= ? AND first < ?")) {
+                stmt.setLong(1, from);
+                stmt.setLong(2, to);
+                try (ResultSet rs = stmt.executeQuery()) { if (rs.next()) s.newPlayers = rs.getInt(1); }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT COUNT(DISTINCT player_uuid), COUNT(*), "
+                            + "SUM(MIN(COALESCE(quit_time, ?), ?) - join_time - COALESCE(afk_seconds, 0) * 1000) "
+                            + "FROM player_sessions WHERE join_time >= ? AND join_time < ?")) {
+                stmt.setLong(1, System.currentTimeMillis());
+                stmt.setLong(2, to);
+                stmt.setLong(3, from);
+                stmt.setLong(4, to);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        s.uniquePlayers = rs.getInt(1);
+                        s.sessions = rs.getInt(2);
+                        s.playtimeMillis = Math.max(0, rs.getLong(3));
+                    }
+                }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT online_players, time FROM tps_history WHERE time >= ? AND time < ? ORDER BY online_players DESC, time ASC LIMIT 1")) {
+                stmt.setLong(1, from);
+                stmt.setLong(2, to);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) { s.peakPlayers = rs.getInt(1); s.peakTime = rs.getLong(2); }
+                }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT AVG(tps_1m), AVG(health_score) FROM tps_history WHERE time >= ? AND time < ?")) {
+                stmt.setLong(1, from);
+                stmt.setLong(2, to);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) { s.avgTps = rs.getDouble(1); s.avgHealth = rs.getDouble(2); }
+                }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM lag_alerts WHERE time >= ? AND time < ?")) {
+                stmt.setLong(1, from);
+                stmt.setLong(2, to);
+                try (ResultSet rs = stmt.executeQuery()) { if (rs.next()) s.lagAlerts = rs.getInt(1); }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT type, reason, issued_by FROM cases WHERE issued_at >= ? AND issued_at < ?")) {
+                stmt.setString(1, fromText);
+                stmt.setString(2, toText);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        s.casesByType.merge(rs.getString(1), 1, Integer::sum);
+                        if (rs.getString(2) != null) s.casesByReason.merge(rs.getString(2), 1, Integer::sum);
+                        String by = rs.getString(3);
+                        if (by != null && !by.equalsIgnoreCase("CONSOLE")) {
+                            s.staff.computeIfAbsent(by, k -> new long[3])[0]++;
+                        }
+                    }
+                }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT closed_by, COUNT(*) FROM reports WHERE status = 'CLOSED' AND closed_by IS NOT NULL "
+                            + "AND reported_at >= ? AND reported_at < ? GROUP BY closed_by")) {
+                stmt.setString(1, fromText);
+                stmt.setString(2, toText);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) s.staff.computeIfAbsent(rs.getString(1), k -> new long[3])[1] += rs.getInt(2);
+                }
+            }
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT staff_uuid, SUM((julianday(COALESCE(ended_at, CURRENT_TIMESTAMP)) - julianday(started_at)) * 1440) "
+                            + "FROM staff_sessions WHERE started_at >= ? AND started_at < ? GROUP BY staff_uuid")) {
+                stmt.setString(1, fromText);
+                stmt.setString(2, toText);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        String name = getLastKnownName(rs.getString(1));
+                        if (name != null) s.staff.computeIfAbsent(name, k -> new long[3])[2] += Math.round(rs.getDouble(2));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to collect weekly stats: " + e.getMessage());
+        }
+        s.appeals = countAppeals(from, to);
+        return s;
+    }
+
+    // ── Discord messages (v1.9.0) ───────────────────────────
+
+    /** Remembers which Discord message shows a case, report or appeal (kind CASE/REPORT/APPEAL). */
+    public void saveDiscordMessage(String kind, int refId, String channelId, String messageId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT OR REPLACE INTO discord_messages (kind, ref_id, channel_id, message_id) VALUES (?, ?, ?, ?)")) {
+            stmt.setString(1, kind);
+            stmt.setInt(2, refId);
+            stmt.setString(3, channelId);
+            stmt.setString(4, messageId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to save Discord message: " + e.getMessage());
+        }
+    }
+
+    /** Returns {channelId, messageId}, or null when this case/report/appeal wasn't posted. */
+    public String[] getDiscordMessage(String kind, int refId) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT channel_id, message_id FROM discord_messages WHERE kind = ? AND ref_id = ?")) {
+            stmt.setString(1, kind);
+            stmt.setInt(2, refId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return new String[]{ rs.getString(1), rs.getString(2) };
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to get Discord message: " + e.getMessage());
+        }
+        return null;
     }
 
     public Connection getConnection() {

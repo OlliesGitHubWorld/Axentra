@@ -121,19 +121,51 @@ public class JoinLeaveListener implements Listener {
         }, 1L);
     }
 
-    private void sendSmartJoinAlert(Player player) {
-        if (!plugin.getFileManager().getSettings().getBoolean("enabled-modules.alts", true)) return;
-        if (!plugin.getFileManager().getProtection().getBoolean("alts.notify", true)) return;
+    /**
+     * Checks the joining player's current IP with proxycheck.io (vpn module). This lookup used to
+     * be missing, so vpn.action and vpn.whitelist had no effect and only cached results were shown.
+     * Runs async; kicks on the main thread when vpn.action is KICK.
+     */
+    private boolean checkVpn(Player player, String uuid, String name, String ip) {
+        if (plugin.getVpnCheckManager() == null || ip == null) return false;
+        org.bukkit.configuration.file.FileConfiguration protection = plugin.getFileManager().getProtection();
+        if (protection.getStringList("vpn.whitelist").contains(uuid)) return false;
 
+        Boolean vpn = plugin.getVpnCheckManager().checkIp(ip);
+        if (vpn == null || !vpn) return false;
+
+        boolean kick = protection.getString("vpn.action", "ALERT").equalsIgnoreCase("KICK");
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.VpnDetectedEvent(uuid, name, kick));
+        if (kick) {
+            String msg = ChatColor.translateAlternateColorCodes('&',
+                    protection.getString("vpn.kick-message", "&cVPN/proxy connections are not allowed on this server."));
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) player.kickPlayer(msg);
+            });
+        }
+        return true;
+    }
+
+    private void sendSmartJoinAlert(Player player) {
         String uuid = player.getUniqueId().toString();
         String name = player.getName();
+        String currentIp = player.getAddress() != null ? player.getAddress().getAddress().getHostAddress() : null;
+        boolean altsModule = plugin.getFileManager().getSettings().getBoolean("enabled-modules.alts", true);
+        boolean notify = plugin.getFileManager().getProtection().getBoolean("alts.notify", true);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            boolean vpnNow = checkVpn(player, uuid, name, currentIp);
+            if (!altsModule) return;
+
             List<String> altUuids = plugin.getDatabaseManager().getAltUuids(uuid);
             int bannedAlts = 0;
             for (String altUuid : altUuids) {
                 if (plugin.getDatabaseManager().isBanned(altUuid)) bannedAlts++;
             }
+            if (!altUuids.isEmpty()) {
+                mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.AltDetectedEvent(uuid, name, altUuids.size(), bannedAlts));
+            }
+            if (!notify) return;
 
             String trust = "UNKNOWN";
             if (plugin.getTrustManager() != null) {
@@ -146,7 +178,7 @@ public class JoinLeaveListener implements Listener {
             if (notes != null) noteCount = notes.size();
             int reportCount = plugin.getDatabaseManager().getRecentReportCount(name, 30);
 
-            boolean hasVpn = false;
+            boolean hasVpn = vpnNow;
             List<DatabaseManager.IpHistoryEntry> ips = plugin.getDatabaseManager().getIpHistory(uuid);
             for (DatabaseManager.IpHistoryEntry ip : ips) {
                 DatabaseManager.VpnCacheEntry vpn = plugin.getDatabaseManager().getVpnCache(ip.ip);

@@ -519,7 +519,7 @@ help-footer: "&8&m────────────────────�
 #    %current% - The current plugin version (upgrade)
 #    %latest%  - The latest available version (upgrade)
 
-axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information>"
+axentra-usage: "%prefix%&cUsage: /axentra <reload | upgrade | help | information | settings | discord>"
 reload-success: "%prefix%&aThe plugin has been reloaded!"
 upgrade-checking: "%prefix%&eChecking for updates..."
 upgrade-up-to-date: "%prefix%&aYou are running the latest version! &7(%version%)"
@@ -900,6 +900,128 @@ rtp-failed: "%prefix%&cCould not find a safe location. Try again."
 rtp-cooldown: "%prefix%&cYou must wait &e%time% &cbefore using /rtp again."
 rtp-disabled-world: "%prefix%&cRTP is disabled in this world."
 rtp-player-only: "%prefix%&cOnly players can use this command."
+
+# Discord (v1.9.0)
+discord-usage: "%prefix%&cUsage: /axentra discord <status | report>"
+discord-module-off: "%prefix%&cThe Discord module is turned off in config.yml (enabled-modules.discord)."
+discord-status-header: "&b&lDiscord status"
+discord-status-connected: "&7Connected: &aYes &8(%ping% ms)"
+discord-status-connecting: "&7Connected: &eConnecting..."
+discord-status-disconnected: "&7Connected: &cNo"
+discord-status-disabled: "&7Connected: &cNo &8(enabled: false in discord.yml)"
+discord-status-error: "&7Last error: &c%error%"
+discord-status-guild: "&7Server: &f%guild%"
+discord-status-guild-missing: "&7Server: &cBot is not in the server with this guild-id"
+discord-status-channel-ok: "&7#%channel%: &aOK"
+discord-status-channel-problem: "&7#%channel%: &c%problem%"
+discord-status-channel-off: "&7#%channel%: &8off"
+discord-status-channel-webhook: "&7#%channel%: &aOK &8(webhook)"
+discord-status-intents-ok: "&7Intents: &aAll enabled"
+discord-status-intent-missing: "&7Intent missing: &c%intent% &8— %feature% is off"
+
+# AFK (v1.9.0)
+afk-now: "%prefix%&7%player% is now AFK."
+afk-now-reason: "%prefix%&7%player% is now AFK: &f%reason%"
+afk-back: "%prefix%&7%player% is no longer AFK."
+afk-kick: "&cYou were kicked for being AFK too long."
+# Shown to someone who messages an AFK player
+msg-target-afk: "%prefix%&e%player% &7is AFK and may not answer."
+msg-target-afk-reason: "%prefix%&e%player% &7is AFK: &f%reason%"
+
+# Seen (v1.9.0)
+seen-usage: "%prefix%&cUsage: /seen <player>"
+seen-online: "%prefix%&e%player% &ais online now &7(this session: &f%session%&7)"
+seen-offline: "%prefix%&e%player% &7was last online &f%ago% ago &8(%date%)"
+seen-never: "%prefix%&e%player% &7has no recorded sessions."
+seen-playtime: "&7Total playtime: &f%playtime% &8(without AFK)"
+seen-location: "&7Last location: &f%world% %x%, %y%, %z%"
+seen-country: "&7Last IP country: &f%country%"
+seen-country-unknown: "unknown (needs VPN detection in protection.yml)"
+
+# Whois (v1.9.0)
+whois-usage: "%prefix%&cUsage: /whois <player>"
+whois-header: "&b&lWhois &f%player%"
+whois-line: "&7%label%: %value%"
+whois-labels:
+  uuid: "UUID"
+  nickname: "Nickname"
+  first-join: "First join"
+  last-seen: "Last seen"
+  playtime: "Playtime"
+  gamemode: "Gamemode"
+  fly: "Fly"
+  god: "God"
+  vanish: "Vanish"
+  afk: "AFK"
+  frozen: "Frozen"
+  ip: "IP"
+  last-ip: "Last IP"
+  trust: "Trust"
+  risk: "Risk"
+  cases: "Cases"
+  punishment: "Punishment"
+  discord: "Discord"
+  alts: "Alts"
+  vpn: "VPN"
+  "yes": "&ayes"
+  "no": "&7no"
+  online-now: "&aonline now"
+  without-afk: " &8(without AFK)"
+  not-linked: "&7not linked"
+  banned-alts: " &c(%count% banned)"
+  vpn-detected: "&cdetected"
+  banned: "&cbanned"
+  tempbanned: "&ctempbanned"
+  muted: "&6muted"
+  none: "&7none"
+
+# Near (v1.9.0)
+near-usage: "%prefix%&cUsage: /near [radius]"
+near-none: "%prefix%&7Nobody within &f%radius% &7blocks."
+near-header: "%prefix%&b%count% &7player(s) within &f%radius% &7blocks:"
+near-line: "&8 - &f%player% &7%distance% blocks &8(%direction%)"
+
+# List (v1.9.0)
+list-header: "&b&lOnline &7(%online%/%max%)"
+list-group: "%group% &8(%count%)&8: %players%"
+list-tag-afk: " &7[AFK]"
+list-tag-duty: " &a[Duty]"
+list-tag-vanished: " &8[V]"
+
+weekly-report-sent: "%prefix%&aThe weekly report was sent to Discord."
+weekly-report-no-channel: "%prefix%&cCouldn't send the weekly report. Check the weekly-report channel with &e/axentra discord status&c."
+
+# Discord linking (v1.9.0)
+discord-linked-as: "&7Linked as &9%discord%&7."
+discord-not-linked: "&7Not linked yet. "
+discord-link-button: "&8[&9Link&8]"
+discord-link-hover: "&7Get a code to link your Discord account"
+# Shown after /link. Placeholders: %code%, %minutes%, %discord% (social-links.discord)
+link-code: "%prefix%&b&lLink your Discord account\n&7Your code: &e&l%code% &8(valid for %minutes% minutes)\n\n&f1. &7Join our Discord: &b%discord%\n&f2. &7In any channel, type &b/link &7and pick the command from our bot\n&f3. &7Enter your code &e%code% &7and press Enter\n"
+link-copy-button: "&8[&bClick to copy the command&8]"
+link-copy-hover: "&7Copies &f/link <code> &7so you can paste it in Discord"
+link-already: "%prefix%&cYour account is already linked to &e%discord%&c. Use &e/unlink &cfirst."
+link-bot-offline: "%prefix%&cThe Discord bot is offline right now. Try again later."
+link-linked: "%prefix%&aYour account is now linked to Discord account &e%discord%&a!"
+# Reminder on join for players who haven't linked (discord.yml linking.join-reminder)
+link-join-reminder: "%prefix%&7Link your Discord account to appeal punishments and get your roles. "
+link-join-reminder-button: "&8[&bHow?&8]"
+link-join-reminder-hover: "&7Click to get your link code"
+unlink-success: "%prefix%&aYour Discord account &e%discord% &awas unlinked."
+unlink-not-linked: "%prefix%&cYour account isn't linked to Discord."
+# Added below the ban screen when Discord appeals are on. Placeholder: %case%
+ban-appeal-discord: "\n\n&7Appeal in our Discord with &f/appeal %case%"
+
+# Appeals (v1.9.0)
+appeal-new: "%prefix%&e%player% &7appealed case &e#%case%&7. Use &e/appeals &7or Discord to handle it."
+appeals-empty: "%prefix%&7There are no appeals yet."
+appeals-empty-open: "%prefix%&7There are no open appeals. Use &e/appeals all &7to see older ones."
+appeals-result: "%prefix%&a%result%"
+appeals-reduce-prompt: "%prefix%&aType the new duration for case &e#%case% &a(e.g. &e3d&a, &e12h&a) in chat, or &ecancel&a."
+appeals-reduce-cancelled: "%prefix%&7Cancelled."
+
+# Kick screen when linking.require-link is on. Placeholders: %code%, %minutes%, %discord% (social-links.discord)
+link-required-kick: "&b&lLink your Discord to play\n\n&7Join our Discord: &b%discord%\n&7Then type &f/link %code% &7in any channel.\n\n&8The code works for %minutes% minutes."
 
 # ══════════════════════════════════════════════════════════
 #                     End of Messages

@@ -85,6 +85,8 @@ public class ReplyCommand implements CommandExecutor, TabCompleter {
         target.sendMessage(getMessage("msg-received")
                 .replace("%player%", player.getName())
                 .replace("%message%", message));
+        String afkNotice = plugin.afkNotice(target);
+        if (afkNotice != null) player.sendMessage(afkNotice);
 
         plugin.setLastMessaged(player.getUniqueId(), target.getUniqueId());
         plugin.setLastMessaged(target.getUniqueId(), player.getUniqueId());

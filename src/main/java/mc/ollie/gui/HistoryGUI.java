@@ -32,10 +32,18 @@ public class HistoryGUI {
 
     private static final Map<String, HistoryGUI> activeGUIs = new HashMap<>();
 
+    /** Linked Discord name shown on the player head (v1.9.0), or null. */
+    private String discordName;
+
     public HistoryGUI(App plugin, String playerName, List<DatabaseManager.CaseInfo> cases) {
         this.plugin = plugin;
         this.playerName = playerName;
         this.cases = cases;
+    }
+
+    public HistoryGUI setDiscordName(String discordName) {
+        this.discordName = discordName;
+        return this;
     }
 
     public String getPlayerName() {
@@ -103,6 +111,10 @@ public class HistoryGUI {
             headLore.add(ChatColor.GOLD + "🔇 " + muteCount + " Mute" + (muteCount != 1 ? "s" : ""));
             headLore.add(ChatColor.LIGHT_PURPLE + "👢 " + kickCount + " Kick" + (kickCount != 1 ? "s" : ""));
             headLore.add(ChatColor.RED + "🔨 " + banCount + " Ban" + (banCount != 1 ? "s" : ""));
+            if (discordName != null) {
+                headLore.add("");
+                headLore.add(ChatColor.GRAY + "Discord: " + ChatColor.BLUE + discordName);
+            }
             skullMeta.setLore(headLore);
             head.setItemMeta(skullMeta);
         }

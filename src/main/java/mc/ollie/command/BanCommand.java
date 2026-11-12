@@ -111,7 +111,7 @@ public class BanCommand implements CommandExecutor, TabCompleter {
                 rawBanMessage = rawBanMessage.replace("%appeal%", appealLink);
             }
 
-            target.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMessage));
+            target.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMessage) + plugin.appealHint(caseId));
         }
 
         sender.sendMessage(getMessage("ban-success")

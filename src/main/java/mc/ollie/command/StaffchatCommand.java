@@ -76,6 +76,7 @@ public class StaffchatCommand implements CommandExecutor, TabCompleter {
             }
         }
         Bukkit.getConsoleSender().sendMessage(formatted);
+        plugin.relayStaffChat(senderName, message);
     }
 
     @Override

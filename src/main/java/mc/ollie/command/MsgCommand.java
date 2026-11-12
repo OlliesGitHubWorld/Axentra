@@ -93,6 +93,8 @@ public class MsgCommand implements CommandExecutor, TabCompleter {
         target.sendMessage(getMessage("msg-received")
                 .replace("%player%", senderName)
                 .replace("%message%", message));
+        String afkNotice = plugin.afkNotice(target);
+        if (afkNotice != null) sender.sendMessage(afkNotice);
 
         // Store last messaged for /reply
         if (sender instanceof Player) {

@@ -24,6 +24,9 @@ public class FileManager {
     private File healthFile;
     private FileConfiguration healthConfig;
 
+    private File discordFile;
+    private FileConfiguration discordConfig;
+
     public FileManager(App plugin) {
         this.plugin = plugin;
     }
@@ -51,6 +54,11 @@ public class FileManager {
         if (!healthFile.exists()) plugin.saveResource("health.yml", false);
         mergeDefaults("health.yml");
         healthConfig = YamlConfiguration.loadConfiguration(healthFile);
+
+        discordFile = new File(plugin.getDataFolder(), "discord.yml");
+        if (!discordFile.exists()) plugin.saveResource("discord.yml", false);
+        mergeDefaults("discord.yml");
+        discordConfig = YamlConfiguration.loadConfiguration(discordFile);
     }
 
     /**
@@ -277,6 +285,9 @@ public class FileManager {
 
         mergeDefaults("health.yml");
         healthConfig = YamlConfiguration.loadConfiguration(healthFile);
+
+        mergeDefaults("discord.yml");
+        discordConfig = YamlConfiguration.loadConfiguration(discordFile);
     }
 
     public FileConfiguration getMessages() { return messagesConfig; }
@@ -284,4 +295,5 @@ public class FileManager {
     public FileConfiguration getPunishments() { return punishmentsConfig; }
     public FileConfiguration getProtection() { return protectionConfig; }
     public FileConfiguration getHealth() { return healthConfig; }
+    public FileConfiguration getDiscord() { return discordConfig; }
 }

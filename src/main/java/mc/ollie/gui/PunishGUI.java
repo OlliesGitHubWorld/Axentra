@@ -1,7 +1,8 @@
 package mc.ollie.gui;
 
 import mc.ollie.App;
-import mc.ollie.listeners.ChatListener;
+import mc.ollie.punish.PunishmentService;
+import mc.ollie.punish.PunishmentService.Step;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,17 +14,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.sql.Timestamp;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PunishGUI {
 
     private final App plugin;
     private final String targetName;
 
-    private static final Pattern DURATION_PATTERN = Pattern.compile("(?:(\\d+)d)?(?:(\\d+)h)?(?:(\\d+)m)?(?:(\\d+)s)?");
 
     private static final Map<String, PunishGUI> activeGUIs = new HashMap<>();
 
@@ -174,41 +171,13 @@ public class PunishGUI {
         staff.openInventory(inv);
     }
 
-    /** One step of a template: an action with an optional duration, e.g. "tempmute 1h". */
-    private static class Step {
-        final String action;
-        final String duration;
-
-        Step(String action, String duration) {
-            this.action = action;
-            this.duration = duration;
-        }
-
-        String label() {
-            return action.toUpperCase() + (duration.isEmpty() ? "" : " " + duration);
-        }
+    // Steps and escalation live in PunishmentService (v1.9.0), shared with Discord moderation
+    private static List<Step> getSteps(ConfigurationSection tmpl) {
+        return PunishmentService.getSteps(tmpl);
     }
 
-    /**
-     * The template's escalation ladder ("escalation" list), or its single action/duration
-     * when it has none.
-     */
-    private List<Step> getSteps(ConfigurationSection tmpl) {
-        List<Step> steps = new ArrayList<>();
-        for (String entry : tmpl.getStringList("escalation")) {
-            String[] parts = entry.trim().split("\\s+", 2);
-            if (parts[0].isEmpty()) continue;
-            steps.add(new Step(parts[0].toLowerCase(), parts.length > 1 ? parts[1].trim() : ""));
-        }
-        if (steps.isEmpty()) {
-            steps.add(new Step(tmpl.getString("action", "warn").toLowerCase(), tmpl.getString("duration", "")));
-        }
-        return steps;
-    }
-
-    /** Picks the step for the next offense: earlier cases with the same reason, capped at the last step. */
-    private int stepIndex(List<Step> steps, Map<String, Integer> offenses, String reason) {
-        return Math.min(offenses.getOrDefault(reason, 0), steps.size() - 1);
+    private static int stepIndex(List<Step> steps, Map<String, Integer> offenses, String reason) {
+        return PunishmentService.stepIndex(steps, offenses, reason);
     }
 
     private String resolveUuid() {
@@ -315,126 +284,16 @@ public class PunishGUI {
     }
 
     private void applyPunishment(Player staff, String action, String reason, String durationStr) {
-        Player target = Bukkit.getPlayer(targetName);
-        String uuid = resolveUuid();
-
-        // Get chat snapshot
-        String chatLog = null;
-        if (target != null) {
-            ChatListener chatListener = plugin.getChatListener();
-            if (chatListener != null) {
-                chatLog = chatListener.getChatSnapshot(target.getUniqueId());
-            }
-        }
-
         String staffName = staff.getName();
         String staffUuid = staff.getUniqueId().toString();
-        Timestamp expiresAt = null;
-
-        if (!durationStr.isEmpty()) {
-            long millis = parseDuration(durationStr);
-            if (millis > 0) {
-                expiresAt = new Timestamp(System.currentTimeMillis() + millis);
-            }
-        }
-
-        String caseType;
-
-        String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
-
-        switch (action) {
-            case "ban":
-                caseType = "BAN";
-                plugin.getDatabaseManager().banPlayer(targetName, uuid, reason, staffName, null);
-                if (target != null) {
-                    String banMsg = plugin.getFileManager().getMessages().getString("ban-message",
-                            "&cYou have been banned!\n&7Reason: &f%reason%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%");
-                    banMsg = banMsg.replace("%reason%", reason).replace("%banned-by%", staffName);
-                    if (appealLink.isEmpty()) {
-                        banMsg = banMsg.replace("\n&7Appeal: &f%appeal%", "");
-                    } else {
-                        banMsg = banMsg.replace("%appeal%", appealLink);
-                    }
-                    target.kickPlayer(ChatColor.translateAlternateColorCodes('&', banMsg));
-                }
-                break;
-
-            case "tempban":
-                caseType = "TEMPBAN";
-                plugin.getDatabaseManager().banPlayer(targetName, uuid, reason, staffName, expiresAt);
-                if (target != null) {
-                    String tempbanMsg = plugin.getFileManager().getMessages().getString("tempban-message",
-                            "&cYou have been temporarily banned!\n&7Reason: &f%reason%\n&7Duration: &f%duration%\n&7Banned by: &f%banned-by%\n&7Appeal: &f%appeal%");
-                    tempbanMsg = tempbanMsg.replace("%reason%", reason).replace("%duration%", durationStr).replace("%banned-by%", staffName);
-                    if (appealLink.isEmpty()) {
-                        tempbanMsg = tempbanMsg.replace("\n&7Appeal: &f%appeal%", "");
-                    } else {
-                        tempbanMsg = tempbanMsg.replace("%appeal%", appealLink);
-                    }
-                    target.kickPlayer(ChatColor.translateAlternateColorCodes('&', tempbanMsg));
-                }
-                break;
-
-            case "mute":
-                caseType = "MUTE";
-                plugin.getDatabaseManager().mutePlayer(targetName, uuid, reason, staffName, null);
-                if (target != null) {
-                    String muteMsg = plugin.getFileManager().getMessages().getString("mute-message",
-                            "%prefix%&cYou have been muted!\n&7Reason: &f%reason%");
-                    String prefix = plugin.getFileManager().getMessages().getString("prefix", "");
-                    muteMsg = muteMsg.replace("%prefix%", prefix).replace("%reason%", reason);
-                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', muteMsg));
-                }
-                break;
-
-            case "tempmute":
-                caseType = "TEMPMUTE";
-                plugin.getDatabaseManager().mutePlayer(targetName, uuid, reason, staffName, expiresAt);
-                if (target != null) {
-                    String tempmuteMsg = plugin.getFileManager().getMessages().getString("tempmute-message",
-                            "%prefix%&cYou have been temporarily muted!\n&7Reason: &f%reason%\n&7Duration: &f%duration%");
-                    String prefix = plugin.getFileManager().getMessages().getString("prefix", "");
-                    tempmuteMsg = tempmuteMsg.replace("%prefix%", prefix).replace("%reason%", reason).replace("%duration%", durationStr);
-                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', tempmuteMsg));
-                }
-                break;
-
-            case "kick":
-                caseType = "KICK";
-                if (target != null) {
-                    String kickMsg = plugin.getFileManager().getMessages().getString("kick-message",
-                            "&cYou have been kicked!\n&7Reason: &f%reason%");
-                    kickMsg = kickMsg.replace("%reason%", reason);
-                    target.kickPlayer(ChatColor.translateAlternateColorCodes('&', kickMsg));
-                }
-                break;
-
-            case "warn":
-            default:
-                caseType = "WARN";
-                plugin.getDatabaseManager().warnPlayer(targetName, uuid, reason, staffName);
-                if (target != null) {
-                    int count = plugin.getDatabaseManager().getWarnCount(uuid);
-                    String warnMsg = plugin.getFileManager().getMessages().getString("warn-message",
-                            "%prefix%&eYou have been warned! &7Reason: &f%reason% &8(&e%count% total&8)");
-                    String prefix = plugin.getFileManager().getMessages().getString("prefix", "");
-                    warnMsg = warnMsg.replace("%prefix%", prefix).replace("%reason%", reason).replace("%count%", String.valueOf(count));
-                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', warnMsg));
-                }
-                break;
-        }
-
-        // Create case
-        int caseId = plugin.getDatabaseManager().createCase(caseType, targetName, uuid, reason, staffName, expiresAt, chatLog);
-
-        // Log audit
-        plugin.getDatabaseManager().logAction(staffName, staffUuid, caseType, targetName,
-                reason + (durationStr.isEmpty() ? "" : " (" + durationStr + ")"));
-
-        staff.sendMessage(ChatColor.GREEN + "Applied " + ChatColor.WHITE + caseType.toLowerCase()
-                + ChatColor.GREEN + " to " + ChatColor.WHITE + targetName
-                + ChatColor.GREEN + " for: " + ChatColor.GRAY + reason
-                + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
+        plugin.getPunishmentService().apply(targetName, null, action, reason, durationStr, staffName, staffUuid,
+                "INGAME", result -> {
+                    if (!staff.isOnline()) return;
+                    staff.sendMessage(ChatColor.GREEN + "Applied " + ChatColor.WHITE + result.caseType().toLowerCase()
+                            + ChatColor.GREEN + " to " + ChatColor.WHITE + targetName
+                            + ChatColor.GREEN + " for: " + ChatColor.GRAY + reason
+                            + ChatColor.DARK_GRAY + " (Case #" + result.caseId() + ")");
+                });
     }
 
     private String getActionColor(String action) {
@@ -449,16 +308,6 @@ public class PunishGUI {
         }
     }
 
-    private long parseDuration(String input) {
-        Matcher matcher = DURATION_PATTERN.matcher(input);
-        if (!matcher.matches()) return -1;
-        long days = matcher.group(1) != null ? Long.parseLong(matcher.group(1)) : 0;
-        long hours = matcher.group(2) != null ? Long.parseLong(matcher.group(2)) : 0;
-        long minutes = matcher.group(3) != null ? Long.parseLong(matcher.group(3)) : 0;
-        long seconds = matcher.group(4) != null ? Long.parseLong(matcher.group(4)) : 0;
-        long millis = (days * 86400 + hours * 3600 + minutes * 60 + seconds) * 1000L;
-        return millis > 0 ? millis : -1;
-    }
 
     private ItemStack createCategory(Material glass, String name) {
         ItemStack item = new ItemStack(glass);

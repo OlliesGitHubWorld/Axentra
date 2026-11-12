@@ -53,6 +53,7 @@
             <a href="#configuration">Configuration</a>
             <a href="#server-health">Server Health</a>
             <a href="#warps">Warps</a>
+            <a href="#discord">Discord</a>
             <a href="#protection">Protection</a>
             <a href="#punishment-gui">Punish GUI</a>
             <a href="#vanish">Vanish</a>
@@ -100,6 +101,7 @@
                 </div>
                 <a href="#server-health" class="sidebar-link">Server Health</a>
                 <a href="#warps" class="sidebar-link">Warps &amp; RTP</a>
+                <a href="#discord" class="sidebar-link">Discord</a>
                 <a href="#protection" class="sidebar-link">Player Protection</a>
                 <a href="#punishment-gui" class="sidebar-link">Punishment GUI</a>
                 <a href="#vanish" class="sidebar-link">Vanish System</a>
@@ -1049,6 +1051,46 @@ cd Axentra
                 <p><code>/rtp</code> (or <code>/wild</code>) teleports a player to a random safe spot between <code>min-radius</code> and <code>max-radius</code> from the world's center. Lava, fire, cactus and the void are avoided, and in the Nether the location stays below the bedrock roof. Each world has its own settings in <code>config.yml</code>, and The End is off by default.</p>
             </section>
 
+            <!-- Discord -->
+            <section id="discord" class="wiki-section">
+                <h1>Discord</h1>
+                <p>Since v1.9.0 Axentra can connect to your Discord server. The bot is optional and off until an admin sets it up in <code>discord.yml</code>.</p>
+
+                <h2>Linking your account (players)</h2>
+                <p>Linking connects your Minecraft account to your Discord account. You need it to appeal a ban, and the server may give you roles for it.</p>
+                <ol>
+                    <li><strong>In Minecraft</strong>, type <code>/link</code> in the chat. You get a 6-digit code, for example <code>482913</code>. It works for 5 minutes.</li>
+                    <li><strong>In the server's Discord</strong>, type <code>/link</code> in any channel and pick the command from the server's bot in the list that pops up.</li>
+                    <li><strong>Enter your code</strong> in the <code>code</code> field and press Enter. The bot answers <em>"Linked to YourName"</em> and you get a message in Minecraft too.</li>
+                </ol>
+                <p>Type <code>/discord</code> in Minecraft to check whether you're linked. To unlink, use <code>/unlink</code> in Minecraft or in Discord.</p>
+                <div class="wiki-info-box">
+                    <h4>Something not working?</h4>
+                    <ul>
+                        <li><strong>"That code is invalid or expired"</strong> &mdash; the code is older than 5 minutes or was already used. Type <code>/link</code> in Minecraft again.</li>
+                        <li><strong><code>/link</code> doesn't show up in Discord</strong> &mdash; the bot was invited without the <code>applications.commands</code> scope. An admin has to re-invite it.</li>
+                        <li><strong>"The Discord bot is offline"</strong> &mdash; tell an admin; they can check <code>/axentra discord status</code>.</li>
+                    </ul>
+                </div>
+
+                <h2>Appealing a ban or mute (players)</h2>
+                <ol>
+                    <li>Your ban screen shows a case number, for example <em>"Appeal in our Discord with /appeal 42"</em>.</li>
+                    <li>In the server's Discord, type <code>/appeal</code> and enter that number.</li>
+                    <li>Fill in the form and send it. Staff review it and the bot sends you a DM with the decision.</li>
+                </ol>
+                <p>Most servers require a linked account to appeal, so link before you need it.</p>
+
+                <h2>Setting up the bot (admins)</h2>
+                <ol>
+                    <li>Create an application in the <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a>, open <strong>Bot</strong>, click <strong>Reset Token</strong> and paste the token in <code>discord.yml</code>. Never share it.</li>
+                    <li>On the same page, turn on <strong>Server Members Intent</strong> and <strong>Message Content Intent</strong> and click Save.</li>
+                    <li>Under <strong>OAuth2 &rarr; URL Generator</strong>, tick <code>bot</code> and <code>applications.commands</code>, give the permissions listed in <code>discord.yml</code>, and open the URL to invite the bot.</li>
+                    <li>Turn on Developer Mode in Discord, copy your server ID to <code>guild-id</code> and the channel IDs to <code>channels</code>, and add your staff role IDs to <code>staff-roles</code>.</li>
+                    <li>Set <code>enabled: true</code>, restart or run <code>/axentra reload</code>, and check <code>/axentra discord status</code>.</li>
+                </ol>
+            </section>
+
             <!-- Player Protection -->
             <section id="protection" class="wiki-section">
                 <h1>Player Protection</h1>
@@ -1190,7 +1232,7 @@ cd Axentra
                     </div>
                     <div class="faq-item">
                         <h3>I found a bug. Where do I report it?</h3>
-                        <p>Open an issue on <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">GitHub Issues</a> or reach out on <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>.</p>
+                        <p>Open an issue on <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">GitHub Issues</a> or reach out on <a href="https://discord.gg/kNjvQPNTw3" target="_blank">Discord</a>.</p>
                     </div>
                 </div>
             </section>
@@ -1214,7 +1256,7 @@ cd Axentra
                 </div>
                 <div class="footer-links">
                     <div class="footer-links-title">Community</div>
-                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
+                    <a href="https://discord.gg/kNjvQPNTw3" target="_blank">Discord</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
                 </div>

@@ -97,6 +97,11 @@ public class TpsAlertManager {
         // Find heaviest chunk for context
         String heaviestInfo = findHeaviestChunk();
 
+        // "/lag tp world 120 -40" -> "world 120, -40"
+        String chunk = heaviestTpCommand != null
+                ? heaviestTpCommand.replace("/lag tp ", "").replaceFirst(" (\\S+)$", ", $1") : null;
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.LagAlertEvent(tps, durationSeconds, healthScore, chunk));
+
         // Notify staff
         String prefix = plugin.getMessageManager().getMessage("prefix");
         // Message is already colour-translated, so the inserted colour code must be too
@@ -130,6 +135,7 @@ public class TpsAlertManager {
     }
 
     private void resolveAlert(double tps) {
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.LagRecoveredEvent(tps));
         FileConfiguration health = plugin.getFileManager().getHealth();
         if (!health.getBoolean("alerts.recovery-message", true)) return;
 

@@ -152,11 +152,119 @@
         <h1>Changelog</h1>
         <p class="changelog-lead">Everything that's changed in Axentra.</p>
 
+        <!-- v1.9.0 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.9.0</h2>
+                <span class="tag">Latest</span>
+            </div>
+            <p class="changelog-date">November 2026 &mdash; Discord Integration Update</p>
+
+            <div class="changelog-section">
+                <h3>Discord Bot</h3>
+                <ul>
+                    <li><strong>Optional and off by default</strong> &mdash; Axentra works exactly as before until you add a bot token in the new <code>discord.yml</code>. The bot connects in the background, so the server never waits for Discord, and a missing or invalid token only gives one clear console message</li>
+                    <li><strong>No plugin dependencies</strong> &mdash; the Discord library (JDA) is downloaded automatically on the first start and kept separate from other plugins, so it doesn't conflict with DiscordSRV</li>
+                    <li><strong><code>/axentra discord status</code></strong> &mdash; connection, ping, server, which channels work and which intents are missing</li>
+                    <li>Bot status with the online player count, updated every minute</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Account Linking &amp; Role Sync</h3>
+                <ul>
+                    <li><strong><code>/link</code></strong> &mdash; get a 6-digit code (valid for 5 minutes) with a click-to-copy button, then use <code>/link &lt;code&gt;</code> in Discord. <code>/unlink</code> works in both places</li>
+                    <li><strong>Require linking</strong> (optional) &mdash; unlinked players see their code on the join screen. Bypass: <code>Axentra.link.bypass</code></li>
+                    <li>Optional nickname sync and a role for everyone who linked</li>
+                    <li><strong>Role sync</strong> &mdash; permission <code>Axentra.discord.role.&lt;name&gt;</code> gives the mapped Discord role. Works with any permission plugin, Minecraft&rarr;Discord, Discord&rarr;Minecraft or both, on join, on link and every 10 minutes. Roles that aren't mapped are never touched</li>
+                    <li>The linked Discord shows in <code>/whois</code>, <code>/history</code> and <code>/timeline</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Channels</h3>
+                <ul>
+                    <li><strong>#cases</strong> &mdash; every case as an embed with a color per type, player head, reason, expiry, staff, source, trust and previous cases. Long chat logs are attached as a file. When a case is unbanned, appealed or deleted, the same message is updated</li>
+                    <li><strong>#reports</strong> &mdash; reports with location and chat log, plus Claim and Close buttons and a punish menu. The message shows who claimed or closed it and the linked case</li>
+                    <li><strong>#staffchat</strong> &mdash; both ways. In-game staff chat goes to Discord through a webhook with the player's head; linked staff can answer from Discord. Mentions like @everyone can never ping</li>
+                    <li><strong>#alerts</strong> &mdash; alts, VPN, lag and recovery, maintenance and restarts, each type on or off</li>
+                    <li><strong>#join-leave</strong> (off by default) &mdash; joins, first joins and leaves, bundled to respect rate limits. Vanished staff are never shown</li>
+                    <li><strong>#chat</strong> (off by default) &mdash; public chat between Minecraft and Discord, with player names and heads. Muted players and staff chat are never sent, mentions can't ping and masked links are blocked. Images from Discord become clickable [Image] links in-game</li>
+                    <li><strong>#console</strong> (off by default) &mdash; the server console in batches with IP addresses hidden. Running commands from Discord is optional, limited to separate console roles, with a blocklist (stop, op, lp, &hellip;) and every command in the audit log</li>
+                    <li>Every report gets its own discussion thread</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Slash Commands</h3>
+                <ul>
+                    <li><code>/case &lt;id&gt;</code>, <code>/history &lt;player&gt;</code>, <code>/lookup &lt;player&gt;</code> and <code>/health</code> for staff roles, with player name autocomplete. <code>/lookup</code> shows trust, risk score, alts, playtime, first join, last seen, linked Discord and notes &mdash; never IP addresses</li>
+                    <li><code>/online</code> for everyone: online players per group and staff on duty</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Ban Appeals</h3>
+                <ul>
+                    <li>The ban screen shows the case ID and how to appeal. The appeal link from <code>config.yml</code> keeps working</li>
+                    <li><strong><code>/appeal</code></strong> in Discord opens a form with your own questions. Linked players don't need the case number: they pick from their active punishments. Staff can get a role ping for every new appeal. Bans and mutes can be appealed; one open appeal per case, and after a denial again after 7 days</li>
+                    <li>Staff get a full dossier in <strong>#appeals</strong>: the case and chat log, earlier cases, notes, trust, risk, alts, playtime and the answers, with <strong>Accept</strong>, <strong>Deny</strong>, <strong>Reduce</strong> and <strong>Discuss</strong> (thread) buttons</li>
+                    <li>Accepting lifts the ban or mute in-game and marks the case as appealed. The player gets a DM with the outcome</li>
+                    <li><strong><code>/appeals [open|all]</code></strong> in-game shows appeals in a GUI with the same actions</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Moderation from Discord &amp; Weekly Report</h3>
+                <ul>
+                    <li><strong>Punish from Discord</strong> &mdash; a menu with your punishment templates under reports and <code>/lookup</code>, with escalation. After confirming, the punishment is applied in-game under the linked staff member's name with source Discord. Punishing from a report closes it and links the case</li>
+                    <li>Discord actions are checked against the in-game permission the staff member had on their last join, so they also work while staff are offline</li>
+                    <li><strong>Weekly report</strong> &mdash; new and unique players, peak, playtime, cases, top punishments, top staff, appeals, TPS, lag alerts and health score, each compared with last week. Send it right away with <code>/axentra discord report</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Player Info</h3>
+                <ul>
+                    <li><strong><code>/afk [reason]</code></strong> and automatic AFK after 3 minutes. Only looking around, drifting in water or riding a vehicle doesn't count as activity. AFK tag in the tab list, a notice when you message an AFK player, and a kick after 5 minutes of being AFK (configurable)</li>
+                    <li>AFK time no longer counts as playtime or for trust progression</li>
+                    <li><strong><code>/seen &lt;player&gt;</code></strong> &mdash; online with session length, or last online, plus total playtime. Staff also see the last location and IP country</li>
+                    <li><strong><code>/whois &lt;player&gt;</code></strong> &mdash; identity, playtime, current state, trust, risk, cases, active punishment and Discord, with clickable buttons</li>
+                    <li><strong><code>/near [radius]</code></strong> and a grouped <strong><code>/list</code></strong> with AFK and duty tags</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>For Developers</h3>
+                <ul>
+                    <li>New Bukkit events: <code>CaseCreatedEvent</code>, <code>CaseUpdatedEvent</code>, <code>ReportCreatedEvent</code>, <code>ReportUpdatedEvent</code>, <code>LagAlertEvent</code>, <code>LagRecoveredEvent</code>, <code>AltDetectedEvent</code>, <code>VpnDetectedEvent</code>, <code>MaintenanceToggleEvent</code> and <code>RestartScheduledEvent</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Bug Fixes</h3>
+                <ul>
+                    <li>VPN detection never ran on join, so <code>vpn.action: KICK</code> and <code>vpn.whitelist</code> had no effect</li>
+                    <li>Unbanning or unmuting left the case marked as active</li>
+                    <li>The <code>/punish</code> GUI wrote to the database on the main thread</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Upgrading</h3>
+                <ul>
+                    <li>Fully restart the server. <code>discord.yml</code> is created and existing configs get the new settings automatically</li>
+                    <li>6 new modules (36 in total): <code>discord</code>, <code>afk</code>, <code>seen</code>, <code>whois</code>, <code>near</code> and <code>list</code></li>
+                    <li><code>/list</code> replaces the vanilla command while the module is on; vanilla stays available as <code>/minecraft:list</code></li>
+                    <li>New permissions: <code>Axentra.link</code>, <code>Axentra.link.bypass</code>, <code>Axentra.appeals</code>, <code>Axentra.discord.role.&lt;name&gt;</code>, <code>Axentra.afk</code>, <code>Axentra.afk.kickbypass</code>, <code>Axentra.afk.exempt</code>, <code>Axentra.seen</code>, <code>Axentra.seen.staff</code>, <code>Axentra.whois</code>, <code>Axentra.whois.sensitive</code>, <code>Axentra.near</code>, <code>Axentra.near.radius.&lt;n&gt;</code>, <code>Axentra.list</code>, <code>Axentra.list.group.&lt;name&gt;</code></li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v1.8.0 -->
         <div class="changelog-entry">
             <div class="changelog-version">
                 <h2>v1.8.0</h2>
-                <span class="tag">Latest</span>
             </div>
             <p class="changelog-date">November 2026 &mdash; Server Health Update</p>
 
@@ -451,7 +559,7 @@
                 </div>
                 <div class="footer-links">
                     <div class="footer-links-title">Community</div>
-                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
+                    <a href="https://discord.gg/kNjvQPNTw3" target="_blank">Discord</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
                     <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
                 </div>

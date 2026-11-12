@@ -207,7 +207,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 target.kickPlayer(kickMsg);
 
                 plugin.getDatabaseManager().createCase("KICK", target.getName(),
-                        target.getUniqueId().toString(), punishReason, staffName, null, null);
+                        target.getUniqueId().toString(), punishReason, staffName, null, null, "AUTO");
                 plugin.getDatabaseManager().logAction(staffName, staffUuid, "KICK", target.getName(),
                         punishReason + " (auto: " + warnCount + " warns)");
 
@@ -223,7 +223,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                     target.sendMessage(getMessage("mute-message").replace("%reason%", punishReason));
 
                     plugin.getDatabaseManager().createCase("MUTE", target.getName(),
-                            target.getUniqueId().toString(), punishReason, staffName, null, null);
+                            target.getUniqueId().toString(), punishReason, staffName, null, null, "AUTO");
                     plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.getName(),
                             punishReason + " (auto: " + warnCount + " warns)");
                 }
@@ -243,7 +243,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 plugin.getDatabaseManager().banPlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), expiresAt);
 
                 plugin.getDatabaseManager().createCase("TEMPBAN", target.getName(),
-                        target.getUniqueId().toString(), punishReason, staffName, expiresAt, null);
+                        target.getUniqueId().toString(), punishReason, staffName, expiresAt, null, "AUTO");
                 plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPBAN", target.getName(),
                         punishReason + " (" + formattedDuration + ", auto: " + warnCount + " warns)");
 
@@ -270,7 +270,7 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 plugin.getDatabaseManager().banPlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), null);
 
                 plugin.getDatabaseManager().createCase("BAN", target.getName(),
-                        target.getUniqueId().toString(), punishReason, staffName, null, null);
+                        target.getUniqueId().toString(), punishReason, staffName, null, null, "AUTO");
                 plugin.getDatabaseManager().logAction(staffName, staffUuid, "BAN", target.getName(),
                         punishReason + " (auto: " + warnCount + " warns)");
 

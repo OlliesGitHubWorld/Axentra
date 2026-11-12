@@ -218,12 +218,14 @@ public class MaintenanceManager implements Listener {
                 p.kickPlayer(kickMsg);
             }
         }
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.MaintenanceToggleEvent(true, activatedBy, reason, durationMinutes));
     }
 
     public void disable() {
         this.active = false;
         plugin.getDatabaseManager().clearMaintenance();
         plugin.getDatabaseManager().logAction("SYSTEM", "SYSTEM", "MAINTENANCE_OFF", null, null);
+        mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.MaintenanceToggleEvent(false, activatedBy, reason, 0));
     }
 
     public boolean isActive() {

@@ -96,8 +96,10 @@ public class LoginListener implements Listener {
                 rawMessage = rawMessage.replace("%appeal%", appealLink);
             }
 
+            // Async pre-login, so the case lookup for the Discord appeal hint is fine here
+            String appealHint = plugin.appealHint(plugin.getDatabaseManager().getActiveBanCaseId(uuid));
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
-                    ChatColor.translateAlternateColorCodes('&', rawMessage));
+                    ChatColor.translateAlternateColorCodes('&', rawMessage) + appealHint);
         }
     }
 }

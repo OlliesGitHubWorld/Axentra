@@ -48,7 +48,35 @@ public class SocialCommand implements CommandExecutor, TabCompleter {
         String prefix = plugin.getFileManager().getMessages().getString("prefix", "");
         message = message.replace("%prefix%", prefix).replace("%link%", link);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+
+        if (command.getName().equalsIgnoreCase("discord") && sender instanceof org.bukkit.entity.Player player
+                && plugin.getLinkService() != null) {
+            showLinkStatus(player);
+        }
         return true;
+    }
+
+    /** /discord also shows whether you're linked, with a clickable [Link] button (v1.9.0). */
+    private void showLinkStatus(org.bukkit.entity.Player player) {
+        String uuid = player.getUniqueId().toString();
+        org.bukkit.Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            mc.ollie.DatabaseManager.DiscordLink link = plugin.getDatabaseManager().getLinkByUuid(uuid);
+            org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                if (!player.isOnline()) return;
+                if (link != null) {
+                    player.sendMessage(getMessage("discord-linked-as")
+                            .replace("%discord%", link.discordName != null ? link.discordName : link.discordId));
+                    return;
+                }
+                net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent(getMessage("discord-not-linked"));
+                net.md_5.bungee.api.chat.TextComponent button = new net.md_5.bungee.api.chat.TextComponent(getMessage("discord-link-button"));
+                button.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/link"));
+                button.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+                        new net.md_5.bungee.api.chat.hover.content.Text(getMessage("discord-link-hover"))));
+                text.addExtra(button);
+                player.spigot().sendMessage(text);
+            });
+        });
     }
 
     @Override

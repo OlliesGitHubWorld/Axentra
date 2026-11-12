@@ -1,9 +1,14 @@
 name: Axentra
-version: 1.8.0
+version: 1.9.0
 main: mc.ollie.App
 api-version: 1.21
 description: A custom server management plugin
 author: OlliesWorld
+
+# Downloaded from Maven Central on first start and loaded in Axentra's own classloader,
+# so the jar stays small and there is no conflict with other Discord plugins.
+libraries:
+  - net.dv8tion:JDA:5.6.1
 
 commands:
   broadcast:
@@ -565,8 +570,49 @@ commands:
     permission-message: "&cYou don't have permission to use this command!"
   axentra:
     description: Main Axentra command
-    usage: /axentra <reload | upgrade | help | information>
+    usage: /axentra <reload | upgrade | help | information | settings | discord>
     aliases: [ax]
+  link:
+    description: Get a code to link your Discord account
+    usage: /link
+    permission: Axentra.link
+    permission-message: "&cYou don't have permission to use this command!"
+  unlink:
+    description: Unlink your Discord account
+    usage: /unlink
+    permission: Axentra.link
+    permission-message: "&cYou don't have permission to use this command!"
+  appeals:
+    description: View and handle ban and mute appeals
+    usage: /appeals [open|all]
+    permission: Axentra.appeals
+    permission-message: "&cYou don't have permission to use this command!"
+  afk:
+    description: Toggle AFK
+    usage: /afk [reason]
+    permission: Axentra.afk
+    permission-message: "&cYou don't have permission to use this command!"
+  seen:
+    description: See when a player was last online
+    usage: /seen <player>
+    permission: Axentra.seen
+    permission-message: "&cYou don't have permission to use this command!"
+  whois:
+    description: View everything about a player
+    usage: /whois <player>
+    permission: Axentra.whois
+    permission-message: "&cYou don't have permission to use this command!"
+  near:
+    description: List players near you
+    usage: /near [radius]
+    permission: Axentra.near
+    permission-message: "&cYou don't have permission to use this command!"
+  list:
+    description: List online players by group
+    usage: /list
+    aliases: [online, who]
+    permission: Axentra.list
+    permission-message: "&cYou don't have permission to use this command!"
 
 permissions:
   Axentra.admin:
@@ -929,3 +975,39 @@ permissions:
   Axentra.cleanup.bypass:
     description: Items dropped by this player are never cleaned
     default: false
+  Axentra.link:
+    description: Link and unlink your Discord account
+    default: true
+  Axentra.link.bypass:
+    description: Join without a Discord link when linking is required
+    default: op
+  Axentra.appeals:
+    description: View and handle appeals
+    default: op
+  Axentra.afk:
+    description: Use /afk
+    default: true
+  Axentra.afk.kickbypass:
+    description: Never kicked for being AFK
+    default: op
+  Axentra.afk.exempt:
+    description: Never set AFK automatically (/afk still works)
+    default: op
+  Axentra.seen:
+    description: Use /seen
+    default: true
+  Axentra.seen.staff:
+    description: See last location and country in /seen
+    default: op
+  Axentra.whois:
+    description: Use /whois
+    default: op
+  Axentra.whois.sensitive:
+    description: See IP, alts and VPN status in /whois
+    default: op
+  Axentra.near:
+    description: Use /near
+    default: op
+  Axentra.list:
+    description: Use /list
+    default: true

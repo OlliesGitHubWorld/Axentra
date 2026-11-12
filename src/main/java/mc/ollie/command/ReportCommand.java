@@ -90,7 +90,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
         }
 
         // Create the report in DB
-        plugin.getDatabaseManager().createReport(
+        int reportId = plugin.getDatabaseManager().createReport(
                 target.getName(),
                 target.getUniqueId().toString(),
                 reason,
@@ -98,6 +98,12 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
                 reporterUuid.toString(),
                 chatLog
         );
+        if (reportId > 0) {
+            org.bukkit.Location loc = target.getLocation();
+            String location = loc.getWorld().getName() + " " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ();
+            mc.ollie.event.AxentraEvent.fire(new mc.ollie.event.ReportCreatedEvent(reportId, target.getName(),
+                    target.getUniqueId().toString(), reporter.getName(), reporterUuid.toString(), reason, location, chatLog));
+        }
 
         // Update cooldown
         plugin.getReportCooldowns().put(reporterUuid, System.currentTimeMillis());
