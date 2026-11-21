@@ -2,6 +2,7 @@ package mc.ollie.command;
 
 import mc.ollie.App;
 import mc.ollie.FreezeManager;
+import mc.ollie.PlayerLookup;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,7 +85,8 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
+        // Also finds players who already logged out
+        PlayerLookup.Target target = PlayerLookup.resolve(plugin, args[0]);
 
         if (target == null) {
             sender.sendMessage(getMessage("player-not-found").replace("%player%", args[0]));
@@ -106,36 +109,38 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
         String chatLog = null;
         ChatListener chatListener = plugin.getChatListener();
         if (chatListener != null) {
-            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+            chatLog = chatListener.getChatSnapshot(UUID.fromString(target.uuid()));
         }
 
-        plugin.getDatabaseManager().warnPlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName());
+        plugin.getDatabaseManager().warnPlayer(target.name(), target.uuid(), reason, sender.getName());
 
-        int warnCount = plugin.getDatabaseManager().getWarnCount(target.getUniqueId().toString());
+        int warnCount = plugin.getDatabaseManager().getWarnCount(target.uuid());
 
         // Create case
         String staffName = sender.getName();
         String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
-        int caseId = plugin.getDatabaseManager().createCase("WARN", target.getName(),
-                target.getUniqueId().toString(), reason, staffName, null, chatLog);
+        int caseId = plugin.getDatabaseManager().createCase("WARN", target.name(),
+                target.uuid(), reason, staffName, null, chatLog);
 
         // Audit log
-        plugin.getDatabaseManager().logAction(staffName, staffUuid, "WARN", target.getName(),
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "WARN", target.name(),
                 reason + " (warn #" + warnCount + ")");
 
-        target.sendMessage(getMessage("warn-message")
-                .replace("%reason%", reason)
-                .replace("%count%", String.valueOf(warnCount)));
+        if (target.online() != null) {
+            target.online().sendMessage(getMessage("warn-message")
+                    .replace("%reason%", reason)
+                    .replace("%count%", String.valueOf(warnCount)));
+        }
 
         sender.sendMessage(getMessage("warn-success")
-                .replace("%player%", target.getName())
+                .replace("%player%", target.name())
                 .replace("%reason%", reason)
                 .replace("%count%", String.valueOf(warnCount))
                 + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-warn")) {
             String announceMsg = getMessage("warn-announce")
-                    .replace("%player%", target.getName())
+                    .replace("%player%", target.name())
                     .replace("%reason%", reason)
                     .replace("%count%", String.valueOf(warnCount));
             for (Player online : Bukkit.getOnlinePlayers()) {
@@ -195,40 +200,43 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void applyPunishment(Player target, ConfigurationSection entry, int warnCount, CommandSender issuer) {
+    private void applyPunishment(PlayerLookup.Target target, ConfigurationSection entry, int warnCount, CommandSender issuer) {
         String action = entry.getString("action", "").toLowerCase();
         String punishReason = entry.getString("reason", "Reached " + warnCount + " warnings");
         String staffName = issuer.getName();
         String staffUuid = issuer instanceof Player ? ((Player) issuer).getUniqueId().toString() : "CONSOLE";
+        Player online = target.online();
 
         switch (action) {
             case "kick": {
+                // Nothing to kick when the player already logged out
+                if (online == null) break;
                 String kickMsg = getMessage("warn-punishment-kick-message").replace("%reason%", punishReason);
-                target.kickPlayer(kickMsg);
+                online.kickPlayer(kickMsg);
 
-                plugin.getDatabaseManager().createCase("KICK", target.getName(),
-                        target.getUniqueId().toString(), punishReason, staffName, null, null);
-                plugin.getDatabaseManager().logAction(staffName, staffUuid, "KICK", target.getName(),
+                plugin.getDatabaseManager().createCase("KICK", target.name(),
+                        target.uuid(), punishReason, staffName, null, null);
+                plugin.getDatabaseManager().logAction(staffName, staffUuid, "KICK", target.name(),
                         punishReason + " (auto: " + warnCount + " warns)");
 
                 broadcastToStaff(getMessage("warn-punishment-announce")
-                        .replace("%player%", target.getName())
+                        .replace("%player%", target.name())
                         .replace("%action%", "kicked")
                         .replace("%count%", String.valueOf(warnCount)));
                 break;
             }
             case "mute": {
-                if (!plugin.getDatabaseManager().isMuted(target.getUniqueId().toString())) {
-                    plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), null);
-                    target.sendMessage(getMessage("mute-message").replace("%reason%", punishReason));
+                if (!plugin.getDatabaseManager().isMuted(target.uuid())) {
+                    plugin.getDatabaseManager().mutePlayer(target.name(), target.uuid(), punishReason, issuer.getName(), null);
+                    if (online != null) online.sendMessage(getMessage("mute-message").replace("%reason%", punishReason));
 
-                    plugin.getDatabaseManager().createCase("MUTE", target.getName(),
-                            target.getUniqueId().toString(), punishReason, staffName, null, null);
-                    plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.getName(),
+                    plugin.getDatabaseManager().createCase("MUTE", target.name(),
+                            target.uuid(), punishReason, staffName, null, null);
+                    plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.name(),
                             punishReason + " (auto: " + warnCount + " warns)");
                 }
                 broadcastToStaff(getMessage("warn-punishment-announce")
-                        .replace("%player%", target.getName())
+                        .replace("%player%", target.name())
                         .replace("%action%", "muted")
                         .replace("%count%", String.valueOf(warnCount)));
                 break;
@@ -240,11 +248,11 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 String formattedDuration = formatDuration(durationMillis);
                 Timestamp expiresAt = new Timestamp(System.currentTimeMillis() + durationMillis);
 
-                plugin.getDatabaseManager().banPlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), expiresAt);
+                plugin.getDatabaseManager().banPlayer(target.name(), target.uuid(), punishReason, issuer.getName(), expiresAt);
 
-                plugin.getDatabaseManager().createCase("TEMPBAN", target.getName(),
-                        target.getUniqueId().toString(), punishReason, staffName, expiresAt, null);
-                plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPBAN", target.getName(),
+                plugin.getDatabaseManager().createCase("TEMPBAN", target.name(),
+                        target.uuid(), punishReason, staffName, expiresAt, null);
+                plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPBAN", target.name(),
                         punishReason + " (" + formattedDuration + ", auto: " + warnCount + " warns)");
 
                 String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
@@ -258,20 +266,20 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 } else {
                     rawBanMsg = rawBanMsg.replace("%appeal%", appealLink);
                 }
-                target.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMsg));
+                if (online != null) online.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMsg));
 
                 broadcastToStaff(getMessage("warn-punishment-announce")
-                        .replace("%player%", target.getName())
+                        .replace("%player%", target.name())
                         .replace("%action%", "temp-banned (" + formattedDuration + ")")
                         .replace("%count%", String.valueOf(warnCount)));
                 break;
             }
             case "ban": {
-                plugin.getDatabaseManager().banPlayer(target.getName(), target.getUniqueId().toString(), punishReason, issuer.getName(), null);
+                plugin.getDatabaseManager().banPlayer(target.name(), target.uuid(), punishReason, issuer.getName(), null);
 
-                plugin.getDatabaseManager().createCase("BAN", target.getName(),
-                        target.getUniqueId().toString(), punishReason, staffName, null, null);
-                plugin.getDatabaseManager().logAction(staffName, staffUuid, "BAN", target.getName(),
+                plugin.getDatabaseManager().createCase("BAN", target.name(),
+                        target.uuid(), punishReason, staffName, null, null);
+                plugin.getDatabaseManager().logAction(staffName, staffUuid, "BAN", target.name(),
                         punishReason + " (auto: " + warnCount + " warns)");
 
                 String appealLink = plugin.getFileManager().getSettings().getString("ban-appeal-link", "");
@@ -284,10 +292,10 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                 } else {
                     rawBanMsg = rawBanMsg.replace("%appeal%", appealLink);
                 }
-                target.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMsg));
+                if (online != null) online.kickPlayer(ChatColor.translateAlternateColorCodes('&', rawBanMsg));
 
                 broadcastToStaff(getMessage("warn-punishment-announce")
-                        .replace("%player%", target.getName())
+                        .replace("%player%", target.name())
                         .replace("%action%", "banned")
                         .replace("%count%", String.valueOf(warnCount)));
                 break;
@@ -299,7 +307,8 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                     plugin.getLogger().warning("Warn punishment '" + action + "' needs the freeze module enabled");
                     break;
                 }
-                if (target.hasPermission("Axentra.freeze.exempt")) break;
+                // Freezing only works on a player who is online
+                if (online == null || online.hasPermission("Axentra.freeze.exempt")) break;
 
                 long durationMillis = 0L;
                 String durationStr = entry.getString("duration", "");
@@ -307,11 +316,11 @@ public class WarnCommand implements CommandExecutor, TabCompleter {
                     durationMillis = FreezeManager.parseDuration(durationStr);
                     if (durationMillis == -1) durationMillis = 0L;
                 }
-                freezeManager.freeze(target, issuer, durationMillis);
-                target.sendMessage(getMessage("warn-punishment-freeze-message").replace("%reason%", punishReason));
+                freezeManager.freeze(online, issuer, durationMillis);
+                online.sendMessage(getMessage("warn-punishment-freeze-message").replace("%reason%", punishReason));
 
                 broadcastToStaff(getMessage("warn-punishment-announce")
-                        .replace("%player%", target.getName())
+                        .replace("%player%", target.name())
                         .replace("%action%", durationMillis > 0
                                 ? "frozen (" + FreezeManager.formatDuration(durationMillis) + ")" : "frozen")
                         .replace("%count%", String.valueOf(warnCount)));

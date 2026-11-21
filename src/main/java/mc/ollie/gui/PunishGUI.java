@@ -1,6 +1,7 @@
 package mc.ollie.gui;
 
 import mc.ollie.App;
+import mc.ollie.PlayerLookup;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,7 +33,9 @@ public class PunishGUI {
 
     public PunishGUI(App plugin, String targetName) {
         this.plugin = plugin;
-        this.targetName = targetName;
+        // Use the player's real name so cases match, also when they already logged out
+        PlayerLookup.Target found = PlayerLookup.resolve(plugin, targetName);
+        this.targetName = found != null ? found.name() : targetName;
     }
 
     public String getTargetName() {
@@ -212,8 +215,8 @@ public class PunishGUI {
     }
 
     private String resolveUuid() {
-        Player target = Bukkit.getPlayer(targetName);
-        return target != null ? target.getUniqueId().toString()
+        PlayerLookup.Target found = PlayerLookup.resolve(plugin, targetName);
+        return found != null ? found.uuid()
                 : Bukkit.getOfflinePlayer(targetName).getUniqueId().toString();
     }
 
@@ -315,7 +318,7 @@ public class PunishGUI {
     }
 
     private void applyPunishment(Player staff, String action, String reason, String durationStr) {
-        Player target = Bukkit.getPlayer(targetName);
+        Player target = Bukkit.getPlayerExact(targetName);
         String uuid = resolveUuid();
 
         // Get chat snapshot

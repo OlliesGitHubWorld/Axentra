@@ -26,9 +26,9 @@
             <a href="/" class="nav-logo">Axentra</a>
             <div class="nav-links">
                 <a href="index.html#features">Features</a>
-                <a href="index.html#screenshots">Screenshots</a>
                 <a href="index.html#commands">Commands</a>
-                <a href="wiki.html" class="active">Wiki</a>
+                <a href="wiki.html" aria-current="page">Wiki</a>
+                <a href="changelog.html">Changelog</a>
                 <a href="index.html#download" class="nav-cta">Download</a>
                 <button class="theme-toggle" aria-label="Toggle theme">
                     <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -116,8 +116,8 @@
                 <p class="wiki-lead">Axentra is a lightweight, all-in-one server management plugin for Minecraft. It replaces multiple plugins with a single jar &mdash; moderation, player protection, server health, restarts, maintenance, homes, warps, chat, vanish, and more.</p>
 
                 <div class="wiki-info-box">
-                    <h4>Latest: v1.8.0 &mdash; Server Health Update</h4>
-                    <p>Adds <a href="#server-health">server health tools</a> (<code>/lag</code>, health score, TPS alerts, cleanup, entity limits), scheduled restarts, maintenance mode, <a href="#warps">warps and random teleport</a>, tempfreeze and escalating punishments. See the <a href="changelog.html">changelog</a> for every change.</p>
+                    <h4>Latest: v1.8.2 &mdash; Bugfix Release</h4>
+                    <p>Lets every punishment command (including <code>/banip</code>) work on players who already logged out, cleans up tab-complete for every command and stops the config update from undoing your own <code>warn-punishments</code> changes. Builds on v1.8.1 (update checker fix, <code>/banip &lt;player&gt;</code>, armor in <code>/invsee</code>) and v1.8.0, which added the <a href="#server-health">server health tools</a>, restarts, maintenance mode and <a href="#warps">warps</a>. See the <a href="changelog.html">changelog</a> for every change.</p>
                 </div>
 
                 <div class="wiki-info-box">
@@ -345,9 +345,9 @@ cd Axentra
                             <tr><td><code>/ban &lt;player&gt; [reason]</code></td><td>Permanently bans a player</td><td><code>Axentra.ban</code></td></tr>
                             <tr><td><code>/tempban &lt;player&gt; &lt;duration&gt; [reason]</code></td><td>Temporarily bans a player</td><td><code>Axentra.tempban</code></td></tr>
                             <tr><td><code>/unban &lt;player&gt;</code></td><td>Unbans a player</td><td><code>Axentra.unban</code></td></tr>
-                            <tr><td><code>/banip &lt;player|ip&gt; [reason]</code></td><td>Bans an IP address</td><td><code>Axentra.banip</code></td></tr>
-                            <tr><td><code>/tempbanip &lt;player|ip&gt; &lt;duration&gt; [reason]</code></td><td>Temporarily bans an IP</td><td><code>Axentra.tempbanip</code></td></tr>
-                            <tr><td><code>/unbanip &lt;ip&gt;</code></td><td>Unbans an IP address</td><td><code>Axentra.unbanip</code></td></tr>
+                            <tr><td><code>/banip &lt;player|ip&gt; [reason]</code></td><td>Bans an IP address. With a player name, the account is banned together with its IP in one case (offline players use their last known IP)</td><td><code>Axentra.banip</code></td></tr>
+                            <tr><td><code>/tempbanip &lt;player|ip&gt; &lt;duration&gt; [reason]</code></td><td>Temporarily bans an IP. With a player name, the account is banned too</td><td><code>Axentra.tempbanip</code></td></tr>
+                            <tr><td><code>/unbanip &lt;player|ip&gt;</code></td><td>Unbans an IP address. With a player name, the account ban and the IP ban are both lifted</td><td><code>Axentra.unbanip</code></td></tr>
                             <tr><td><code>/warn &lt;player&gt; [reason]</code></td><td>Warns a player</td><td><code>Axentra.warn</code></td></tr>
                             <tr><td><code>/warns [player]</code></td><td>View a player's warnings</td><td><code>Axentra.warns</code></td></tr>
                             <tr><td><code>/clearwarns &lt;player&gt;</code></td><td>Clears a player's warnings</td><td><code>Axentra.clearwarns</code></td></tr>
@@ -357,6 +357,7 @@ cd Axentra
                         </tbody>
                     </table>
                 </div>
+                <p>Every punishment command (<code>/ban</code>, <code>/tempban</code>, <code>/banip</code>, <code>/tempbanip</code>, <code>/mute</code>, <code>/tempmute</code>, <code>/warn</code>, <code>/punish</code> and <code>/note</code>) also works on players who already logged out, as long as they joined the server before. Players who left in the last 10 minutes are still suggested in tab-complete, so a player who logs out right after cheating or spamming can still be punished. Only <code>/kick</code> and <code>/freeze</code> need the player to be online.</p>
 
                 <h2 id="cmd-player">Player & Utility</h2>
                 <div class="wiki-table-wrapper">
@@ -374,9 +375,9 @@ cd Axentra
                             <tr><td><code>/gma [player]</code></td><td>&mdash;</td><td>Switch to adventure</td><td><code>Axentra.gamemode</code></td></tr>
                             <tr><td><code>/gmsp [player]</code></td><td>&mdash;</td><td>Switch to spectator</td><td><code>Axentra.gamemode</code></td></tr>
                             <tr><td><code>/speed &lt;1-10|reset&gt; [walk|fly] [player]</code></td><td>&mdash;</td><td>Set walk or fly speed</td><td><code>Axentra.speed</code></td></tr>
-                            <tr><td><code>/invsee &lt;player&gt;</code></td><td>&mdash;</td><td>View a player's inventory</td><td><code>Axentra.invsee</code></td></tr>
+                            <tr><td><code>/invsee &lt;player&gt;</code></td><td>&mdash;</td><td>View a player's inventory, armor and off hand. Editable when <code>invsee-read-only</code> is <code>false</code></td><td><code>Axentra.invsee</code></td></tr>
                             <tr><td><code>/enderchestsee &lt;player&gt;</code></td><td><code>/ecsee /echestsee</code></td><td>View a player's ender chest</td><td><code>Axentra.enderchestsee</code></td></tr>
-                            <tr><td><code>/clear [player]</code></td><td><code>/c</code></td><td>Clear inventory</td><td><code>Axentra.clear</code></td></tr>
+                            <tr><td><code>/clear [player]</code></td><td><code>/c</code></td><td>Clear inventory. Asks for confirmation: click [Confirm] or type <code>/clear confirm</code> within 10 seconds</td><td><code>Axentra.clear</code></td></tr>
                             <tr><td><code>/repair</code></td><td>&mdash;</td><td>Repair held item</td><td><code>Axentra.repair</code></td></tr>
                             <tr><td><code>/hat</code></td><td>&mdash;</td><td>Wear item as hat</td><td><code>Axentra.hat</code></td></tr>
                             <tr><td><code>/ping [player]</code></td><td>&mdash;</td><td>Check ping</td><td><code>Axentra.ping</code></td></tr>
@@ -475,7 +476,7 @@ cd Axentra
                         <thead><tr><th>Command</th><th>Aliases</th><th>Description</th><th>Permission</th></tr></thead>
                         <tbody>
                             <tr><td><code>/axentra reload</code></td><td><code>/ax reload</code></td><td>Reloads config and messages</td><td><code>Axentra.admin</code></td></tr>
-                            <tr><td><code>/axentra upgrade</code></td><td><code>/ax upgrade</code></td><td>Checks for updates</td><td><code>Axentra.admin</code></td></tr>
+                            <tr><td><code>/axentra upgrade</code></td><td><code>/ax upgrade</code></td><td>Checks for updates (unavailable when <code>update-checker.enabled</code> is <code>false</code>)</td><td><code>Axentra.admin</code></td></tr>
                             <tr><td><code>/axentra settings</code></td><td><code>/ax settings</code></td><td>Opens the staff settings GUI</td><td><code>Axentra.admin</code></td></tr>
                             <tr><td><code>/axentra help</code></td><td><code>/ax help</code></td><td>Shows all commands</td><td>&mdash;</td></tr>
                             <tr><td><code>/axentra information</code></td><td><code>/ax information</code></td><td>Shows plugin information</td><td>&mdash;</td></tr>
@@ -533,6 +534,7 @@ cd Axentra
                             <tr><td><code>Axentra.lag</code></td><td>OP</td><td>Use /lag and its views (chunks, entities, history, player)</td></tr>
                             <tr><td><code>Axentra.lag.clear</code></td><td>OP</td><td>Use /lag clear</td></tr>
                             <tr><td><code>Axentra.lag.alerts</code></td><td>OP</td><td>Receive TPS lag alerts</td></tr>
+                            <tr><td><code>Axentra.staff</code></td><td>OP</td><td>Counts as online staff for the /lag health score</td></tr>
                             <tr><td><code>Axentra.cleanup.bypass</code></td><td>Nobody</td><td>Items dropped by this player are never cleared by auto-cleanup</td></tr>
                             <tr><td><code>Axentra.entitylimit.bypass</code></td><td>OP</td><td>Bypass per-chunk entity limits</td></tr>
                             <tr><td><code>Axentra.restart</code></td><td>OP</td><td>Use /restart</td></tr>
@@ -575,7 +577,7 @@ cd Axentra
                             <tr><td><code>Axentra.tempmute</code></td><td>OP</td><td>Use /tempmute</td></tr>
                             <tr><td><code>Axentra.unmute</code></td><td>OP</td><td>Use /unmute</td></tr>
                             <tr><td><code>Axentra.notify.kick</code></td><td>OP</td><td>See kick announcements</td></tr>
-                            <tr><td><code>Axentra.notify.ban</code></td><td>OP</td><td>See ban/unban announcements</td></tr>
+                            <tr><td><code>Axentra.notify.ban</code></td><td>OP</td><td>See ban, tempban, IP ban and unban announcements</td></tr>
                             <tr><td><code>Axentra.notify.warn</code></td><td>OP</td><td>See warn announcements</td></tr>
                             <tr><td><code>Axentra.notify.mute</code></td><td>OP</td><td>See mute/unmute announcements</td></tr>
                             <tr><td><code>Axentra.spawn</code></td><td>Everyone</td><td>Use /spawn on yourself</td></tr>
@@ -596,7 +598,7 @@ cd Axentra
                             <tr><td><code>Axentra.delhome</code></td><td>Everyone</td><td>Delete your homes</td></tr>
                             <tr><td><code>Axentra.homes</code></td><td>Everyone</td><td>Open the homes GUI</td></tr>
                             <tr><td><code>Axentra.homes.others</code></td><td>OP</td><td>View other players' homes</td></tr>
-                            <tr><td><code>Axentra.homes.&lt;n&gt;</code></td><td>&mdash;</td><td>Allow up to <em>n</em> homes (e.g. <code>Axentra.homes.5</code>)</td></tr>
+                            <tr><td><code>Axentra.homes.&lt;n&gt;</code></td><td>Nobody</td><td>Allow up to <em>n</em> homes (e.g. <code>Axentra.homes.5</code>). <code>Axentra.homes.1</code> to <code>Axentra.homes.100</code> are registered, so permission plugins suggest them</td></tr>
                             <tr><td><code>Axentra.homes.unlimited</code></td><td>OP</td><td>Unlimited homes</td></tr>
                             <tr><td><code>Axentra.vanish</code></td><td>OP</td><td>Toggle vanish for yourself</td></tr>
                             <tr><td><code>Axentra.vanish.others</code></td><td>OP</td><td>Toggle vanish for others</td></tr>
@@ -705,7 +707,7 @@ cd Axentra
                 </div>
 
                 <h3>Warn Auto-Punishments</h3>
-                <p>Configure automatic punishments when players reach warning thresholds:</p>
+                <p>Configure automatic punishments when players reach warning thresholds. The entries below are only the defaults for a new config: you can change, add or remove thresholds, and Axentra keeps your list as it is when it updates the config.</p>
                 <div class="wiki-code-block">
                     <pre><code>warn-punishments:
   3:
@@ -835,7 +837,10 @@ cd Axentra
                     <table>
                         <thead><tr><th>Setting</th><th>Default</th><th>Description</th></tr></thead>
                         <tbody>
-                            <tr><td><code>invsee-read-only</code></td><td><code>true</code></td><td>Prevent modifying items in /invsee</td></tr>
+                            <tr><td><code>invsee-read-only</code></td><td><code>true</code></td><td>Prevent modifying items in /invsee. With <code>false</code>, staff can edit everything including armor and off hand; changes sync to the player straight away</td></tr>
+                            <tr><td><code>clear.require-confirm</code></td><td><code>true</code></td><td>Ask for confirmation before <code>/clear</code> and <code>/clear &lt;player&gt;</code> wipe an inventory</td></tr>
+                            <tr><td><code>update-checker.enabled</code></td><td><code>true</code></td><td>Check GitHub for new Axentra releases. With <code>false</code> no request is made at all, and <code>/axentra upgrade</code> is disabled</td></tr>
+                            <tr><td><code>update-checker.notify-ops-on-join</code></td><td><code>true</code></td><td>Tell players with <code>Axentra.admin</code> about a new version when they join</td></tr>
                             <tr><td><code>report-cooldown-seconds</code></td><td><code>60</code></td><td>Cooldown between /report uses per player</td></tr>
                             <tr><td><code>verbose-logging</code></td><td><code>true</code></td><td>Show info messages in the console. Errors are always shown.</td></tr>
                         </tbody>
@@ -1154,7 +1159,21 @@ cd Axentra
                     </div>
                     <div class="faq-item">
                         <h3>How do I update?</h3>
-                        <p>Replace the old jar with the new one and restart your server. Your config files and database are preserved. Use <code>/axentra upgrade</code> to check for new versions in-game.</p>
+                        <p>Replace the old jar with the new one and restart your server. Your config files and database are preserved. Use <code>/axentra upgrade</code> to check for new versions in-game. Don't want Axentra to check GitHub for updates? Set <code>update-checker.enabled</code> to <code>false</code> in <code>config.yml</code>.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Is Axentra really free?</h3>
+                        <p>Yes. Axentra is free and open source under the GNU GPL v3 license. Every feature is in the free download, and the source code is on <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank" rel="noopener">GitHub</a>.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Does Axentra work with LuckPerms?</h3>
+                        <p>Yes. Axentra uses the standard Bukkit permission system, so it works with LuckPerms and any other permission plugin. Every permission Axentra checks is registered, so LuckPerms suggests them in its editor and in tab-complete. See <a href="#permissions">Permissions</a> for the full list.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I use Axentra next to EssentialsX?</h3>
+                        <p>Yes, but some commands exist in both, such as <code>/home</code>, <code>/tpa</code>, <code>/spawn</code>, <code>/msg</code> and <code>/ban</code>. When two plugins register the same command, only one of them answers to the plain name, depending on load order and EssentialsX's own settings.</p>
+                        <p>To avoid conflicts, turn off the Axentra modules you want EssentialsX to handle in <code>enabled-modules</code> (see <a href="#configuration">Module Toggles</a>): <code>tpa</code>, <code>spawn</code>, <code>back</code>, <code>messaging</code>, <code>nickname</code>, <code>player-utilities</code>, <code>vanish</code>, <code>invsee</code>, <code>workbench-commands</code>, <code>weather-time</code>, <code>homes</code>, <code>teleport</code> and <code>warps</code>. Axentra's moderation commands (<code>/ban</code>, <code>/kick</code>, <code>/mute</code>, <code>/warn</code>, &hellip;) are always on; to use those, add EssentialsX's versions to <code>disabled-commands</code> in its <code>config.yml</code>.</p>
+                        <p>You can always run one plugin's command directly with a prefix, like <code>/axentra:home</code> or <code>/essentials:home</code>.</p>
                     </div>
                     <div class="faq-item">
                         <h3>Can I disable features I don't need?</h3>
@@ -1211,16 +1230,22 @@ cd Axentra
                     <a href="wiki.html">Wiki</a>
                     <a href="wiki.html#commands">Commands</a>
                     <a href="changelog.html">Changelog</a>
+                    <a href="roadmap.html">Roadmap</a>
                 </div>
                 <div class="footer-links">
                     <div class="footer-links-title">Community</div>
-                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
-                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
-                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank" rel="noopener">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" rel="noopener">SpigotMC</a>
+                    <a href="https://modrinth.com/plugin/axentra" target="_blank" rel="noopener">Modrinth</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank" rel="noopener">Report a Bug</a>
+                    <!-- Support link: replace the URL with your GitHub Sponsors or Ko-fi page, then remove the comment markers
+                    <a href="https://ko-fi.com/YOUR-NAME" target="_blank" rel="noopener">Support the project</a>
+                    -->
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Axentra. Licensed under MIT.</p>
+                <p>&copy; 2026 Axentra. Licensed under GPL v3.</p>
             </div>
         </div>
     </footer>

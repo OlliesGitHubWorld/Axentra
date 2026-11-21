@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.PlayerLookup;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -89,7 +90,9 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String playerName = args[0];
+        // Also finds players who already logged out; unknown names still get banned by name
+        PlayerLookup.Target found = PlayerLookup.resolve(plugin, args[0]);
+        String playerName = found != null ? found.name() : args[0];
         String durationStr = args[1];
 
         long durationMillis = parseDuration(durationStr);
@@ -117,8 +120,8 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player target = Bukkit.getPlayer(playerName);
-        String uuid = target != null ? target.getUniqueId().toString()
+        Player target = found != null ? found.online() : null;
+        String uuid = found != null ? found.uuid()
                 : Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
         String bannedBy = sender.getName();
         String formattedDuration = formatDuration(durationMillis);
@@ -126,10 +129,10 @@ public class TempBanCommand implements CommandExecutor, TabCompleter {
 
         // Get chat snapshot
         String chatLog = null;
-        if (target != null) {
+        if (found != null) {
             ChatListener chatListener = plugin.getChatListener();
             if (chatListener != null) {
-                chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+                chatLog = chatListener.getChatSnapshot(java.util.UUID.fromString(found.uuid()));
             }
         }
 

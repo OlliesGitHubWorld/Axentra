@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.PlayerLookup;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,7 +89,8 @@ public class TempMuteCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
+        // Also finds players who already logged out
+        PlayerLookup.Target target = PlayerLookup.resolve(plugin, args[0]);
 
         if (target == null) {
             sender.sendMessage(getMessage("player-not-found").replace("%player%", args[0]));
@@ -101,8 +104,8 @@ public class TempMuteCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (plugin.getDatabaseManager().isMuted(target.getUniqueId().toString())) {
-            sender.sendMessage(getMessage("mute-already-muted").replace("%player%", target.getName()));
+        if (plugin.getDatabaseManager().isMuted(target.uuid())) {
+            sender.sendMessage(getMessage("mute-already-muted").replace("%player%", target.name()));
             return true;
         }
 
@@ -125,27 +128,29 @@ public class TempMuteCommand implements CommandExecutor, TabCompleter {
         String chatLog = null;
         ChatListener chatListener = plugin.getChatListener();
         if (chatListener != null) {
-            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+            chatLog = chatListener.getChatSnapshot(UUID.fromString(target.uuid()));
         }
 
-        plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName(), expiresAt);
+        plugin.getDatabaseManager().mutePlayer(target.name(), target.uuid(), reason, sender.getName(), expiresAt);
 
         // Create case
         String staffName = sender.getName();
         String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
-        int caseId = plugin.getDatabaseManager().createCase("TEMPMUTE", target.getName(),
-                target.getUniqueId().toString(), reason, staffName, expiresAt, chatLog);
+        int caseId = plugin.getDatabaseManager().createCase("TEMPMUTE", target.name(),
+                target.uuid(), reason, staffName, expiresAt, chatLog);
 
         // Audit log
-        plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPMUTE", target.getName(),
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "TEMPMUTE", target.name(),
                 reason + " (" + formattedDuration + ")");
 
-        target.sendMessage(getMessage("tempmute-message")
-                .replace("%reason%", reason)
-                .replace("%duration%", formattedDuration));
+        if (target.online() != null) {
+            target.online().sendMessage(getMessage("tempmute-message")
+                    .replace("%reason%", reason)
+                    .replace("%duration%", formattedDuration));
+        }
 
         sender.sendMessage(getMessage("tempmute-success")
-                .replace("%player%", target.getName())
+                .replace("%player%", target.name())
                 .replace("%duration%", formattedDuration)
                 .replace("%reason%", reason)
                 + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
@@ -154,7 +159,7 @@ public class TempMuteCommand implements CommandExecutor, TabCompleter {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.hasPermission("Axentra.notify.mute")) {
                     player.sendMessage(getMessage("tempmute-announce")
-                            .replace("%player%", target.getName())
+                            .replace("%player%", target.name())
                             .replace("%duration%", formattedDuration)
                             .replace("%reason%", reason));
                 }

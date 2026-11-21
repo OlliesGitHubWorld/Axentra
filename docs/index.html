@@ -40,9 +40,9 @@
             <a href="/" class="nav-logo">Axentra</a>
             <div class="nav-links">
                 <a href="#features">Features</a>
-                <a href="#screenshots">Screenshots</a>
                 <a href="#commands">Commands</a>
                 <a href="wiki.html">Wiki</a>
+                <a href="changelog.html">Changelog</a>
                 <a href="#download" class="nav-cta">Download</a>
                 <button class="theme-toggle" aria-label="Toggle theme">
                     <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -64,9 +64,10 @@
     <section class="hero">
         <div class="hero-bg"></div>
         <div class="container hero-content">
-            <a href="changelog.html" class="hero-badge">v1.8.0 - Server Health Update</a>
-            <h1 class="hero-heading"><span class="hero-title">Axentra</span> <span class="hero-subtitle">A powerful, lightweight Minecraft server management plugin</span></h1>
-            <p class="hero-desc">Run your Minecraft server with one powerful, lightweight plugin and 110+ commands &mdash; moderation, player protection, staff tools, server health monitoring, restarts, maintenance, warps and more. No bloat. No dependencies.</p>
+            <!-- Fallback text; script.js swaps in the latest GitHub release name when it differs -->
+            <a href="changelog.html" class="hero-badge" id="release-badge">v1.8.2 - Bugfix Release</a>
+            <h1 class="hero-heading"><span class="hero-title">Axentra</span> <span class="hero-subtitle">Moderation, lag tools and staff mode in one free plugin</span></h1>
+            <p class="hero-desc">110+ commands for running a Minecraft server &mdash; punishments, player protection, server health, restarts, maintenance, homes and warps. Lightweight, with no dependencies.</p>
             <div class="hero-badges">
                 <img src="https://img.shields.io/github/v/release/OlliesGitHubWorld/Axentra?style=flat-square&label=Latest%20Release&color=00bcd4" alt="Latest Release">
                 <img src="https://img.shields.io/github/downloads/OlliesGitHubWorld/Axentra/total?style=flat-square&label=Downloads&color=00bcd4" alt="Downloads">
@@ -91,6 +92,63 @@
                 <div class="stat">
                     <span class="stat-number">0</span>
                     <span class="stat-label">Dependencies</span>
+                </div>
+            </div>
+            <!-- Filled in by script.js from bStats; stays hidden when the request fails -->
+            <a href="https://bstats.org/plugin/bukkit/Axentra/30019" target="_blank" rel="noopener" class="hero-usage" id="server-count" hidden>
+                <span class="hero-usage-dot" aria-hidden="true"></span>
+                Used on <strong>0</strong> <span class="hero-usage-unit">servers</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Replaces -->
+    <section id="replaces" class="replaces">
+        <div class="container">
+            <h2 class="section-title">One jar instead of five</h2>
+            <p class="section-subtitle">Axentra covers the plugins most servers install one by one</p>
+            <div class="replaces-grid">
+                <div class="replace-card">
+                    <div class="replace-icon" aria-hidden="true">&#x1F3E0;</div>
+                    <div>
+                        <h3>Essentials commands</h3>
+                        <p>Homes, warps, TPA, spawn, <code>/back</code>, nicknames, fly, heal and virtual workbenches.</p>
+                    </div>
+                </div>
+                <div class="replace-card">
+                    <div class="replace-icon" aria-hidden="true">&#x2696;</div>
+                    <div>
+                        <h3>Punishments &amp; bans</h3>
+                        <p>Bans, mutes, warns and IP bans with a punishment GUI, cases and full history.</p>
+                    </div>
+                </div>
+                <div class="replace-card">
+                    <div class="replace-icon" aria-hidden="true">&#x1F441;</div>
+                    <div>
+                        <h3>Staff mode &amp; vanish</h3>
+                        <p>A staff hotbar, vanish, reports, duty tracking and staff chat.</p>
+                    </div>
+                </div>
+                <div class="replace-card">
+                    <div class="replace-icon" aria-hidden="true">&#x1F4C8;</div>
+                    <div>
+                        <h3>Lag monitoring &amp; cleanup</h3>
+                        <p>TPS and MSPT, the heaviest chunks, lag alerts, item cleanup and entity limits.</p>
+                    </div>
+                </div>
+                <div class="replace-card">
+                    <div class="replace-icon" aria-hidden="true">&#x1F504;</div>
+                    <div>
+                        <h3>Restarts &amp; maintenance</h3>
+                        <p>Scheduled restarts with a countdown, and maintenance mode with a custom MOTD.</p>
+                    </div>
+                </div>
+                <div class="replace-card">
+                    <div class="replace-icon" aria-hidden="true">&#x1F6E1;</div>
+                    <div>
+                        <h3>Player protection</h3>
+                        <p>Inventory snapshots, alt and VPN detection, trust levels and freeze.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -178,197 +236,152 @@
                 </div>
             </div>
 
+            <!-- Main screenshots. Each link opens the full-size PNG in the lightbox (data-caption = lightbox caption). -->
             <div class="screenshots-grid">
                 <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/lag-overview.webp" width="800" height="430" alt="Lag Overview" loading="lazy">
-                    </div>
+                    <a href="assets/lag-overview.png" class="screenshot-img-wrapper lightbox-link" data-caption="Lag Overview — TPS, MSPT, memory, per-world entities and a health score">
+                        <img src="assets/lag-overview.webp" width="800" height="430" alt="The /lag performance overview in chat: TPS, MSPT, memory, uptime, players, entities per world and a health score of 93/100" loading="lazy">
+                    </a>
                     <div class="screenshot-info">
                         <div class="screenshot-title">Lag Overview</div>
                         <p>TPS, MSPT, memory, per-world entities and a health score with one command.</p>
                     </div>
                 </div>
                 <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/restart-countdown.webp" width="800" height="430" alt="Restart Countdown" loading="lazy">
-                    </div>
-                    <div class="screenshot-info">
-                        <div class="screenshot-title">Restart Countdown</div>
-                        <p>Players get a bossbar, sounds and a title before every scheduled restart.</p>
-                    </div>
-                </div>
-                <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/maintenance.webp" width="800" height="430" alt="Maintenance Mode" loading="lazy">
-                    </div>
-                    <div class="screenshot-info">
-                        <div class="screenshot-title">Maintenance Mode</div>
-                        <p>A clear screen with the reason, start time and when the server is expected back.</p>
-                    </div>
-                </div>
-                <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/inventory-snapshots.webp" width="800" height="431" alt="Inventory Snapshots" loading="lazy">
-                    </div>
-                    <div class="screenshot-info">
-                        <div class="screenshot-title">Inventory Snapshots</div>
-                        <p>Lost items after a death or bug? Browse snapshots and restore them in one click.</p>
-                    </div>
-                </div>
-                <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/join-alert.webp" width="800" height="431" alt="Smart Join Alerts" loading="lazy">
-                    </div>
-                    <div class="screenshot-info">
-                        <div class="screenshot-title">Smart Join Alerts</div>
-                        <p>Staff instantly see alts, VPN usage, trust level and open cases when a player joins.</p>
-                    </div>
-                </div>
-                <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/punishment-gui.webp" width="800" height="431" alt="Punishment GUI" loading="lazy">
-                    </div>
+                    <a href="assets/punishment-gui.png" class="screenshot-img-wrapper lightbox-link" data-caption="Punishment GUI — templates that escalate on repeat offenses">
+                        <img src="assets/punishment-gui.webp" width="800" height="431" alt="The /punish menu with punishment templates, showing the X-Ray template: a 30-day tempban" loading="lazy">
+                    </a>
                     <div class="screenshot-info">
                         <div class="screenshot-title">Punishment GUI</div>
                         <p>One-click punishments from templates that escalate automatically on repeat offenses.</p>
                     </div>
                 </div>
                 <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/ban-screen.webp" width="800" height="431" alt="Ban Screen" loading="lazy">
-                    </div>
+                    <a href="assets/join-alert.png" class="screenshot-img-wrapper lightbox-link" data-caption="Smart Join Alerts — alts, trust level and open cases, with History and Timeline buttons">
+                        <img src="assets/join-alert.webp" width="1300" height="700" alt="A staff join alert in chat showing the player's alt count, trust level and number of cases, with History and Timeline buttons" loading="lazy">
+                    </a>
                     <div class="screenshot-info">
-                        <div class="screenshot-title">Ban Screen</div>
-                        <p>Clean ban screen with reason, duration, staff name and configurable appeal link.</p>
+                        <div class="screenshot-title">Smart Join Alerts</div>
+                        <p>Staff instantly see alts, VPN usage, trust level and open cases when a player joins.</p>
                     </div>
                 </div>
                 <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/staff-tools.webp" width="800" height="431" alt="Staff Tools" loading="lazy">
-                    </div>
+                    <a href="assets/inventory-snapshots.png" class="screenshot-img-wrapper lightbox-link" data-caption="Inventory Snapshots — browse and restore lost items">
+                        <img src="assets/inventory-snapshots.webp" width="1300" height="700" alt="The inventory snapshots menu for a player, with a death snapshot showing its time, reason, world and item count" loading="lazy">
+                    </a>
                     <div class="screenshot-info">
-                        <div class="screenshot-title">Staff Tools</div>
-                        <p>Case system, staff chat, vanish and clickable history &mdash; everything staff needs.</p>
+                        <div class="screenshot-title">Inventory Snapshots</div>
+                        <p>Lost items after a death or bug? Browse snapshots and restore them in one click.</p>
                     </div>
                 </div>
                 <div class="screenshot-card">
-                    <div class="screenshot-img-wrapper">
-                        <img src="assets/settings-gui.webp" width="800" height="431" alt="Settings GUI" loading="lazy">
-                    </div>
+                    <a href="assets/restart-countdown.png" class="screenshot-img-wrapper lightbox-link" data-caption="Restart Countdown — bossbar, sounds and a title">
+                        <img src="assets/restart-countdown.webp" width="800" height="430" alt="A restart countdown with a red bossbar, a large RESTARTING title and chat warnings" loading="lazy">
+                    </a>
                     <div class="screenshot-info">
-                        <div class="screenshot-title">In-Game Settings</div>
-                        <p>Toggle announcements, gameplay and vanish settings directly from the GUI.</p>
+                        <div class="screenshot-title">Restart Countdown</div>
+                        <p>Players get a bossbar, sounds and a title before every scheduled restart.</p>
                     </div>
+                </div>
+                <div class="screenshot-card">
+                    <a href="assets/maintenance.png" class="screenshot-img-wrapper lightbox-link" data-caption="Maintenance Mode — reason, start time and expected end">
+                        <img src="assets/maintenance.webp" width="800" height="430" alt="The maintenance disconnect screen with the reason, start time and expected end time" loading="lazy">
+                    </a>
+                    <div class="screenshot-info">
+                        <div class="screenshot-title">Maintenance Mode</div>
+                        <p>A clear screen with the reason, start time and when the server is expected back.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More screenshots: small thumbnails, tap to open in the lightbox -->
+            <div class="more-shots">
+                <h3 class="more-shots-title">More screenshots</h3>
+                <div class="more-shots-grid">
+                    <a href="assets/warps-gui.png" class="more-shot lightbox-link" data-caption="Warps GUI — reorder, rename and change icons in the menu">
+                        <img src="assets/warps-gui.webp" width="1300" height="700" alt="The /warps menu with a tooltip showing a warp's world, location and position, plus the shift-click, 1-9 and Q shortcuts" loading="lazy">
+                        <span>Warps GUI</span>
+                    </a>
+                    <a href="assets/ban-screen.png" class="more-shot lightbox-link" data-caption="Ban Screen — reason, duration, staff name and appeal link">
+                        <img src="assets/ban-screen.webp" width="800" height="431" alt="The temporary ban screen with the reason, duration, who issued the ban and an appeal link" loading="lazy">
+                        <span>Ban Screen</span>
+                    </a>
+                    <a href="assets/staff-tools.png" class="more-shot lightbox-link" data-caption="Staff Tools — cases, staff chat, vanish and clickable history">
+                        <img src="assets/staff-tools.webp" width="800" height="431" alt="Staff chat, a case summary with a View full history button and a vanish message in chat" loading="lazy">
+                        <span>Staff Tools</span>
+                    </a>
+                    <a href="assets/settings-gui.png" class="more-shot lightbox-link" data-caption="In-Game Settings — announcements, gameplay and vanish settings">
+                        <img src="assets/settings-gui.webp" width="800" height="431" alt="The Axentra Settings menu with a tooltip for the mute announcement toggle" loading="lazy">
+                        <span>In-Game Settings</span>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Commands Preview -->
+    <!--
+    ═══ Testimonials (hidden until you have real ones) ═══
+    Paste real quotes from server owners below and remove the comment markers around the section.
+    Only use quotes you have permission to publish.
+
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2 class="section-title">What server owners say</h2>
+            <div class="testimonials-grid">
+                <figure class="testimonial">
+                    <blockquote>"Quote here."</blockquote>
+                    <figcaption>Name &mdash; Server name</figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- Commands Preview: 8 commands that show the range. The full list is in the wiki. -->
     <section id="commands" class="commands">
         <div class="container">
             <h2 class="section-title">110+ commands, one plugin</h2>
-            <p class="section-subtitle">Every command fully configurable with permissions</p>
-            <div class="commands-tabs">
-                <button class="tab-btn active" data-tab="server">Server</button>
-                <button class="tab-btn" data-tab="protection">Protection</button>
-                <button class="tab-btn" data-tab="moderation">Moderation</button>
-                <button class="tab-btn" data-tab="homes">Homes &amp; Warps</button>
-                <button class="tab-btn" data-tab="chat">Chat</button>
-                <button class="tab-btn" data-tab="teleport">Teleport</button>
-                <button class="tab-btn" data-tab="utility">Utility</button>
-            </div>
-            <div class="commands-content">
-                <div class="tab-content active" id="tab-server">
-                    <div class="command-list">
-                        <div class="command"><code>/lag</code><span>TPS, MSPT, memory and health score</span></div>
-                        <div class="command"><code>/lag chunks</code><span>Top 10 heaviest chunks</span></div>
-                        <div class="command"><code>/lag entities</code><span>Entities per type and status</span></div>
-                        <div class="command"><code>/lag history [hours]</code><span>TPS history GUI</span></div>
-                        <div class="command"><code>/lag clear [items|mobs|all]</code><span>Clear ground items or mobs</span></div>
-                        <div class="command"><code>/restart schedule &lt;time&gt;</code><span>Schedule a restart</span></div>
-                        <div class="command"><code>/maintenance on [duration] [reason]</code><span>Start maintenance mode</span></div>
-                        <div class="command"><code>/maintenance off</code><span>End maintenance mode</span></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-protection">
-                    <div class="command-list">
-                        <div class="command"><code>/restoreinv &lt;player&gt;</code><span>View &amp; restore inventory snapshots</span></div>
-                        <div class="command"><code>/trust &lt;player&gt;</code><span>View player trust level</span></div>
-                        <div class="command"><code>/trust set &lt;player&gt; &lt;level&gt;</code><span>Set trust level</span></div>
-                        <div class="command"><code>/alts &lt;player&gt;</code><span>View alt accounts</span></div>
-                        <div class="command"><code>/freeze &lt;player&gt;</code><span>Freeze a player</span></div>
-                        <div class="command"><code>/tempfreeze &lt;player&gt; &lt;duration&gt;</code><span>Freeze a player temporarily</span></div>
-                        <div class="command"><code>/unfreeze &lt;player&gt;</code><span>Unfreeze a player</span></div>
-                        <div class="command"><code>/timeline &lt;player&gt;</code><span>View activity timeline</span></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-moderation">
-                    <div class="command-list">
-                        <div class="command"><code>/punish &lt;player&gt;</code><span>Open punishment GUI</span></div>
-                        <div class="command"><code>/ban &lt;player&gt; [reason]</code><span>Permanently ban a player</span></div>
-                        <div class="command"><code>/tempban &lt;player&gt; &lt;duration&gt; [reason]</code><span>Temporarily ban a player</span></div>
-                        <div class="command"><code>/mute &lt;player&gt; [reason]</code><span>Mute a player</span></div>
-                        <div class="command"><code>/warn &lt;player&gt; [reason]</code><span>Warn a player</span></div>
-                        <div class="command"><code>/kick &lt;player&gt; [reason]</code><span>Kick a player</span></div>
-                        <div class="command"><code>/case &lt;id&gt;</code><span>View case details</span></div>
-                        <div class="command"><code>/case resolve &lt;id&gt;</code><span>Resolve a case</span></div>
-                        <div class="command"><code>/history &lt;player&gt;</code><span>View moderation history</span></div>
-                        <div class="command"><code>/auditlog &lt;staff&gt;</code><span>View staff action log</span></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-homes">
-                    <div class="command-list">
-                        <div class="command"><code>/sethome [name]</code><span>Set a home location</span></div>
-                        <div class="command"><code>/home [name]</code><span>Teleport to a home</span></div>
-                        <div class="command"><code>/delhome &lt;name&gt;</code><span>Delete a home</span></div>
-                        <div class="command"><code>/homes [player]</code><span>View all homes in GUI</span></div>
-                        <div class="command"><code>/setwarp &lt;name&gt;</code><span>Create a warp</span></div>
-                        <div class="command"><code>/warp &lt;name&gt;</code><span>Teleport to a warp</span></div>
-                        <div class="command"><code>/warps</code><span>Warps GUI (reorder, rename, icons)</span></div>
-                        <div class="command"><code>/rtp [world]</code><span>Random safe teleport</span></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-chat">
-                    <div class="command-list">
-                        <div class="command"><code>/msg &lt;player&gt; &lt;message&gt;</code><span>Send a private message</span></div>
-                        <div class="command"><code>/reply &lt;message&gt;</code><span>Reply to last message</span></div>
-                        <div class="command"><code>/staffchat [message]</code><span>Staff-only chat</span></div>
-                        <div class="command"><code>/broadcast &lt;message&gt;</code><span>Broadcast to all players</span></div>
-                        <div class="command"><code>/mutechat</code><span>Toggle global chat mute</span></div>
-                        <div class="command"><code>/slowchat [seconds]</code><span>Toggle slow chat</span></div>
-                        <div class="command"><code>/clearchat</code><span>Clear chat</span></div>
-                        <div class="command"><code>/nick &lt;name|off&gt;</code><span>Set nickname</span></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-teleport">
-                    <div class="command-list">
-                        <div class="command"><code>/tpa &lt;player&gt;</code><span>Send teleport request</span></div>
-                        <div class="command"><code>/tpaccept</code><span>Accept request</span></div>
-                        <div class="command"><code>/tpdeny</code><span>Deny request</span></div>
-                        <div class="command"><code>/tpahere &lt;player&gt;</code><span>Request player to teleport to you</span></div>
-                        <div class="command"><code>/spawn [player]</code><span>Teleport to spawn</span></div>
-                        <div class="command"><code>/back</code><span>Return to previous location</span></div>
-                        <div class="command"><code>/tp &lt;player&gt;</code><span>Teleport to a player</span></div>
-                        <div class="command"><code>/tphere &lt;player&gt;</code><span>Teleport player to you</span></div>
-                        <div class="command"><code>/top</code><span>Teleport to highest block</span></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-utility">
-                    <div class="command-list">
-                        <div class="command"><code>/fly [player]</code><span>Toggle flight</span></div>
-                        <div class="command"><code>/heal [player]</code><span>Heal a player</span></div>
-                        <div class="command"><code>/vanish [player]</code><span>Toggle vanish</span></div>
-                        <div class="command"><code>/gamemode &lt;mode&gt;</code><span>Change gamemode</span></div>
-                        <div class="command"><code>/repair</code><span>Repair held item</span></div>
-                        <div class="command"><code>/clear [player]</code><span>Clear inventory</span></div>
-                        <div class="command"><code>/workbench</code><span>Open crafting table</span></div>
-                        <div class="command"><code>/enderchest</code><span>Open ender chest</span></div>
-                    </div>
-                </div>
+            <p class="section-subtitle">A few highlights &mdash; every command has its own permission</p>
+            <div class="command-list command-list-featured">
+                <div class="command"><code>/lag chunks</code><span><em class="command-cat">Server health</em>The 10 heaviest chunks, with click-to-teleport</span></div>
+                <div class="command"><code>/restart schedule &lt;time&gt;</code><span><em class="command-cat">Restarts</em>Restart with a bossbar countdown and warnings</span></div>
+                <div class="command"><code>/punish &lt;player&gt;</code><span><em class="command-cat">Moderation</em>Punishment GUI with escalating templates</span></div>
+                <div class="command"><code>/history &lt;player&gt;</code><span><em class="command-cat">Moderation</em>Every case a player has had, in a GUI</span></div>
+                <div class="command"><code>/staffmode</code><span><em class="command-cat">Staff</em>Vanish plus a hotbar full of staff tools</span></div>
+                <div class="command"><code>/restoreinv &lt;player&gt;</code><span><em class="command-cat">Protection</em>Browse and restore inventory snapshots</span></div>
+                <div class="command"><code>/warps</code><span><em class="command-cat">Warps</em>Warps GUI you can reorder and rename in place</span></div>
+                <div class="command"><code>/tpa &lt;player&gt;</code><span><em class="command-cat">Teleport</em>Teleport requests with accept and deny</span></div>
             </div>
             <div class="commands-footer">
-                <a href="wiki.html#commands" class="btn btn-secondary">View all commands</a>
+                <a href="wiki.html#commands" class="btn btn-primary btn-lg">View all 110+ commands <span class="btn-arrow" aria-hidden="true">&rarr;</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick start -->
+    <section id="quick-start" class="quick-start">
+        <div class="container">
+            <h2 class="section-title">Up and running in a minute</h2>
+            <p class="section-subtitle">No database or other plugins to set up</p>
+            <ol class="steps">
+                <li class="step">
+                    <span class="step-num" aria-hidden="true">1</span>
+                    <h3>Download the jar</h3>
+                    <p>Get it from <a href="https://github.com/OlliesGitHubWorld/Axentra/releases/latest" target="_blank" rel="noopener">GitHub</a>, <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" rel="noopener">SpigotMC</a> or <a href="https://modrinth.com/plugin/axentra" target="_blank" rel="noopener">Modrinth</a>.</p>
+                </li>
+                <li class="step">
+                    <span class="step-num" aria-hidden="true">2</span>
+                    <h3>Add it to your server</h3>
+                    <p>Put the jar in your server's <code>plugins/</code> folder.</p>
+                </li>
+                <li class="step">
+                    <span class="step-num" aria-hidden="true">3</span>
+                    <h3>Restart the server</h3>
+                    <p>The config files are created automatically on the first start.</p>
+                </li>
+            </ol>
+            <div class="quick-start-footer">
+                <a href="wiki.html#installation">Full installation guide <span aria-hidden="true">&rarr;</span></a>
             </div>
         </div>
     </section>
@@ -377,7 +390,7 @@
     <section id="download" class="download">
         <div class="container">
             <h2 class="section-title">Get Axentra</h2>
-            <p class="section-subtitle">Free and open source &mdash; MIT licensed</p>
+            <p class="section-subtitle">Free and open source &mdash; GPL v3 licensed</p>
             <div class="download-cards">
                 <a href="https://github.com/OlliesGitHubWorld/Axentra/releases/latest" target="_blank" class="download-card">
                     <div class="download-icon">
@@ -431,6 +444,20 @@
                     <p>No. Axentra is fully standalone with zero external dependencies. SQLite is bundled inside the jar, so there is no database to set up.</p>
                 </details>
                 <details>
+                    <summary>Is Axentra really free?</summary>
+                    <p>Yes. Axentra is free and open source under the GNU GPL v3 license. Every feature is in the free download, and the source code is on <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank" rel="noopener">GitHub</a>.</p>
+                </details>
+                <details>
+                    <summary>Does Axentra work with LuckPerms?</summary>
+                    <p>Yes. Axentra uses the standard Bukkit permission system, so it works with LuckPerms and any other permission plugin. Every permission Axentra checks is registered, so LuckPerms suggests them in its editor and in tab-complete. See the <a href="wiki.html#permissions">full permission list</a>.</p>
+                </details>
+                <details>
+                    <summary>Can I use Axentra next to EssentialsX?</summary>
+                    <p>Yes, but some commands exist in both, such as <code>/home</code>, <code>/tpa</code>, <code>/spawn</code>, <code>/msg</code> and <code>/ban</code>. When two plugins register the same command, only one of them answers to the plain name, depending on load order and EssentialsX's own settings.</p>
+                    <p>To avoid conflicts, turn off the Axentra modules you want EssentialsX to handle in <code>enabled-modules</code>: <code>tpa</code>, <code>spawn</code>, <code>back</code>, <code>messaging</code>, <code>nickname</code>, <code>player-utilities</code>, <code>vanish</code>, <code>invsee</code>, <code>workbench-commands</code>, <code>weather-time</code>, <code>homes</code>, <code>teleport</code> and <code>warps</code>. Axentra's moderation commands (<code>/ban</code>, <code>/kick</code>, <code>/mute</code>, <code>/warn</code>, &hellip;) are always on; to use those, add EssentialsX's versions to <code>disabled-commands</code> in its <code>config.yml</code>.</p>
+                    <p>You can always run one plugin's command directly with a prefix, like <code>/axentra:home</code> or <code>/essentials:home</code>.</p>
+                </details>
+                <details>
                     <summary>Can I turn off features I don't need?</summary>
                     <p>Yes. Axentra has 30 modules that you can toggle in the <code>enabled-modules</code> section of <code>config.yml</code>. The commands of a disabled module are fully unregistered. Changing a module requires a server restart.</p>
                 </details>
@@ -470,16 +497,22 @@
                     <a href="wiki.html">Plugin Wiki</a>
                     <a href="wiki.html#commands">Command Reference</a>
                     <a href="changelog.html">Changelog</a>
+                    <a href="roadmap.html">Roadmap</a>
                 </div>
                 <div class="footer-links">
                     <div class="footer-links-title">Community</div>
-                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
-                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
-                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank" rel="noopener">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" rel="noopener">SpigotMC</a>
+                    <a href="https://modrinth.com/plugin/axentra" target="_blank" rel="noopener">Modrinth</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank" rel="noopener">Report a Bug</a>
+                    <!-- Support link: replace the URL with your GitHub Sponsors or Ko-fi page, then remove the comment markers
+                    <a href="https://ko-fi.com/YOUR-NAME" target="_blank" rel="noopener">Support the project</a>
+                    -->
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Axentra. Licensed under MIT.</p>
+                <p>&copy; 2026 Axentra. Licensed under GPL v3.</p>
             </div>
         </div>
     </footer>

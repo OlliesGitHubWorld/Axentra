@@ -61,7 +61,8 @@ public class UnbanIpCommand implements CommandExecutor, TabCompleter {
 
         // Player name: lift the account ban and every banned IP the player has used
         String playerName = input;
-        String uuid = Bukkit.getOfflinePlayer(input).getUniqueId().toString();
+        String uuid = plugin.getDatabaseManager().findUuidByName(input);
+        if (uuid == null) uuid = Bukkit.getOfflinePlayer(input).getUniqueId().toString();
         boolean accountBanned = plugin.getDatabaseManager().isBannedByName(playerName);
         List<String> bannedIps = new ArrayList<>();
         for (DatabaseManager.IpHistoryEntry entry : plugin.getDatabaseManager().getIpHistory(uuid)) {

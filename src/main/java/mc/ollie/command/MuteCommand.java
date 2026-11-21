@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.PlayerLookup;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MuteCommand implements CommandExecutor, TabCompleter {
 
@@ -53,15 +55,16 @@ public class MuteCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
+        // Also finds players who already logged out
+        PlayerLookup.Target target = PlayerLookup.resolve(plugin, args[0]);
 
         if (target == null) {
             sender.sendMessage(getMessage("player-not-found").replace("%player%", args[0]));
             return true;
         }
 
-        if (plugin.getDatabaseManager().isMuted(target.getUniqueId().toString())) {
-            sender.sendMessage(getMessage("mute-already-muted").replace("%player%", target.getName()));
+        if (plugin.getDatabaseManager().isMuted(target.uuid())) {
+            sender.sendMessage(getMessage("mute-already-muted").replace("%player%", target.name()));
             return true;
         }
 
@@ -81,27 +84,29 @@ public class MuteCommand implements CommandExecutor, TabCompleter {
         String chatLog = null;
         ChatListener chatListener = plugin.getChatListener();
         if (chatListener != null) {
-            chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+            chatLog = chatListener.getChatSnapshot(UUID.fromString(target.uuid()));
         }
 
-        plugin.getDatabaseManager().mutePlayer(target.getName(), target.getUniqueId().toString(), reason, sender.getName(), null);
+        plugin.getDatabaseManager().mutePlayer(target.name(), target.uuid(), reason, sender.getName(), null);
 
         // Create case
         String staffName = sender.getName();
         String staffUuid = sender instanceof Player ? ((Player) sender).getUniqueId().toString() : "CONSOLE";
-        int caseId = plugin.getDatabaseManager().createCase("MUTE", target.getName(),
-                target.getUniqueId().toString(), reason, staffName, null, chatLog);
+        int caseId = plugin.getDatabaseManager().createCase("MUTE", target.name(),
+                target.uuid(), reason, staffName, null, chatLog);
 
         // Audit log
-        plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.getName(), reason);
+        plugin.getDatabaseManager().logAction(staffName, staffUuid, "MUTE", target.name(), reason);
 
-        target.sendMessage(getMessage("mute-message").replace("%reason%", reason));
-        sender.sendMessage(getMessage("mute-success").replace("%player%", target.getName()).replace("%reason%", reason)
+        if (target.online() != null) {
+            target.online().sendMessage(getMessage("mute-message").replace("%reason%", reason));
+        }
+        sender.sendMessage(getMessage("mute-success").replace("%player%", target.name()).replace("%reason%", reason)
                 + ChatColor.DARK_GRAY + " (Case #" + caseId + ")");
 
         if (plugin.getFileManager().getSettings().getBoolean("announce-mute")) {
             String announceMsg = getMessage("mute-announce")
-                    .replace("%player%", target.getName())
+                    .replace("%player%", target.name())
                     .replace("%reason%", reason);
             for (Player online : Bukkit.getOnlinePlayers()) {
                 if (online.hasPermission("Axentra.notify.mute")) {

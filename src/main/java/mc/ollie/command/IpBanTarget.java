@@ -2,8 +2,7 @@ package mc.ollie.command;
 
 import mc.ollie.App;
 import mc.ollie.DatabaseManager;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import mc.ollie.PlayerLookup;
 import org.bukkit.entity.Player;
 
 import java.net.InetSocketAddress;
@@ -37,26 +36,34 @@ final class IpBanTarget {
     }
 
     /** Returns null when the input is a player whose IP is not known. */
-    @SuppressWarnings("deprecation")
     static IpBanTarget resolve(App plugin, String input) {
-        Player online = Bukkit.getPlayer(input);
-        if (online != null) {
-            InetSocketAddress address = online.getAddress();
-            if (address == null) return null;
-            return new IpBanTarget(address.getAddress().getHostAddress(),
-                    online.getName(), online.getUniqueId().toString(), online);
-        }
-
         if (looksLikeIp(input)) {
             return new IpBanTarget(input, null, null, null);
         }
 
+        // Same lookup as /ban: online, left recently, or known to the database. Bukkit.getOfflinePlayer(name)
+        // gives the wrong UUID on offline-mode and proxy servers, so the IP history came back empty.
+        PlayerLookup.Target target = PlayerLookup.resolve(plugin, input);
+        if (target == null) return null;
+
+        if (target.online() != null) {
+            InetSocketAddress address = target.online().getAddress();
+            if (address == null) return null;
+            return new IpBanTarget(address.getAddress().getHostAddress(), target.name(), target.uuid(), target.online());
+        }
+
         // Offline player: use the most recent IP they joined with
-        OfflinePlayer offline = Bukkit.getOfflinePlayer(input);
-        String uuid = offline.getUniqueId().toString();
-        String name = offline.getName() != null ? offline.getName() : input;
-        List<DatabaseManager.IpHistoryEntry> history = plugin.getDatabaseManager().getIpHistory(uuid);
-        if (history.isEmpty()) return null;
-        return new IpBanTarget(history.get(0).ip, name, uuid, null);
+        String ip = PlayerLookup.recentIp(target.uuid());
+        if (ip == null) {
+            List<DatabaseManager.IpHistoryEntry> history = plugin.getDatabaseManager().getIpHistory(target.uuid());
+            for (DatabaseManager.IpHistoryEntry entry : history) {
+                if (!"unknown".equals(entry.ip)) {
+                    ip = entry.ip;
+                    break;
+                }
+            }
+        }
+        if (ip == null) return null;
+        return new IpBanTarget(ip, target.name(), target.uuid(), null);
     }
 }

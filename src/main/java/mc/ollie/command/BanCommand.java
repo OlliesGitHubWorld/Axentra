@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.PlayerLookup;
 import mc.ollie.listeners.ChatListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -53,8 +54,10 @@ public class BanCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String playerName = args[0];
-        Player target = Bukkit.getPlayer(playerName);
+        // Also finds players who already logged out; unknown names still get banned by name
+        PlayerLookup.Target found = PlayerLookup.resolve(plugin, args[0]);
+        String playerName = found != null ? found.name() : args[0];
+        Player target = found != null ? found.online() : null;
 
         // Build reason
         String reason;
@@ -70,7 +73,7 @@ public class BanCommand implements CommandExecutor, TabCompleter {
         }
 
         String bannedBy = sender.getName();
-        String uuid = target != null ? target.getUniqueId().toString()
+        String uuid = found != null ? found.uuid()
                 : org.bukkit.Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
 
         // Check if already banned
@@ -81,10 +84,10 @@ public class BanCommand implements CommandExecutor, TabCompleter {
 
         // Get chat snapshot before banning
         String chatLog = null;
-        if (target != null) {
+        if (found != null) {
             ChatListener chatListener = plugin.getChatListener();
             if (chatListener != null) {
-                chatLog = chatListener.getChatSnapshot(target.getUniqueId());
+                chatLog = chatListener.getChatSnapshot(java.util.UUID.fromString(found.uuid()));
             }
         }
 
