@@ -743,6 +743,7 @@ public final class App extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new LoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerLookup(this), this);
 
         if (settings.getBoolean("enabled-modules.chat-management", true)) {
             this.chatListener = new ChatListener(this, staffchatCommand);

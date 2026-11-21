@@ -72,6 +72,7 @@ public class FileManager {
         // Check if any keys are missing
         Set<String> missingKeys = new LinkedHashSet<>();
         for (String key : defaultConfig.getKeys(true)) {
+            if (insideUserMap(fileName, key, userConfig)) continue;
             if (!userConfig.contains(key)) {
                 missingKeys.add(key);
             }
@@ -114,6 +115,16 @@ public class FileManager {
             boolean isListInDefault = !isSection && defaultConfig.isList(keyPath);
             boolean isListInUser = !isSection && userConfig.isList(keyPath);
             boolean isList = isListInDefault || isListInUser;
+
+            if (isUserMap(fileName, keyPath) && userConfig.contains(keyPath)) {
+                // User-owned map — copy the user's whole block, never the template's entries
+                int userLine = findKeyLine(userLineToKey, keyPath);
+                if (userLine >= 0) {
+                    output.addAll(userLines.subList(userLine, endOfBlock(userLines, userLine) + 1));
+                    i = endOfBlock(templateLines, i) + 1;
+                    continue;
+                }
+            }
 
             if (isSection) {
                 // Section header — always copy from template (structure/comments stay correct)
@@ -172,6 +183,9 @@ public class FileManager {
             i++;
         }
 
+        // Keep keys the user added that the template doesn't know (custom warn thresholds, per-world blocks...)
+        keepUserOnlyKeys(output, userLines, userLineToKey, defaultConfig, fileName);
+
         // Write the merged file
         try {
             Files.write(file.toPath(), output, StandardCharsets.UTF_8);
@@ -190,6 +204,78 @@ public class FileManager {
         if (fileName.equals("config.yml")) {
             plugin.reloadConfig();
         }
+    }
+
+    /**
+     * Copies every user key that is missing from the template (with its value, children and list items)
+     * into the merged output, at the end of its parent section. Without this, rebuilding the file from
+     * the template would silently delete user-added entries.
+     */
+    private void keepUserOnlyKeys(List<String> output, List<String> userLines, Map<Integer, String> userLineToKey,
+                                  YamlConfiguration defaultConfig, String fileName) {
+        for (Map.Entry<Integer, String> entry : userLineToKey.entrySet()) {
+            String key = entry.getValue();
+            if (defaultConfig.contains(key)) continue;
+            // Already copied wholesale with its user-owned map
+            if (insideUserMap(fileName, key, null)) continue;
+            int dot = key.lastIndexOf('.');
+            String parent = dot < 0 ? "" : key.substring(0, dot);
+            // Only the top-most unknown key: its children are copied as part of its block
+            if (!parent.isEmpty() && !defaultConfig.isConfigurationSection(parent)) continue;
+
+            int start = entry.getKey();
+            int lastContent = endOfBlock(userLines, start);
+            List<String> block = new ArrayList<>(userLines.subList(start, lastContent + 1));
+
+            int insertAt;
+            if (parent.isEmpty()) {
+                insertAt = output.size();
+            } else {
+                int parentLine = findKeyLine(mapLinesToKeys(output), parent);
+                if (parentLine < 0) continue;
+                insertAt = endOfBlock(output, parentLine) + 1;
+            }
+            output.addAll(insertAt, block);
+            plugin.logInfo("[" + fileName + "] Kept custom key: " + key);
+        }
+    }
+
+    /**
+     * Sections whose entries belong to the user (thresholds, per-world blocks). The bundled entries are
+     * only examples for a fresh file — once the user has the section, removed or renamed entries must not
+     * be merged back in.
+     */
+    private static final Map<String, Set<String>> USER_MAPS = Map.of(
+            "config.yml", Set.of("warn-punishments", "rtp.worlds")
+    );
+
+    private boolean isUserMap(String fileName, String key) {
+        return USER_MAPS.getOrDefault(fileName, Set.of()).contains(key);
+    }
+
+    /** True if {@code key} is an entry under a user-owned map (and, when {@code userConfig} is given, the user has that map). */
+    private boolean insideUserMap(String fileName, String key, YamlConfiguration userConfig) {
+        for (String map : USER_MAPS.getOrDefault(fileName, Set.of())) {
+            if (key.startsWith(map + ".") && (userConfig == null || userConfig.contains(map))) return true;
+        }
+        return false;
+    }
+
+    /** Index of the last non-comment line belonging to the key at {@code keyLine} (its children and list items). */
+    private int endOfBlock(List<String> lines, int keyLine) {
+        int indent = getIndent(lines.get(keyLine));
+        int last = keyLine;
+        for (int j = keyLine + 1; j < lines.size(); j++) {
+            String trimmed = lines.get(j).trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) continue;
+            int lineIndent = getIndent(lines.get(j));
+            if (lineIndent > indent || (lineIndent == indent && trimmed.startsWith("-"))) {
+                last = j;
+            } else {
+                break;
+            }
+        }
+        return last;
     }
 
     private List<String> readLines(InputStream stream) {

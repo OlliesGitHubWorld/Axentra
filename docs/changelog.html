@@ -131,9 +131,9 @@
             <a href="/" class="nav-logo">Axentra</a>
             <div class="nav-links">
                 <a href="index.html#features">Features</a>
-                <a href="index.html#screenshots">Screenshots</a>
                 <a href="index.html#commands">Commands</a>
                 <a href="wiki.html">Wiki</a>
+                <a href="changelog.html" aria-current="page">Changelog</a>
                 <a href="index.html#download" class="nav-cta">Download</a>
                 <button class="theme-toggle" aria-label="Toggle theme">
                     <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -150,13 +150,103 @@
 
     <div class="changelog-page">
         <h1>Changelog</h1>
-        <p class="changelog-lead">Everything that's changed in Axentra.</p>
+        <p class="changelog-lead">Everything that's changed in Axentra. <a href="roadmap.html">See what's coming next &rarr;</a></p>
+
+        <!-- v1.8.2 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.8.2</h2>
+                <span class="tag">Latest</span>
+            </div>
+            <p class="changelog-date">November 2026 &mdash; Bugfix Release</p>
+
+            <div class="changelog-section">
+                <h3>Punishing Offline Players</h3>
+                <ul>
+                    <li>All punishment commands now work on players who already logged out: <strong><code>/ban</code></strong>, <strong><code>/tempban</code></strong>, <strong><code>/banip</code></strong>, <strong><code>/tempbanip</code></strong>, <strong><code>/mute</code></strong>, <strong><code>/tempmute</code></strong>, <strong><code>/warn</code></strong>, <strong><code>/punish</code></strong> and <strong><code>/note</code></strong>. Anyone who has joined the server before can be punished, and the case is saved under their real UUID</li>
+                    <li><strong><code>/banip &lt;player&gt;</code></strong> on an offline player said "Could not retrieve the address" on offline-mode and proxy servers, or when the snapshots, trust, alts and timeline modules were all off. Axentra now always remembers every player's last IP</li>
+                    <li>Players who left in the last 10 minutes are still suggested in tab-complete for these commands, so you can punish someone who logs out right before you hit enter</li>
+                    <li>Warn punishments from <code>warn-punishments</code> are applied to offline players too. A kick step is skipped when the player isn't online</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Tab-Complete</h3>
+                <ul>
+                    <li>Tab-complete for every Axentra command now only shows entries that match what you typed: names starting with your input first, then names that contain it</li>
+                    <li>Vanished players no longer show up in tab-complete for players who can't see them</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Bug Fixes</h3>
+                <ul>
+                    <li>Removing or renaming a threshold in <code>warn-punishments</code> no longer brings the default entries back after a restart. The same goes for <code>rtp.worlds</code></li>
+                    <li>Keys you added yourself to <code>config.yml</code> (for example extra warn thresholds) are no longer deleted when the config is updated on startup</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Upgrading</h3>
+                <ul>
+                    <li>Replace the jar and fully restart the server. No config changes are needed</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- v1.8.1 -->
+        <div class="changelog-entry">
+            <div class="changelog-version">
+                <h2>v1.8.1</h2>
+            </div>
+            <p class="changelog-date">November 2026 &mdash; Bugfix Release</p>
+
+            <div class="changelog-section">
+                <h3>Update Checker</h3>
+                <ul>
+                    <li>No longer says "New update available 1.8.0 &rarr; 1.8.0". Versions are compared number by number, and you're only notified when the release is actually newer</li>
+                    <li><strong><code>update-checker.enabled</code></strong> in <code>config.yml</code> &mdash; with <code>false</code> no request is made at all (this also turns off <code>/axentra upgrade</code>)</li>
+                    <li><strong><code>update-checker.notify-ops-on-join</code></strong> &mdash; choose whether players with <code>Axentra.admin</code> hear about new versions when they join</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>IP Bans</h3>
+                <ul>
+                    <li><strong><code>/banip &lt;player&gt;</code></strong> and <strong><code>/tempbanip &lt;player&gt;</code></strong> now ban the account together with the IP, in one case. Also works for offline players, using their last known IP</li>
+                    <li><strong><code>/unbanip &lt;player&gt;</code></strong> lifts both the account ban and the IP ban. <code>/unbanip &lt;ip&gt;</code> still works</li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Inventory</h3>
+                <ul>
+                    <li><strong><code>/invsee</code></strong> now shows armor and off hand in a 54-slot menu. With <code>invsee-read-only: false</code> you can edit everything, including armor, and changes sync to the player straight away</li>
+                    <li><strong><code>/clear</code></strong> and <code>/clear &lt;player&gt;</code> now ask for confirmation. Click [Confirm] or type <code>/clear confirm</code> within 10 seconds. Turn it off with <code>clear.require-confirm: false</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Bug Fixes</h3>
+                <ul>
+                    <li>Starting <code>/maintenance on</code> while a countdown was already running started a second countdown, so every warning showed up twice and the old bossbar got stuck. The old countdown is now replaced</li>
+                    <li>Every permission Axentra checks is now registered, so LuckPerms suggests them: <code>Axentra.notify.ban</code>, <code>Axentra.notify.kick</code>, <code>Axentra.staff</code>, <code>Axentra.trust.admin</code> and <code>Axentra.homes.1</code> to <code>Axentra.homes.100</code></li>
+                </ul>
+            </div>
+
+            <div class="changelog-section">
+                <h3>Upgrading</h3>
+                <ul>
+                    <li>Fully restart the server &mdash; new settings are added to your configs automatically and your own values are kept</li>
+                    <li>Existing messages aren't overwritten: delete the <code>unbanip-usage</code> line from <code>messages.yml</code> and restart to get the new usage text</li>
+                </ul>
+            </div>
+        </div>
 
         <!-- v1.8.0 -->
         <div class="changelog-entry">
             <div class="changelog-version">
                 <h2>v1.8.0</h2>
-                <span class="tag">Latest</span>
             </div>
             <p class="changelog-date">November 2026 &mdash; Server Health Update</p>
 
@@ -448,16 +538,22 @@
                     <a href="wiki.html">Wiki</a>
                     <a href="wiki.html#commands">Commands</a>
                     <a href="wiki.html#permissions">Permissions</a>
+                    <a href="roadmap.html">Roadmap</a>
                 </div>
                 <div class="footer-links">
                     <div class="footer-links-title">Community</div>
-                    <a href="https://discord.gg/kNjvQPNTw" target="_blank">Discord</a>
-                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank">GitHub</a>
-                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank">Report a Bug</a>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank" rel="noopener">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" rel="noopener">SpigotMC</a>
+                    <a href="https://modrinth.com/plugin/axentra" target="_blank" rel="noopener">Modrinth</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank" rel="noopener">Report a Bug</a>
+                    <!-- Support link: replace the URL with your GitHub Sponsors or Ko-fi page, then remove the comment markers
+                    <a href="https://ko-fi.com/YOUR-NAME" target="_blank" rel="noopener">Support the project</a>
+                    -->
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Axentra. Licensed under MIT.</p>
+                <p>&copy; 2026 Axentra. Licensed under GPL v3.</p>
             </div>
         </div>
     </footer>

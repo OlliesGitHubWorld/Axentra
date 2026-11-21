@@ -30,11 +30,13 @@ public class ProtectionListener implements Listener {
         String ip = player.getAddress() != null ? player.getAddress().getAddress().getHostAddress() : "unknown";
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            // IP and name history are always kept: /banip and offline punishments look players up by them
+            plugin.getDatabaseManager().trackIp(uuid, ip);
+            plugin.getDatabaseManager().trackName(uuid, player.getName());
+
             // Session tracking
             if (isModuleEnabled("snapshots") || isModuleEnabled("trust") || isModuleEnabled("alts") || isModuleEnabled("timeline")) {
                 plugin.getDatabaseManager().startPlayerSession(uuid, ip);
-                plugin.getDatabaseManager().trackIp(uuid, ip);
-                plugin.getDatabaseManager().trackName(uuid, player.getName());
             }
 
             // Trust init

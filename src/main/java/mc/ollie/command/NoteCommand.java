@@ -1,6 +1,7 @@
 package mc.ollie.command;
 
 import mc.ollie.App;
+import mc.ollie.PlayerLookup;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -127,8 +128,8 @@ public class NoteCommand implements CommandExecutor, TabCompleter {
     }
 
     private String getUuid(String playerName) {
-        Player online = Bukkit.getPlayer(playerName);
-        if (online != null) return online.getUniqueId().toString();
+        PlayerLookup.Target target = PlayerLookup.resolve(plugin, playerName);
+        if (target != null) return target.uuid();
         return Bukkit.getOfflinePlayer(playerName).getUniqueId().toString();
     }
 

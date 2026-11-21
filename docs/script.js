@@ -234,10 +234,9 @@ const statsObserver = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             const statNumbers = entry.target.querySelectorAll('.stat-number');
             statNumbers.forEach(num => {
-                const text = num.textContent.trim();
-                if (text === '60+') animateCounter(num, 60, '+');
-                else if (text === '3') animateCounter(num, 3);
-                else if (text === '0') animateCounter(num, 0);
+                // "110+" -> 110 with suffix "+"
+                const match = num.textContent.trim().match(/^(\d+)(\D*)$/);
+                if (match) animateCounter(num, parseInt(match[1], 10), match[2]);
             });
             statsObserver.unobserve(entry.target);
         }
@@ -445,3 +444,181 @@ document.querySelectorAll('.btn').forEach(btn => {
         btn.style.transition = 'transform 0.1s ease';
     });
 });
+
+// ═══════════════════════════════════════════
+// Live data: latest release + server count
+// ═══════════════════════════════════════════
+
+// sessionStorage can throw (private mode, blocked storage), so every access is guarded
+function cacheGet(key) {
+    try { return sessionStorage.getItem(key); } catch (e) { return null; }
+}
+
+function cacheSet(key, value) {
+    try { sessionStorage.setItem(key, value); } catch (e) { /* ignore */ }
+}
+
+function fetchJson(url, timeoutMs) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(url, { signal: controller.signal })
+        .then(res => {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .finally(() => clearTimeout(timer));
+}
+
+// Hero badge: keeps the hardcoded text unless GitHub has a newer release
+const releaseBadge = document.getElementById('release-badge');
+if (releaseBadge) {
+    // Compares "v1.8.2"-style versions number by number
+    const isNewer = (tag, than) => {
+        const a = (tag.match(/\d+/g) || []).map(Number);
+        const b = (than.match(/\d+/g) || []).map(Number);
+        for (let i = 0; i < Math.max(a.length, b.length); i++) {
+            if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0);
+        }
+        return false;
+    };
+    const applyRelease = (tag, name) => {
+        const current = releaseBadge.textContent.trim().split(' ')[0];
+        if (!tag || !isNewer(tag, current)) return;
+        const title = (name || tag).replace(/^Axentra\s+/i, '');
+        releaseBadge.textContent = title.includes(tag) ? title : tag + ' - ' + title;
+    };
+
+    const cached = cacheGet('axentra-release');
+    if (cached) {
+        try { const r = JSON.parse(cached); applyRelease(r.tag, r.name); } catch (e) { /* ignore */ }
+    } else {
+        fetchJson('https://api.github.com/repos/OlliesGitHubWorld/Axentra/releases/latest', 3000)
+            .then(data => {
+                cacheSet('axentra-release', JSON.stringify({ tag: data.tag_name, name: data.name }));
+                applyRelease(data.tag_name, data.name);
+            })
+            .catch(() => { /* keep the fallback text */ });
+    }
+}
+
+// "Used on X servers": latest point of the bStats servers chart, hidden when unavailable
+const serverCount = document.getElementById('server-count');
+if (serverCount) {
+    const showCount = count => {
+        if (!(count > 0)) return;
+        serverCount.querySelector('strong').textContent = count.toLocaleString('en-US');
+        serverCount.querySelector('.hero-usage-unit').textContent = count === 1 ? 'server' : 'servers';
+        serverCount.hidden = false;
+    };
+
+    const cached = parseInt(cacheGet('axentra-servers'), 10);
+    if (cached > 0) {
+        showCount(cached);
+    } else {
+        fetchJson('https://bstats.org/api/v1/plugins/30019/charts/servers/data?maxElements=1', 4000)
+            .then(points => {
+                const last = Array.isArray(points) && points.length ? points[points.length - 1] : null;
+                const count = last ? Number(last[1]) : 0;
+                if (count > 0) cacheSet('axentra-servers', String(count));
+                showCount(count);
+            })
+            .catch(() => { /* stays hidden */ });
+    }
+}
+
+// ═══════════════════════════════════════════
+// Screenshot lightbox
+// ═══════════════════════════════════════════
+
+const lightboxLinks = Array.from(document.querySelectorAll('.lightbox-link'));
+
+if (lightboxLinks.length) {
+    const box = document.createElement('div');
+    box.className = 'lightbox';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-label', 'Screenshot viewer');
+    box.innerHTML =
+        '<span class="lightbox-counter" aria-live="polite"></span>' +
+        '<button class="lightbox-btn lightbox-close" aria-label="Close">&times;</button>' +
+        '<button class="lightbox-btn lightbox-prev" aria-label="Previous screenshot">&lsaquo;</button>' +
+        '<button class="lightbox-btn lightbox-next" aria-label="Next screenshot">&rsaquo;</button>' +
+        '<figure class="lightbox-figure"><img class="lightbox-img" alt=""><figcaption class="lightbox-caption"></figcaption></figure>';
+    document.body.appendChild(box);
+
+    const img = box.querySelector('.lightbox-img');
+    const caption = box.querySelector('.lightbox-caption');
+    const counter = box.querySelector('.lightbox-counter');
+    const closeBtn = box.querySelector('.lightbox-close');
+    let current = 0;
+    let lastFocus = null;
+
+    function show(index) {
+        current = (index + lightboxLinks.length) % lightboxLinks.length;
+        const link = lightboxLinks[current];
+        const thumb = link.querySelector('img');
+        img.src = link.getAttribute('href');
+        img.alt = thumb ? thumb.alt : '';
+        caption.textContent = link.dataset.caption || '';
+        counter.textContent = (current + 1) + ' / ' + lightboxLinks.length;
+    }
+
+    function open(index) {
+        lastFocus = document.activeElement;
+        show(index);
+        box.classList.add('open');
+        document.body.classList.add('lightbox-open');
+        closeBtn.focus();
+    }
+
+    function close() {
+        box.classList.remove('open');
+        document.body.classList.remove('lightbox-open');
+        if (lastFocus) lastFocus.focus();
+    }
+
+    lightboxLinks.forEach((link, i) => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            open(i);
+        });
+    });
+
+    closeBtn.addEventListener('click', close);
+    box.querySelector('.lightbox-prev').addEventListener('click', () => show(current - 1));
+    box.querySelector('.lightbox-next').addEventListener('click', () => show(current + 1));
+
+    // Tap outside the image closes
+    box.addEventListener('click', e => {
+        if (e.target === box || e.target.classList.contains('lightbox-figure')) close();
+    });
+
+    document.addEventListener('keydown', e => {
+        if (!box.classList.contains('open')) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') show(current - 1);
+        else if (e.key === 'ArrowRight') show(current + 1);
+        else if (e.key === 'Tab') {
+            // Keep focus inside the viewer
+            const buttons = Array.from(box.querySelectorAll('button'));
+            const at = buttons.indexOf(document.activeElement);
+            e.preventDefault();
+            buttons[(at + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+        }
+    });
+
+    // Swipe left/right to browse
+    let touchX = null;
+    let touchY = null;
+    box.addEventListener('touchstart', e => {
+        touchX = e.touches[0].clientX;
+        touchY = e.touches[0].clientY;
+    }, { passive: true });
+    box.addEventListener('touchend', e => {
+        if (touchX === null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        const dy = e.changedTouches[0].clientY - touchY;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(current + (dx < 0 ? 1 : -1));
+        touchX = null;
+    }, { passive: true });
+}

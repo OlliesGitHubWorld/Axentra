@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadmap - Axentra</title>
+    <meta name="description" content="Axentra Roadmap — what's being worked on now, what's next and what's planned later for the Axentra Minecraft server management plugin.">
+    <meta name="keywords" content="Axentra, AxentraMC, Axentra roadmap, Minecraft plugin roadmap">
+    <meta name="theme-color" content="#00bcd4">
+    <link rel="canonical" href="https://axentramc.com/roadmap.html">
+    <meta property="og:title" content="Axentra Roadmap">
+    <meta property="og:description" content="What's being worked on now, what's next and what's planned later for Axentra.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://axentramc.com/roadmap.html">
+    <meta property="og:image" content="https://axentramc.com/assets/og-image.png">
+    <meta property="og:site_name" content="Axentra">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>const t=localStorage.getItem('axentra-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');</script>
+    <style>
+        .roadmap-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+        .roadmap-page h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .roadmap-lead {
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            font-size: 1.05rem;
+            max-width: 640px;
+        }
+        .roadmap-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+        .roadmap-column {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        .roadmap-column-now {
+            border-color: rgba(0, 188, 212, 0.4);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 188, 212, 0.06) 100%);
+        }
+        .roadmap-column h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .roadmap-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        .roadmap-column-now .roadmap-dot {
+            background: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
+        }
+        .roadmap-column-next .roadmap-dot {
+            background: var(--accent-dark);
+        }
+        .roadmap-column-hint {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .roadmap-column ul {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+        .roadmap-column li {
+            padding: 12px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+        }
+        .roadmap-column li strong {
+            display: block;
+            font-size: 0.95rem;
+        }
+        .roadmap-column li code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            color: var(--accent);
+        }
+        .roadmap-column li span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+        .roadmap-ideas {
+            margin-top: 40px;
+            padding: 20px 24px;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .roadmap-note {
+            margin-top: 16px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        @media (max-width: 860px) {
+            .roadmap-columns { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .roadmap-page { padding: 100px 16px 60px; }
+            .roadmap-page h1 { font-size: 1.75rem; }
+            .roadmap-column { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Axentra</a>
+            <div class="nav-links">
+                <a href="index.html#features">Features</a>
+                <a href="index.html#commands">Commands</a>
+                <a href="wiki.html">Wiki</a>
+                <a href="changelog.html">Changelog</a>
+                <a href="index.html#download" class="nav-cta">Download</a>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="roadmap-page">
+        <h1>Roadmap</h1>
+        <p class="roadmap-lead">What's being worked on now, what comes next and what's planned for later. Plans can change, so there are no dates.</p>
+
+        <div class="roadmap-columns">
+
+            <!-- ═════ EDIT ROADMAP BELOW ═════
+                 One <li> per item: <strong> = title, <span> = short description (optional).
+                 Move an item to another column by cutting and pasting its <li>. -->
+
+            <!-- NOW -->
+            <section class="roadmap-column roadmap-column-now" aria-labelledby="roadmap-now">
+                <h2 id="roadmap-now"><span class="roadmap-dot" aria-hidden="true"></span>Now</h2>
+                <p class="roadmap-column-hint">Being worked on</p>
+                <ul>
+                    <li><strong>Discord integration</strong><span>A built-in Discord bot: account linking, role sync, cases and reports in Discord, and staff chat in both directions.</span></li>
+                    <li><strong>Ban appeals in Discord</strong><span>Players appeal with a form; staff accept, deny or reduce with a reason and can talk to the player through DMs.</span></li>
+                    <li><strong>Discord setup wizard</strong><span>Checks the bot's permissions and creates the missing channels for you.</span></li>
+                    <li><strong>Live server status</strong><span>A Discord message with players, TPS and health that updates itself, plus start, stop and crash alerts.</span></li>
+                    <li><strong>Player info</strong><span><code>/afk</code>, <code>/seen</code>, <code>/whois</code>, <code>/near</code> and a grouped <code>/list</code>.</span></li>
+                    <li><strong>Smarter cleanup</strong><span>Clear mobs as well as items, protect death drops, per-world settings and instant leaf decay.</span></li>
+                </ul>
+            </section>
+
+            <!-- NEXT -->
+            <section class="roadmap-column roadmap-column-next" aria-labelledby="roadmap-next">
+                <h2 id="roadmap-next"><span class="roadmap-dot" aria-hidden="true"></span>Next</h2>
+                <p class="roadmap-column-hint">Coming up after that</p>
+                <ul>
+                    <li><strong>MySQL &amp; MariaDB</strong><span>Optional MySQL storage with a one-command migration and automatic daily backups.</span></li>
+                    <li><strong>Network support</strong><span>Velocity and BungeeCord: bans, mutes and staff chat across all servers, plus <code>/find</code>, <code>/send</code> and <code>/glist</code>.</span></li>
+                    <li><strong>Chat protection</strong><span>A word filter that catches bypass tricks, anti-advertising and anti-spam, with escalating punishments.</span></li>
+                    <li><strong>/helpop</strong><span>Players ask staff for help; staff can answer in-game or from Discord.</span></li>
+                    <li><strong>PlaceholderAPI support</strong><span>Trust, playtime, AFK, TPS and more as placeholders for other plugins.</span></li>
+                </ul>
+            </section>
+
+            <!-- LATER -->
+            <section class="roadmap-column roadmap-column-later" aria-labelledby="roadmap-later">
+                <h2 id="roadmap-later"><span class="roadmap-dot" aria-hidden="true"></span>Later</h2>
+                <p class="roadmap-column-hint">Planned, not started</p>
+                <ul>
+                    <li><strong>Block logging &amp; rollback</strong></li>
+                    <li><strong>Web panel</strong></li>
+                </ul>
+            </section>
+
+            <!-- ═════ END OF ROADMAP ═════ -->
+
+        </div>
+
+        <p class="roadmap-ideas">Have an idea? Suggest it on <a href="https://discord.gg/kNjvQPNTw" target="_blank" rel="noopener">Discord</a> or <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+        <p class="roadmap-note">Looking for what's already released? See the <a href="changelog.html">changelog</a>.</p>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-brand-name">Axentra</div>
+                    <p>Made with love by <a href="https://github.com/OlliesGitHubWorld" target="_blank" rel="noopener">OlliesWorld</a></p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-title">Resources</div>
+                    <a href="wiki.html">Wiki</a>
+                    <a href="wiki.html#commands">Commands</a>
+                    <a href="changelog.html">Changelog</a>
+                    <a href="roadmap.html">Roadmap</a>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-title">Community</div>
+                    <a href="https://discord.gg/kNjvQPNTw" target="_blank" rel="noopener">Discord</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://www.spigotmc.org/resources/axentra.133221/" target="_blank" rel="noopener">SpigotMC</a>
+                    <a href="https://modrinth.com/plugin/axentra" target="_blank" rel="noopener">Modrinth</a>
+                    <a href="https://github.com/OlliesGitHubWorld/Axentra/issues" target="_blank" rel="noopener">Report a Bug</a>
+                    <!-- Support link: replace the URL with your GitHub Sponsors or Ko-fi page, then remove the comment markers
+                    <a href="https://ko-fi.com/YOUR-NAME" target="_blank" rel="noopener">Support the project</a>
+                    -->
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Axentra. Licensed under GPL v3.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

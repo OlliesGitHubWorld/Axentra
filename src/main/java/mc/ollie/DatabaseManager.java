@@ -1888,6 +1888,23 @@ public class DatabaseManager {
         return null;
     }
 
+    /**
+     * Finds a player's UUID by their (latest) name: name history first (every player who joined
+     * since v1.7.0), then cases. Returns null for players who never joined.
+     */
+    public String findUuidByName(String playerName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT player_uuid FROM name_history WHERE LOWER(name) = LOWER(?) ORDER BY changed_at DESC LIMIT 1")) {
+            stmt.setString(1, playerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getString(1);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to find UUID by name: " + e.getMessage());
+        }
+        return getUuidByName(playerName);
+    }
+
     public List<LeaderboardEntry> getStaffLeaderboard(int limit) {
         List<LeaderboardEntry> entries = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(
